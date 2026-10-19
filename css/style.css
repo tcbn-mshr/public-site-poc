@@ -357,3 +357,297 @@ a {
     }
 
 }
+
+
+
+/* =========================================
+   Materials Page
+========================================= */
+
+
+/* -----------------------------------------
+   Page Header
+----------------------------------------- */
+
+.materials-header {
+    padding: 90px 32px 70px;
+
+    background: #f5f6f7;
+}
+
+.materials-header h1 {
+    margin: 0 0 25px;
+
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 500;
+
+    letter-spacing: 0.04em;
+}
+
+.materials-lead {
+    margin: 0;
+
+    color: #555;
+
+    font-size: 16px;
+
+    line-height: 2;
+}
+
+
+/* -----------------------------------------
+   Materials Section
+----------------------------------------- */
+
+.materials-section {
+    padding: 90px 32px 120px;
+}
+
+.materials-heading {
+    margin-bottom: 35px;
+}
+
+.materials-heading h2 {
+    margin: 0;
+
+    font-size: 32px;
+    font-weight: 500;
+}
+
+
+/* -----------------------------------------
+   Category Filter
+----------------------------------------- */
+
+.category-filter {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-bottom: 50px;
+}
+
+.category-button {
+    padding: 11px 24px;
+
+    color: #333;
+    background: #fff;
+
+    border: 1px solid #ccc;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.category-button:hover {
+    border-color: #222;
+}
+
+.category-button.active {
+    color: #fff;
+    background: #222;
+
+    border-color: #222;
+}
+
+
+/* -----------------------------------------
+   Materials Grid
+----------------------------------------- */
+
+.materials-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 32px;
+}
+
+
+/* -----------------------------------------
+   Material Card
+----------------------------------------- */
+
+.material-card {
+    display: flex;
+    flex-direction: column;
+
+    background: #fff;
+
+    border: 1px solid #e2e2e2;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.material-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Card Image */
+
+.material-card-image {
+    aspect-ratio: 16 / 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    color: #777;
+    background: #f2f3f4;
+}
+
+.material-card-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* Card Content */
+
+.material-card-content {
+    flex: 1;
+
+    padding: 24px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.material-category {
+    margin: 0 0 10px;
+
+    color: #777;
+
+    font-size: 12px;
+
+    letter-spacing: 0.08em;
+}
+
+.material-title {
+    margin: 0 0 15px;
+
+    font-size: 18px;
+    font-weight: 500;
+
+    line-height: 1.6;
+}
+
+.material-description {
+    margin: 0 0 25px;
+
+    color: #666;
+
+    font-size: 14px;
+
+    line-height: 1.8;
+}
+
+
+/* Card Link */
+
+.material-link {
+    margin-top: auto;
+
+    padding-top: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-top: 1px solid #ddd;
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.material-link span {
+    transition: transform 0.2s ease;
+}
+
+.material-card:hover .material-link span {
+    transform: translateX(4px);
+}
+
+
+/* -----------------------------------------
+   Loading / Error
+----------------------------------------- */
+
+.materials-loading,
+.materials-error {
+    padding: 50px 0;
+
+    color: #777;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   Materials Responsive
+========================================= */
+
+@media (max-width: 900px) {
+
+    .materials-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .materials-header {
+        padding:
+            65px 20px
+            55px;
+    }
+
+    .materials-section {
+        padding:
+            65px 20px
+            80px;
+    }
+
+    .materials-grid {
+        grid-template-columns: 1fr;
+
+        gap: 24px;
+    }
+
+    .category-filter {
+        margin-bottom: 35px;
+    }
+
+    .category-button {
+        padding: 9px 16px;
+
+        font-size: 13px;
+    }
+
+}
