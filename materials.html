@@ -1,33 +1,188 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>資料一覧 | INABATA</title>
+
+    <title>展示会資料一覧 | INABATA</title>
+
+    <meta
+        name="description"
+        content="展示会でご紹介した製品・技術資料をご覧いただけます。"
+    >
+
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h1>INABATA</h1>
+    <!-- Header -->
+    <header class="site-header">
+
+        <div class="header-inner">
+
+            <a href="./index.html" class="site-logo">
+                INABATA
+            </a>
+
+            <nav class="header-nav" aria-label="メインナビゲーション">
+                <a href="./materials.html">
+                    資料一覧
+                </a>
+            </nav>
+
+        </div>
+
     </header>
 
+
     <main>
-        <h2>展示会資料</h2>
 
-        <p>
-            展示会でご紹介した製品・技術情報をご覧いただけます。
-        </p>
+        <!-- Page Header -->
+        <section class="materials-header">
 
-        <section id="materials">
-            <!-- STEP 3以降で資料カードを表示 -->
+            <div class="content-inner">
+
+                <p class="section-label">
+                    MATERIALS
+                </p>
+
+                <h1>
+                    展示会資料
+                </h1>
+
+                <p class="materials-lead">
+                    展示会でご紹介した製品・技術情報から、<br>
+                    ご希望の資料をお選びください。
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Materials -->
+        <section class="materials-section">
+
+            <div class="content-inner">
+
+                <div class="materials-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            DOCUMENTS
+                        </p>
+
+                        <h2>
+                            資料を探す
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Category -->
+                <div class="category-filter">
+
+                    <button
+                        type="button"
+                        class="category-button active"
+                        data-category="all">
+                        すべて
+                    </button>
+
+                    <button
+                        type="button"
+                        class="category-button"
+                        data-category="electronics">
+                        情報電子
+                    </button>
+
+                    <button
+                        type="button"
+                        class="category-button"
+                        data-category="chemicals">
+                        化学品
+                    </button>
+
+                    <button
+                        type="button"
+                        class="category-button"
+                        data-category="life">
+                        生活産業
+                    </button>
+
+                </div>
+
+
+                <!--
+                    app.jsからPDFカードを
+                    この領域へ出力する想定
+                -->
+                <div
+                    id="materials-list"
+                    class="materials-grid"
+                    aria-live="polite">
+                </div>
+
+
+                <!-- Loading -->
+                <div
+                    id="materials-loading"
+                    class="materials-loading">
+
+                    資料を読み込んでいます...
+
+                </div>
+
+
+                <!-- Error -->
+                <div
+                    id="materials-error"
+                    class="materials-error"
+                    hidden>
+
+                    資料を取得できませんでした。
+
+                </div>
+
+            </div>
+
         </section>
 
     </main>
 
-    <footer>
-        <p>&copy; INABATA &amp; CO., LTD.</p>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+
+        <div class="footer-inner">
+
+            <div class="footer-links">
+
+                <a href="./privacy.html">
+                    個人情報の取り扱い
+                </a>
+
+            </div>
+
+            <p class="copyright">
+                &copy; INABATA &amp; CO., LTD.
+            </p>
+
+        </div>
+
     </footer>
 
+
+    <!--
+        既存のBlob Storage取得処理
+    -->
+    <script src="./js/app.js"></script>
+
 </body>
+
 </html>
