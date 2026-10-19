@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資料ダウンロード | INABATA</title>
+</head>
+
+<body>
+
+    <header>
+        <h1>INABATA</h1>
+    </header>
+
+    <main>
+
+        <h2>資料ダウンロード</h2>
+
+        <p>
+            以下の項目をご入力ください。
+        </p>
+
+        <form id="download-form">
+
+            <div>
+                <label for="company">会社名 *</label>
+                <input
+                    type="text"
+                    id="company"
+                    name="company"
+                    required>
+            </div>
+
+            <div>
+                <label for="name">氏名 *</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required>
+            </div>
+
+            <div>
+                <label for="email">メールアドレス *</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required>
+            </div>
+
+            <div>
+                <label>
+                    <input
+                        type="checkbox"
+                        id="privacy-consent"
+                        required>
+                    個人情報の取り扱いに同意します。
+                </label>
+            </div>
+
+            <button type="submit">
+                資料をダウンロード
+            </button>
+
+        </form>
+
+    </main>
+
+    <footer>
+        <p>&copy; INABATA &amp; CO., LTD.</p>
+    </footer>
+
+</body>
+</html>
