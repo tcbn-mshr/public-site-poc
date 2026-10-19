@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>展示会資料一覧 | INABATA</title>
+
+    <meta
+        name="description"
+        content="展示会でご紹介した製品・技術資料をご覧いただけます。"
+    >
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-inner">
+
+            <a class="site-logo" href="./index.html">
+                <img
+                    class="site-logo-image"
+                    src="./assets/images/Iktagline_jp_01_RGB.png"
+                    alt="INABATA"
+                >
+            </a>
+
+            <nav class="header-nav" aria-label="メインナビゲーション">
+                <a href="./materials.html">
+                    資料一覧
+                </a>
+            </nav>
+
+        </div>
+    </header>
+
+
+    <main>
+
+        <!-- Page Header -->
+        <section class="materials-header">
+
+            <div class="content-inner">
+
+                <p class="section-label">
+                    MATERIALS
+                </p>
+
+                <h1>
+                    展示会資料
+                </h1>
+
+                <p class="materials-lead">
+                    展示会でご紹介した製品・技術情報から、<br>
+                    ご希望の資料をお選びください。
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Materials -->
+        <section class="materials-section">
+
+            <div class="content-inner">
+
+                <div class="materials-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            DOCUMENTS
+                        </p>
+
+                        <h2>
+                            資料を探す
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Category -->
+                <div class="category-filter">
+
+                    <button
+                        type="button"
+                        class="category-button active"
+                        data-category="all">
+                        すべて
+                    </button>
+
+                    <button
+                        type="button"
+                        class="category-button"
+                        data-category="electronics">
+                        情報電子
+                    </button>
+
+                    <button
+                        type="button"
+                        class="category-button"
+                        data-category="chemicals">
+                        化学品
+                    </button>
+
+                    <button
+                        type="button"
+                        class="category-button"
+                        data-category="life">
+                        生活産業
+                    </button>
+
+                </div>
+
+
+                <!--
+                    app.jsからPDFカードを
+                    この領域へ出力する想定
+                -->
+                <div
+                    id="materials-list"
+                    class="materials-grid"
+                    aria-live="polite">
+                </div>
+
+
+                <!-- Loading -->
+                <div
+                    id="materials-loading"
+                    class="materials-loading">
+
+                    資料を読み込んでいます...
+
+                </div>
+
+
+                <!-- Error -->
+                <div
+                    id="materials-error"
+                    class="materials-error"
+                    hidden>
+
+                    資料を取得できませんでした。
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+
+        <div class="footer-inner">
+
+            <nav
+                class="footer-links"
+                aria-label="フッターナビゲーション"
+            >
+
+                <a
+                    href="https://www.inabata.co.jp/privacy/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    個人情報保護方針
+                </a>
+
+                <a
+                    href="https://www.inabata.co.jp/privacy/handling.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    個人情報の取扱いについて
+                </a>
+
+                <a
+                    href="https://www.inabata.co.jp/cookiepolicy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Cookieポリシー
+                </a>
+
+                <a
+                    href="https://www.inabata.co.jp/sitepolicy/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    サイトポリシー
+                </a>
+
+            </nav>
+
+            <p class="copyright">
+                &copy; INABATA &amp; CO., LTD.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+<!-- ==============================
+     Cookie Consent
+=============================== -->
+
+<div
+    id="cookie-banner"
+    class="cookie-banner"
+    role="dialog"
+    aria-labelledby="cookie-title"
+    aria-describedby="cookie-description"
+    hidden
+>
+
+    <div class="cookie-banner-inner">
+
+        <div class="cookie-message">
+
+            <h2 id="cookie-title">
+                Cookieの利用について
+            </h2>
+
+            <p id="cookie-description">
+                当サイトでは、サイトの利用状況の把握等のため
+                Cookieを使用する場合があります。
+                Cookieの使用について設定できます。
+            </p>
+
+            <a
+                href="https://www.inabata.co.jp/cookiepolicy"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="cookie-policy-link"
+            >
+                Cookieポリシー
+            </a>
+
+        </div>
+
+
+        <div class="cookie-actions">
+
+            <button
+                type="button"
+                id="cookie-reject"
+                class="cookie-button cookie-button-secondary"
+            >
+                拒否する
+            </button>
+
+            <button
+                type="button"
+                id="cookie-accept"
+                class="cookie-button cookie-button-primary"
+            >
+                すべて許可する
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+    <!--
+        既存のBlob Storage取得処理
+    -->
+    <script src="./js/app.js"></script>
+
+    <script src="./js/consent.js"></script>
+    
+</body>
+
+</html>
