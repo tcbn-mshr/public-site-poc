@@ -1,0 +1,18 @@
+{
+  "name": "exhibition-download-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Download logging API for exhibition materials",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
+    "@azure/storage-blob": "^12.0.0"
+  }
+}
