@@ -651,3 +651,51 @@ a {
     }
 
 }
+
+
+
+/* -----------------------------------------
+   PDF Type Label
+----------------------------------------- */
+
+.material-file-type {
+    min-width: 78px;
+    min-height: 92px;
+
+    padding: 18px 12px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    background: #555;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    letter-spacing: 0.08em;
+
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+
+
+/* -----------------------------------------
+   Empty Message
+----------------------------------------- */
+
+.materials-empty {
+    grid-column: 1 / -1;
+
+    margin: 0;
+    padding: 60px 20px;
+
+    color: #777;
+    background: #f7f7f7;
+
+    text-align: center;
+
+    font-size: 14px;
+}
