@@ -4,47 +4,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITサポートポータル</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <title>展示会資料 | INABATA</title>
+
+    <meta
+        name="description"
+        content="展示会でご紹介した製品・技術情報をご覧いただけます。"
+    >
+
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
 
-    <header>
-        <h1>ITサポートポータル（PoC）</h1>
+    <!-- ==============================
+         Header
+    =============================== -->
+
+    <header class="site-header">
+
+        <div class="header-inner">
+
+            <a href="./index.html" class="site-logo">
+                INABATA
+            </a>
+
+            <nav class="header-nav" aria-label="メインナビゲーション">
+
+                <a href="./materials.html">
+                    資料一覧
+                </a>
+
+            </nav>
+
+        </div>
+
     </header>
+
 
     <main>
 
-        <section>
-            <h2>お知らせ</h2>
+        <!-- ==============================
+             Hero
+        =============================== -->
 
-            <ul>
-                <li>2026/09/23 サイト公開</li>
-            </ul>
+        <section class="hero">
+
+            <div class="hero-inner">
+
+                <p class="hero-en">
+                    Exhibition Materials
+                </p>
+
+                <h1>
+                    展示会資料
+                </h1>
+
+                <p class="hero-description">
+                    展示会でご紹介した製品・技術情報を、<br>
+                    オンラインでご覧いただけます。
+                </p>
+
+                <a
+                    href="./materials.html"
+                    class="primary-button"
+                >
+                    資料を見る
+                    <span aria-hidden="true">→</span>
+                </a>
+
+            </div>
+
         </section>
 
-        <section>
-            <h2>FAQ</h2>
 
-            <ul>
-                <li>PCリプレースについて</li>
-                <li>OneDriveについて</li>
-                <li>SharePointについて</li>
-            </ul>
-        </section>
+        <!-- ==============================
+             Introduction
+        =============================== -->
 
-        <section>
-            <h2>資料ダウンロード</h2>
+        <section class="introduction">
 
-            <ul id="pdfList">
-            </ul>
+            <div class="content-inner">
+
+                <p class="section-label">
+                    PICK UP
+                </p>
+
+                <h2>
+                    展示会資料をオンラインで
+                </h2>
+
+                <p class="section-description">
+                    製品カタログや技術資料など、
+                    展示会でご紹介した資料を掲載しています。
+                    ご希望の資料を選択してご覧ください。
+                </p>
+
+                <a
+                    href="./materials.html"
+                    class="text-link"
+                >
+                    資料を探す
+                    <span aria-hidden="true">→</span>
+                </a>
+
+            </div>
+
         </section>
 
     </main>
 
-    <script src="js/app.js"></script>
-    
+
+    <!-- ==============================
+         Footer
+    =============================== -->
+
+    <footer class="site-footer">
+
+        <div class="footer-inner">
+
+            <div class="footer-links">
+
+                <a href="./privacy.html">
+                    個人情報の取り扱い
+                </a>
+
+            </div>
+
+            <p class="copyright">
+                &copy; INABATA &amp; CO., LTD.
+            </p>
+
+        </div>
+
+    </footer>
+
 </body>
 
 </html>
