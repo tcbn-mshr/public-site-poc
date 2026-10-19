@@ -64,10 +64,16 @@ a {
 }
 
 .site-logo {
-    font-size: 25px;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
 
-    letter-spacing: 0.08em;
+.site-logo-image {
+    display: block;
+    width: 210px;
+    max-width: 100%;
+    height: auto;
 }
 
 .header-nav {
@@ -309,9 +315,9 @@ a {
         padding: 0 20px;
     }
 
-    .site-logo {
-        font-size: 21px;
-    }
+   .site-logo-image {
+      width: 165px;
+   }
 
     .header-nav {
         gap: 18px;
