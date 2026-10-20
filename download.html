@@ -9,12 +9,12 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>資料ダウンロード | INABATA</title>
-
     <meta
         name="description"
         content="展示会資料のダウンロードページです。"
     >
+
+    <title>資料ダウンロード｜INABATA</title>
 
     <link
         rel="stylesheet"
@@ -22,53 +22,72 @@
     >
 </head>
 
+
 <body>
 
-    <!-- Header -->
+    <!-- =====================================
+         Header
+    ====================================== -->
+
     <header class="site-header">
+
         <div class="header-inner">
 
-            <a class="site-logo" href="./index.html">
+            <a
+                href="./index.html"
+                class="site-logo"
+                aria-label="INABATA トップページ"
+            >
                 <img
-                    class="site-logo-image"
                     src="./assets/images/Iktagline_jp_01_RGB.png"
-                    alt="INABATA"
+                    alt="INABATA 当たり前をつなぐ、未来を紡ぐ。"
+                    class="site-logo-image"
                 >
             </a>
 
-            <nav class="header-nav" aria-label="メインナビゲーション">
+
+            <nav
+                class="header-nav"
+                aria-label="メインナビゲーション"
+            >
                 <a href="./materials.html">
                     資料一覧
                 </a>
             </nav>
 
         </div>
+
     </header>
 
 
+    <!-- =====================================
+         Main
+    ====================================== -->
+
     <main>
 
-        <!-- Page Header -->
-        <section class="download-header">
+        <!-- Hero -->
 
-            <div class="content-inner">
+        <section class="download-hero">
+
+            <div class="download-hero-inner">
 
                 <p class="section-label">
                     DOWNLOAD
                 </p>
 
                 <p
-                    id="download-material-category"
-                    class="download-material-category"
+                    id="download-category-top"
+                    class="download-hero-category"
                 >
                     展示会資料
                 </p>
 
-                <h1>
+                <h1 class="download-page-title">
                     資料ダウンロード
                 </h1>
 
-                <p class="download-lead">
+                <p class="download-page-description">
                     必要事項をご入力のうえ、
                     ダウンロードへお進みください。
                 </p>
@@ -78,271 +97,328 @@
         </section>
 
 
-        <!-- Download Form -->
-        <section class="download-section">
+        <!-- Loading -->
 
-            <div class="content-inner">
-
-                <div class="download-layout">
-
-
-                    <!-- Target material -->
-
-                    <aside
-                        class="download-material-summary"
-                        aria-label="ダウンロード対象資料"
-                    >
-
-                        <div class="download-pdf-visual">
-                            <span>PDF</span>
-                        </div>
-
-                        <div class="download-material-information">
-
-                            <p class="section-label">
-                                SELECTED DOCUMENT
-                            </p>
-
-                            <h2 id="download-material-title">
-                                資料
-                            </h2>
-
-                            <p>
-                                選択した資料をダウンロードします。
-                            </p>
-
-                        </div>
-
-                    </aside>
+        <div
+            id="download-page-loading"
+            class="material-state-message"
+            role="status"
+        >
+            資料情報を読み込んでいます...
+        </div>
 
 
-                    <!-- Form -->
+        <!-- Page error -->
 
-                    <div class="download-form-area">
+        <div
+            id="download-page-error"
+            class="material-state-message"
+            role="alert"
+            hidden
+        >
+            <h2>
+                資料情報を取得できませんでした。
+            </h2>
 
-                        <p class="section-label">
-                            YOUR INFORMATION
-                        </p>
+            <p>
+                資料が存在しないか、
+                現在公開されていない可能性があります。
+            </p>
 
-                        <h2>
-                            お客様情報
-                        </h2>
-
-                        <p class="required-note">
-                            <span aria-hidden="true">*</span>
-                            は必須項目です。
-                        </p>
+            <p>
+                <a href="./materials.html">
+                    資料一覧へ戻る
+                </a>
+            </p>
+        </div>
 
 
-                        <form
-                            id="download-form"
-                            novalidate
+        <!-- Download content -->
+
+        <section
+            id="download-content"
+            class="download-section"
+            hidden
+        >
+
+            <div class="download-inner">
+
+                <!-- Selected document -->
+
+                <aside
+                    class="selected-document"
+                    aria-labelledby="selected-document-title"
+                >
+
+                    <div class="selected-document-visual">
+
+                        <div
+                            class="selected-document-pdf"
+                            aria-hidden="true"
                         >
-
-                            <!-- APIへ送る資料ID -->
-                            <input
-                                type="hidden"
-                                id="material-id"
-                                name="materialId"
-                            >
-
-
-                            <!-- Company -->
-
-                            <div class="form-field">
-
-                                <label for="company">
-                                    会社名
-                                    <span class="required-mark">
-                                        *
-                                    </span>
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="company"
-                                    name="company"
-                                    autocomplete="organization"
-                                    maxlength="100"
-                                    required
-                                >
-
-                                <p
-                                    id="company-error"
-                                    class="field-error"
-                                    aria-live="polite"
-                                ></p>
-
-                            </div>
-
-
-                            <!-- Name -->
-
-                            <div class="form-field">
-
-                                <label for="name">
-                                    氏名
-                                    <span class="required-mark">
-                                        *
-                                    </span>
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    autocomplete="name"
-                                    maxlength="100"
-                                    required
-                                >
-
-                                <p
-                                    id="name-error"
-                                    class="field-error"
-                                    aria-live="polite"
-                                ></p>
-
-                            </div>
-
-
-                            <!-- Email -->
-
-                            <div class="form-field">
-
-                                <label for="email">
-                                    メールアドレス
-                                    <span class="required-mark">
-                                        *
-                                    </span>
-                                </label>
-
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    autocomplete="email"
-                                    inputmode="email"
-                                    maxlength="254"
-                                    required
-                                >
-
-                                <p
-                                    id="email-error"
-                                    class="field-error"
-                                    aria-live="polite"
-                                ></p>
-
-                            </div>
-
-
-                            <!-- Privacy consent -->
-
-                            <div class="form-consent">
-
-                                <label>
-
-                                    <input
-                                        type="checkbox"
-                                        id="privacy-consent"
-                                        name="consent"
-                                        required
-                                    >
-
-                                    <span>
-                                        <a
-                                            href="https://www.inabata.co.jp/privacy/handling.html"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            個人情報の取り扱い
-                                        </a>
-                                        を確認し、同意します。
-                                        <span class="required-mark">
-                                            *
-                                        </span>
-                                    </span>
-
-                                </label>
-
-                                <p
-                                    id="consent-error"
-                                    class="field-error"
-                                    aria-live="polite"
-                                ></p>
-
-                            </div>
-
-
-                            <!-- Submit -->
-
-                            <button
-                                type="submit"
-                                id="download-submit"
-                                class="primary-button download-submit"
-                            >
-                                <span id="submit-button-text">
-                                    同意してダウンロード
-                                </span>
-
-                                <span aria-hidden="true">
-                                    →
-                                </span>
-                            </button>
-
-
-                            <!-- Processing -->
-
-                            <p
-                                id="download-processing"
-                                class="download-status"
-                                role="status"
-                                hidden
-                            >
-                                ダウンロードを準備しています...
-                            </p>
-
-
-                            <!-- Success -->
-
-                            <p
-                                id="download-success"
-                                class="download-status download-success"
-                                role="status"
-                                hidden
-                            >
-                                ダウンロードを開始しました。
-                            </p>
-
-
-                            <!-- API error -->
-
-                            <div
-                                id="download-error"
-                                class="download-api-error"
-                                role="alert"
-                                hidden
-                            >
-                                ダウンロードを開始できませんでした。
-                                入力内容をご確認のうえ、もう一度お試しください。
-                            </div>
-
-                        </form>
+                            PDF
+                        </div>
 
                     </div>
 
-                </div>
+
+                    <div class="selected-document-body">
+
+                        <p class="section-label">
+                            SELECTED DOCUMENT
+                        </p>
+
+                        <h2
+                            id="selected-document-title"
+                            class="selected-document-title"
+                        ></h2>
+
+                        <p
+                            id="selected-document-description"
+                            class="selected-document-description"
+                        ></p>
+
+                        <a
+                            id="back-to-material"
+                            href="./materials.html"
+                            class="selected-document-back"
+                        >
+                            資料詳細へ戻る
+                        </a>
+
+                    </div>
+
+                </aside>
 
 
-                <!-- Back -->
+                <!-- Form -->
 
-                <div class="download-back">
+                <div class="download-form-area">
 
-                    <a
-                        id="back-to-material"
-                        href="./materials.html"
+                    <p class="section-label">
+                        YOUR INFORMATION
+                    </p>
+
+                    <h2 class="download-form-title">
+                        お客様情報
+                    </h2>
+
+                    <p class="download-required-note">
+                        <span aria-hidden="true">*</span>
+                        は必須項目です。
+                    </p>
+
+
+                    <form
+                        id="download-form"
+                        novalidate
                     >
-                        ← 資料詳細へ戻る
-                    </a>
+
+                        <!-- Company -->
+
+                        <div class="form-field">
+
+                            <label for="company">
+                                会社名
+                                <span
+                                    class="required-mark"
+                                    aria-hidden="true"
+                                >
+                                    *
+                                </span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="company"
+                                name="company"
+                                maxlength="200"
+                                autocomplete="organization"
+                                required
+                            >
+
+                            <p
+                                id="company-error"
+                                class="form-error"
+                                role="alert"
+                                hidden
+                            >
+                                会社名を入力してください。
+                            </p>
+
+                        </div>
+
+
+                        <!-- Customer name -->
+
+                        <div class="form-field">
+
+                            <label for="customer-name">
+                                氏名
+                                <span
+                                    class="required-mark"
+                                    aria-hidden="true"
+                                >
+                                    *
+                                </span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customer-name"
+                                name="customerName"
+                                maxlength="100"
+                                autocomplete="name"
+                                required
+                            >
+
+                            <p
+                                id="customer-name-error"
+                                class="form-error"
+                                role="alert"
+                                hidden
+                            >
+                                氏名を入力してください。
+                            </p>
+
+                        </div>
+
+
+                        <!-- Email -->
+
+                        <div class="form-field">
+
+                            <label for="email">
+                                メールアドレス
+                                <span
+                                    class="required-mark"
+                                    aria-hidden="true"
+                                >
+                                    *
+                                </span>
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                maxlength="254"
+                                autocomplete="email"
+                                inputmode="email"
+                                required
+                            >
+
+                            <p
+                                id="email-error"
+                                class="form-error"
+                                role="alert"
+                                hidden
+                            >
+                                正しいメールアドレスを入力してください。
+                            </p>
+
+                        </div>
+
+
+                        <!-- Consent -->
+
+                        <div class="form-field form-field-consent">
+
+                            <label class="consent-label">
+
+                                <input
+                                    type="checkbox"
+                                    id="privacy-consent"
+                                    name="consent"
+                                    required
+                                >
+
+                                <span>
+                                    <a
+                                        href="https://www.inabata.co.jp/privacy/handling.html"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        個人情報の取り扱い
+                                    </a>
+                                    を確認し、同意します。
+                                    <span
+                                        class="required-mark"
+                                        aria-hidden="true"
+                                    >
+                                        *
+                                    </span>
+                                </span>
+
+                            </label>
+
+                            <p
+                                id="consent-error"
+                                class="form-error"
+                                role="alert"
+                                hidden
+                            >
+                                個人情報の取り扱いへの同意が必要です。
+                            </p>
+
+                        </div>
+
+
+                        <!-- Submit -->
+
+                        <button
+                            type="submit"
+                            id="download-submit"
+                            class="button button-primary"
+                        >
+                            <span id="download-submit-label">
+                                同意してダウンロード
+                            </span>
+
+                            <span aria-hidden="true">
+                                →
+                            </span>
+                        </button>
+
+
+                        <!-- Processing -->
+
+                        <p
+                            id="download-processing"
+                            class="download-status"
+                            role="status"
+                            hidden
+                        >
+                            ダウンロードを準備しています...
+                        </p>
+
+
+                        <!-- Success -->
+
+                        <p
+                            id="download-success"
+                            class="download-status download-success"
+                            role="status"
+                            hidden
+                        >
+                            ダウンロードを開始しました。
+                        </p>
+
+
+                        <!-- API error -->
+
+                        <div
+                            id="download-error"
+                            class="download-api-error"
+                            role="alert"
+                            hidden
+                        >
+                            ダウンロードを開始できませんでした。
+                            入力内容をご確認のうえ、
+                           もう一度お試しください。
+                        </div>
+
+                    </form>
 
                 </div>
 
@@ -353,7 +429,10 @@
     </main>
 
 
-    <!-- Footer -->
+    <!-- =====================================
+         Footer
+    ====================================== -->
+
     <footer class="site-footer">
 
         <div class="footer-inner">
@@ -397,6 +476,7 @@
 
             </nav>
 
+
             <p class="copyright">
                 &copy; INABATA &amp; CO., LTD.
             </p>
@@ -406,76 +486,77 @@
     </footer>
 
 
-<!-- ==============================
-     Cookie Consent
-=============================== -->
+    <!-- =====================================
+         Cookie Consent
+    ====================================== -->
 
-<div
-    id="cookie-banner"
-    class="cookie-banner"
-    role="dialog"
-    aria-labelledby="cookie-title"
-    aria-describedby="cookie-description"
-    hidden
->
+    <div
+        id="cookie-banner"
+        class="cookie-banner"
+        role="dialog"
+        aria-labelledby="cookie-title"
+        aria-describedby="cookie-description"
+        hidden
+    >
 
-    <div class="cookie-banner-inner">
+        <div class="cookie-banner-inner">
 
-        <div class="cookie-message">
+            <div class="cookie-message">
 
-            <h2 id="cookie-title">
-                Cookieの利用について
-            </h2>
+                <h2 id="cookie-title">
+                    Cookieの利用について
+                </h2>
 
-            <p id="cookie-description">
-                当サイトでは、サイトの利用状況の把握等のため
-                Cookieを使用する場合があります。
-                Cookieの使用について設定できます。
-            </p>
+                <p id="cookie-description">
+                    当サイトでは、サイトの利用状況の把握等のため
+                    Cookieを使用する場合があります。
+                    Cookieの使用について設定できます。
+                </p>
 
-            <a
-                href="https://www.inabata.co.jp/cookiepolicy"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="cookie-policy-link"
-            >
-                Cookieポリシー
-            </a>
+                <a
+                    href="https://www.inabata.co.jp/cookiepolicy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="cookie-policy-link"
+                >
+                    Cookieポリシー
+                </a>
 
-        </div>
+            </div>
 
 
-        <div class="cookie-actions">
+            <div class="cookie-actions">
 
-            <button
-                type="button"
-                id="cookie-reject"
-                class="cookie-button cookie-button-secondary"
-            >
-                拒否する
-            </button>
+                <button
+                    type="button"
+                    id="cookie-reject"
+                    class="cookie-button cookie-button-secondary"
+                >
+                    拒否する
+                </button>
 
-            <button
-                type="button"
-                id="cookie-accept"
-                class="cookie-button cookie-button-primary"
-            >
-                すべて許可する
-            </button>
+                <button
+                    type="button"
+                    id="cookie-accept"
+                    class="cookie-button cookie-button-primary"
+                >
+                    すべて許可する
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
+    <!-- =====================================
+         JavaScript
+    ====================================== -->
 
     <script src="./js/download.js"></script>
-
-
     <script src="./js/consent.js"></script>
 
-    
 </body>
 
 </html>
