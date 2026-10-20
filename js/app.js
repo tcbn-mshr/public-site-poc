@@ -5,8 +5,7 @@
    Configuration
 ========================================= */
 
-const MATERIALS_API_URL =
-    "/api/materials";
+const MATERIALS_API_URL = "/api/materials";
 
 
 /* =========================================
@@ -14,30 +13,20 @@ const MATERIALS_API_URL =
 ========================================= */
 
 const materialsGrid =
-    document.getElementById(
-        "materials-grid"
-    );
+    document.getElementById("materials-grid");
 
 const materialsLoading =
-    document.getElementById(
-        "materials-loading"
-    );
+    document.getElementById("materials-loading");
 
 const materialsError =
-    document.getElementById(
-        "materials-error"
-    );
+    document.getElementById("materials-error");
 
 const materialsEmpty =
-    document.getElementById(
-        "materials-empty"
-    );
+    document.getElementById("materials-empty");
 
 const categoryButtons =
     Array.from(
-        document.querySelectorAll(
-            "[data-category]"
-        )
+        document.querySelectorAll("[data-category]")
     );
 
 
@@ -47,80 +36,39 @@ const categoryButtons =
 
 let allMaterials = [];
 
-let selectedCategory =
-    "all";
+let selectedCategory = "all";
 
 
 /* =========================================
-   HTML Escape
-========================================= */
-
-function escapeHtml(value) {
-
-    return String(
-        value ?? ""
-    )
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            "\"",
-            "&quot;"
-        )
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
-}
-
-
-/* =========================================
-   UI State
+   Utility
 ========================================= */
 
 function hideElement(element) {
 
-    if (!element) {
-        return;
+    if (element) {
+        element.hidden = true;
     }
-
-    element.hidden = true;
 }
 
 
 function showElement(element) {
 
-    if (!element) {
-        return;
+    if (element) {
+        element.hidden = false;
     }
-
-    element.hidden = false;
 }
 
 
-function setLoadingState() {
+/* =========================================
+   UI States
+========================================= */
 
-    hideElement(
-        materialsError
-    );
+function showLoading() {
 
-    hideElement(
-        materialsEmpty
-    );
+    showElement(materialsLoading);
 
-    showElement(
-        materialsLoading
-    );
-
+    hideElement(materialsError);
+    hideElement(materialsEmpty);
 
     if (materialsGrid) {
         materialsGrid.innerHTML = "";
@@ -128,32 +76,19 @@ function setLoadingState() {
 }
 
 
-function setLoadedState() {
+function hideLoading() {
 
-    hideElement(
-        materialsLoading
-    );
-
-    hideElement(
-        materialsError
-    );
+    hideElement(materialsLoading);
 }
 
 
-function setErrorState() {
+function showError() {
 
-    hideElement(
-        materialsLoading
-    );
+    hideLoading();
 
-    hideElement(
-        materialsEmpty
-    );
+    hideElement(materialsEmpty);
 
-    showElement(
-        materialsError
-    );
-
+    showElement(materialsError);
 
     if (materialsGrid) {
         materialsGrid.innerHTML = "";
@@ -161,20 +96,13 @@ function setErrorState() {
 }
 
 
-function setEmptyState() {
+function showEmpty() {
 
-    hideElement(
-        materialsLoading
-    );
+    hideLoading();
 
-    hideElement(
-        materialsError
-    );
+    hideElement(materialsError);
 
-    showElement(
-        materialsEmpty
-    );
-
+    showElement(materialsEmpty);
 
     if (materialsGrid) {
         materialsGrid.innerHTML = "";
@@ -183,69 +111,53 @@ function setEmptyState() {
 
 
 /* =========================================
-   Material Normalization
+   Normalize
 ========================================= */
 
 function normalizeMaterial(material) {
 
-    const id =
-        String(
-            material?.id ?? ""
-        ).trim();
-
-    const title =
-        String(
-            material?.title ?? ""
-        ).trim();
-
-    const category =
-        String(
-            material?.category ?? "other"
-        ).trim() || "other";
-
-    const categoryName =
-        String(
-            material?.categoryName ??
-            "その他"
-        ).trim() || "その他";
-
-    const description =
-        String(
-            material?.description ?? ""
-        ).trim();
-
-
     return {
-        id,
-        title,
-        category,
-        categoryName,
-        description
+
+        id:
+            String(
+                material?.id ?? ""
+            ).trim(),
+
+        title:
+            String(
+                material?.title ?? ""
+            ).trim(),
+
+        category:
+            String(
+                material?.category ?? "other"
+            ).trim() || "other",
+
+        categoryName:
+            String(
+                material?.categoryName ?? "その他"
+            ).trim() || "その他",
+
+        description:
+            String(
+                material?.description ?? ""
+            ).trim()
     };
 }
 
 
-function isValidMaterial(material) {
-
-    return Boolean(
-        material.id &&
-        material.title
-    );
-}
-
-
 /* =========================================
-   Material Card
+   Create Material Card
 ========================================= */
 
-function createMaterialCard(
-    material
-) {
+function createMaterialCard(material) {
+
+    /*
+     * article
+     */
 
     const article =
-        document.createElement(
-            "article"
-        );
+        document.createElement("article");
 
     article.className =
         "material-card";
@@ -254,62 +166,187 @@ function createMaterialCard(
         material.category;
 
 
-    const detailUrl =
+    /*
+     * Link
+     */
+
+    const link =
+        document.createElement("a");
+
+    link.className =
+        "material-card-link";
+
+    link.href =
         "./material.html?id=" +
-        encodeURIComponent(
-            material.id
+        encodeURIComponent(material.id);
+
+    link.setAttribute(
+        "aria-label",
+        material.title + "の詳細を見る"
+    );
+
+
+    /*
+     * Visual
+     */
+
+    const visual =
+        document.createElement("div");
+
+    visual.className =
+        "material-card-visual";
+
+
+    const fileType =
+        document.createElement("span");
+
+    fileType.className =
+        "material-card-file-type";
+
+    fileType.textContent =
+        "PDF";
+
+    fileType.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    visual.appendChild(
+        fileType
+    );
+
+
+    /*
+     * Body
+     */
+
+    const body =
+        document.createElement("div");
+
+    body.className =
+        "material-card-body";
+
+
+    /*
+     * Category
+     */
+
+    const category =
+        document.createElement("p");
+
+    category.className =
+        "material-card-category";
+
+    category.textContent =
+        material.categoryName;
+
+
+    /*
+     * Title
+     */
+
+    const title =
+        document.createElement("h2");
+
+    title.className =
+        "material-card-title";
+
+    title.textContent =
+        material.title;
+
+
+    body.appendChild(
+        category
+    );
+
+    body.appendChild(
+        title
+    );
+
+
+    /*
+     * Description
+     */
+
+    if (material.description) {
+
+        const description =
+            document.createElement("p");
+
+        description.className =
+            "material-card-description";
+
+        description.textContent =
+            material.description;
+
+        body.appendChild(
+            description
+        );
+    }
+
+
+    /*
+     * Detail
+     */
+
+    const detail =
+        document.createElement("span");
+
+    detail.className =
+        "material-card-detail";
+
+    detail.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    const detailText =
+        document.createTextNode(
+            "詳細を見る "
         );
 
 
-    article.innerHTML = `
-        <a
-            href="${detailUrl}"
-            class="material-card-link"
-            aria-label="${escapeHtml(
-                material.title
-            )}の詳細を見る"
-        >
-            <div class="material-card-visual">
-                <span
-                    class="material-card-file-type"
-                    aria-hidden="true"
-                >
-                    PDF
-                </span>
-            </div>
+    const arrow =
+        document.createElement("span");
 
-            <div class="material-card-body">
-                <p class="material-card-category">
-                    ${escapeHtml(
-                        material.categoryName
-                    )}
-                </p>
+    arrow.className =
+        "material-card-arrow";
 
-                <h2 class="material-card-title">
-                    ${escapeHtml(
-                        material.title
-                    )}
-                </h2>
+    arrow.textContent =
+        "→";
 
-                ${
-                    material.description
-                        ? `
-                            <p class="material-card-description">
-                                ${escapeHtml(
-                                    material        }
 
-                <span
-                    class="material-card-detail"
-                    aria-hidden="true"
-                >
-                    詳細を見る
-                    <span class="material-card-arrow">
-                        →
-                    </span>
-                </span>
-            </div>
-        </a>
-    `;
+    detail.appendChild(
+        detailText
+    );
+
+    detail.appendChild(
+        arrow
+    );
+
+
+    body.appendChild(
+        detail
+    );
+
+
+    /*
+     * Assemble
+     */
+
+    link.appendChild(
+        visual
+    );
+
+    link.appendChild(
+        body
+    );
+
+    article.appendChild(
+        link
+    );
 
 
     return article;
@@ -317,14 +354,13 @@ function createMaterialCard(
 
 
 /* =========================================
-   Render
+   Filter
 ========================================= */
 
 function getFilteredMaterials() {
 
-    if (
-        selectedCategory === "all"
-    ) {
+    if (selectedCategory === "all") {
+
         return allMaterials;
     }
 
@@ -337,55 +373,57 @@ function getFilteredMaterials() {
 }
 
 
+/* =========================================
+   Render
+========================================= */
+
 function renderMaterials() {
 
     if (!materialsGrid) {
 
         console.error(
-            "materials-grid element was not found."
+            "materials-grid was not found."
         );
 
         return;
     }
 
 
-    const filteredMaterials =
+    const materials =
         getFilteredMaterials();
 
 
     materialsGrid.innerHTML = "";
 
 
-    if (
-        filteredMaterials.length === 0
-    ) {
+    if (materials.length === 0) {
 
-        setEmptyState();
+        showEmpty();
 
         return;
     }
 
 
-    hideElement(
-        materialsEmpty
-    );
+    hideLoading();
 
-    hideElement(
-        materialsError
-    );
+    hideElement(materialsError);
+    hideElement(materialsEmpty);
 
 
     const fragment =
         document.createDocumentFragment();
 
 
-    filteredMaterials.forEach(
+    materials.forEach(
         (material) => {
 
-            fragment.appendChild(
+            const card =
                 createMaterialCard(
                     material
-                )
+                );
+
+            fragment.appendChild(
+                card
             );
         }
     );
@@ -410,36 +448,31 @@ function updateCategoryButtons() {
                 button.dataset.category ||
                 "all";
 
-            const isSelected =
+            const selected =
                 category ===
                 selectedCategory;
 
 
             button.classList.toggle(
                 "is-active",
-                isSelected
+                selected
             );
+
 
             button.setAttribute(
                 "aria-pressed",
-                String(
-                    isSelected
-                )
+                String(selected)
             );
         }
     );
 }
 
 
-function handleCategoryButtonClick(
-    event
-) {
-
-    const button =
-        event.currentTarget;
+function handleCategoryClick(event) {
 
     selectedCategory =
-        button.dataset.category ||
+        event.currentTarget
+            .dataset.category ||
         "all";
 
 
@@ -456,7 +489,7 @@ function initializeCategoryFilter() {
 
             button.addEventListener(
                 "click",
-                handleCategoryButtonClick
+                handleCategoryClick
             );
         }
     );
@@ -476,8 +509,7 @@ async function fetchMaterials() {
         await fetch(
             MATERIALS_API_URL,
             {
-                method:
-                    "GET",
+                method: "GET",
 
                 headers: {
                     "Accept":
@@ -493,7 +525,8 @@ async function fetchMaterials() {
     if (!response.ok) {
 
         throw new Error(
-            `Materials API returned ${response.status}.`
+            "Materials API HTTP error: " +
+            response.status
         );
     }
 
@@ -502,9 +535,7 @@ async function fetchMaterials() {
         await response.json();
 
 
-    if (
-        result?.success !== true
-    ) {
+    if (result?.success !== true) {
 
         throw new Error(
             result?.message ||
@@ -520,7 +551,7 @@ async function fetchMaterials() {
     ) {
 
         throw new Error(
-            "Materials API response is invalid."
+            "Invalid materials response."
         );
     }
 
@@ -530,12 +561,12 @@ async function fetchMaterials() {
 
 
 /* =========================================
-   Load Materials
+   Load
 ========================================= */
 
 async function loadMaterials() {
 
-    setLoadingState();
+    showLoading();
 
 
     try {
@@ -550,25 +581,20 @@ async function loadMaterials() {
                     normalizeMaterial
                 )
                 .filter(
-                    isValidMaterial
+                    (material) =>
+                        material.id &&
+                        material.title
                 );
 
 
-        /*
-         * 表示順を安定させます。
-         * 日本語タイトルにも対応します。
-         */
-
         allMaterials.sort(
-            (firstMaterial, secondMaterial) =>
-                firstMaterial.title.localeCompare(
-                    secondMaterial.title,
+            (a, b) =>
+                a.title.localeCompare(
+                    b.title,
                     "ja"
                 )
         );
 
-
-        setLoadedState();
 
         renderMaterials();
 
@@ -580,7 +606,7 @@ async function loadMaterials() {
             error
         );
 
-        setErrorState();
+        showError();
     }
 }
 
@@ -592,11 +618,6 @@ async function loadMaterials() {
 function initializeMaterialsPage() {
 
     if (!materialsGrid) {
-
-        /*
-         * materials.html以外でapp.jsが
-         * 読み込まれてもエラーにしません。
-         */
 
         return;
     }
