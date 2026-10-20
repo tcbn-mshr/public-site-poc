@@ -377,11 +377,9 @@ async function handleSubmit(event) {
 
     event.preventDefault();
 
-
     if (!validateForm()) {
         return;
     }
-
 
     setProcessing(true);
 
@@ -397,6 +395,8 @@ async function handleSubmit(event) {
             error.message ||
             "ダウンロードを開始できませんでした。"
         );
+
+    } finally {
 
         setProcessing(false);
     }
