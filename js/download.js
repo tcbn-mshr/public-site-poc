@@ -84,6 +84,11 @@ const processingElement =
         "download-processing"
     );
 
+const successElement =
+    document.getElementById(
+        "download-success"
+    );
+
 const apiErrorElement =
     document.getElementById(
         "download-error"
@@ -381,11 +386,21 @@ async function handleSubmit(event) {
         return;
     }
 
+    /*
+     * 前回の成功メッセージを消す
+     */
+    successElement.hidden = true;
+
     setProcessing(true);
 
     try {
 
         await requestDownload();
+
+        /*
+         * ダウンロード開始成功
+         */
+        successElement.hidden = false;
 
     } catch (error) {
 
@@ -398,6 +413,10 @@ async function handleSubmit(event) {
 
     } finally {
 
+        /*
+         * 成功・失敗にかかわらず
+         * 「準備しています」を解除
+         */
         setProcessing(false);
     }
 }
