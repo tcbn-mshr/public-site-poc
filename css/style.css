@@ -1775,3 +1775,316 @@ a {
     font-size: 15px;
     line-height: 1.9;
 }
+
+
+/* =========================================
+   Material Detail - Final Layout Fix
+========================================= */
+
+.material-detail-hero {
+    padding: 72px 24px;
+
+    background: #f3f4f5;
+}
+
+.material-detail-hero-inner {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto;
+}
+
+.material-detail-category {
+    margin: 18px 0 26px;
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+.material-detail-title {
+    margin: 0;
+
+    color: #222;
+
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 500;
+
+    letter-spacing: 0.02em;
+}
+
+
+/* Detail section */
+
+.material-detail-section {
+    padding: 88px 24px;
+}
+
+.material-detail-inner {
+    display: grid;
+
+    grid-template-columns:
+        minmax(320px, 560px)
+        minmax(320px, 480px);
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 80px;
+
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+}
+
+
+/* PDF visual */
+
+.material-detail-visual {
+    min-height: 420px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f2f3f4;
+}
+
+.material-detail-pdf {
+    width: 150px;
+    height: 200px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    background: #595959;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    box-shadow:
+        14px 18px 24px
+        rgba(0, 0, 0, 0.12);
+}
+
+
+/* Detail information */
+
+.material-detail-information {
+    min-width: 0;
+}
+
+.material-detail-document-title {
+    margin: 22px 0 22px;
+
+    color: #222;
+
+    font-size: 30px;
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+.material-detail-description {
+    margin: 0 0 36px;
+
+    color: #555;
+
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+#material-download-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 32px;
+
+    min-width: 230px;
+    min-height: 56px;
+
+    padding: 14px 24px;
+
+    box-sizing: border-box;
+
+    color: #fff;
+    background: #222;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    border: 1px solid #222;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+#material-download-link:hover {
+    color: #222;
+    background: #fff;
+}
+
+
+/* =========================================
+   Materials Page - Final Layout Fix
+========================================= */
+
+.materials-hero {
+    padding: 72px 24px;
+
+    background: #fff;
+}
+
+.materials-hero-inner {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto;
+}
+
+.materials-page-title {
+    margin: 30px 0 22px;
+
+    color: #222;
+
+    font-size: clamp(36px, 5vw, 52px);
+    font-weight: 500;
+
+    letter-spacing: 0.02em;
+}
+
+.materials-page-description {
+    max-width: 720px;
+
+    margin: 0;
+
+    color: #444;
+
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+
+.materials-section {
+    padding: 64px 24px 96px;
+}
+
+.materials-section-inner {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto;
+}
+
+
+/* Heading */
+
+#materials-heading {
+    margin: 0;
+}
+
+
+/* State messages */
+
+.materials-message {
+    margin: 30px 0;
+
+    color: #555;
+
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.materials-message-error {
+    color: #b60018;
+}
+
+
+/* =========================================
+   Accessibility
+========================================= */
+
+.visually-hidden {
+    position: absolute !important;
+
+    width: 1px !important;
+    height: 1px !important;
+
+    padding: 0 !important;
+    margin: -1px !important;
+
+    overflow: hidden !important;
+
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+
+    border: 0 !important;
+}
+
+
+/* =========================================
+   Material / Materials Responsive
+========================================= */
+
+@media (max-width: 860px) {
+
+    .material-detail-inner {
+        grid-template-columns: 1fr;
+
+        gap: 48px;
+    }
+
+    .material-detail-visual {
+        min-height: 320px;
+    }
+
+    .material-detail-information {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .materials-hero,
+    .material-detail-hero {
+        padding:
+            48px 16px;
+    }
+
+    .materials-section,
+    .material-detail-section {
+        padding:
+            48px 16px 64px;
+    }
+
+    .materials-page-title,
+    .material-detail-title {
+        font-size: 36px;
+    }
+
+    .material-detail-visual {
+        min-height: 260px;
+    }
+
+    .material-detail-pdf {
+        width: 110px;
+        height: 145px;
+    }
+
+    .material-detail-document-title {
+        font-size: 25px;
+    }
+
+    #material-download-link {
+        width: 100%;
+    }
+}
