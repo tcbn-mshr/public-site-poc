@@ -1,26 +1,33 @@
 "use strict";
 
-const crypto = require("crypto");
+
+const crypto =
+    require("node:crypto");
+
 
 const {
     app
 } = require("@azure/functions");
 
+
 const {
     TableClient
 } = require("@azure/data-tables");
 
+
 const {
-    BlobServiceClient,
-    BlobSASPermissions
+    BlobServiceClient
 } = require("@azure/storage-blob");
 
 
 /* =========================================
-   Constants
+   Configuration
 ========================================= */
 
-const DEFAULT_TABLE_NAME =
+const MATERIALS_TABLE_NAME =
+    "Materials";
+
+const DEFAULT_LOG_TABLE_NAME =
     "DownloadLogs";
 
 const DEFAULT_CONTAINER_NAME =
@@ -31,17 +38,20 @@ const DEFAULT_SAS_MINUTES =
 
 
 /* =========================================
-   Response helpers
+   Response
 ========================================= */
 
 function jsonResponse(
     status,
     body
 ) {
+
     return {
-        status: status,
+
+        status,
 
         headers: {
+
             "Content-Type":
                 "application/json; charset=utf-8",
 
@@ -49,213 +59,402 @@ function jsonResponse(
                 "no-store"
         },
 
-        jsonBody: body
+        jsonBody:
+            body
     };
 }
 
 
 /* =========================================
-   Input helpers
+   Environment
 ========================================= */
 
-function normalizeString(
+function getRequiredSetting(name) {
+
+    const value =
+        String(
+            process.env[name] || ""
+        ).trim();
+
+
+    if (!value) {
+
+        throw new Error(
+            `${name} is not configured.`
+        );
+    }
+
+
+    return value;
+}
+
+
+function getConfiguration() {
+
+    const connectionString =
+        getRequiredSetting(
+            "DOWNLOAD_STORAGE_CONNECTION_STRING"
+        );
+
+
+    const logTableName =
+        String(
+            process.env.DOWNLOAD_LOG_TABLE ||
+            DEFAULT_LOG_TABLE_NAME
+        ).trim();
+
+
+    const containerName =
+        String(
+            process.env.DOWNLOAD_CONTAINER ||
+            DEFAULT_CONTAINER_NAME
+        ).trim();
+
+
+    const configuredMinutes =
+        Number.parseInt(
+            process.env.DOWNLOAD_SAS_MINUTES ||
+            "",
+            10
+        );
+
+
+    const sasMinutes =
+        Number.isFinite(
+            configuredMinutes
+        ) &&
+        configuredMinutes > 0
+            ? Math.min(
+                configuredMinutes,
+                60
+            )
+            : DEFAULT_SAS_MINUTES;
+
+
+    return {
+        connectionString,
+        logTableName,
+        containerName,
+        sasMinutes
+    };
+}
+
+
+/* =========================================
+   Request Validation
+========================================= */
+
+function normalizeText(
     value,
     maximumLength
 ) {
-    if (typeof value !== "string") {
-        return "";
-    }
 
-    return value
+    return String(
+        value ?? ""
+    )
         .trim()
-        .slice(0, maximumLength);
+        .slice(
+            0,
+            maximumLength
+        );
 }
 
 
-function isValidEmail(
-    emailAddress
-) {
+function isValidEmail(value) {
+
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(emailAddress);
+        .test(value);
 }
 
 
-/* =========================================
-   Material map
-========================================= */
+function validatePayload(body) {
 
-/*
- * ブラウザーから送られたファイル名は信用せず、
- * materialIdからAPI側でBlob名を解決します。
- *
- * Azure Static Web AppsのApplication setting:
- *
- * MATERIAL_MAP_JSON
- * {"material-1":"テスト.pdf"}
- */
-
-function getMaterialMap() {
-
-    const materialMapJson =
-        process.env.MATERIAL_MAP_JSON;
-
-    if (!materialMapJson) {
-        throw new Error(
-            "MATERIAL_MAP_JSON is not configured."
+    const materialId =
+        normalizeText(
+            body?.materialId,
+            128
         );
+
+    const company =
+        normalizeText(
+            body?.company,
+            200
+        );
+
+    const customerName =
+        normalizeText(
+            body?.customerName,
+            100
+        );
+
+    const email =
+        normalizeText(
+            body?.email,
+            254
+        );
+
+    const consent =
+        body?.consent === true;
+
+
+    if (!materialId) {
+
+        return {
+            valid: false,
+            message:
+                "資料IDが指定されていません。"
+        };
     }
 
-    let materialMap;
 
-    try {
-        materialMap =
-            JSON.parse(materialMapJson);
+    if (!company) {
 
-    } catch {
-        throw new Error(
-            "MATERIAL_MAP_JSON is invalid."
-        );
+        return {
+            valid: false,
+            message:
+                "会社名を入力してください。"
+        };
     }
+
+
+    if (!customerName) {
+
+        return {
+            valid: false,
+            message:
+                "氏名を入力してください。"
+        };
+    }
+
 
     if (
-        !materialMap ||
-        typeof materialMap !== "object" ||
-        Array.isArray(materialMap)
+        !email ||
+        !isValidEmail(email)
     ) {
-        throw new Error(
-            "MATERIAL_MAP_JSON must be an object."
-        );
+
+        return {
+            valid: false,
+            message:
+                "正しいメールアドレスを入力してください。"
+        };
     }
 
-    return materialMap;
+
+    if (!consent) {
+
+        return {
+            valid: false,
+            message:
+                "個人情報の取り扱いへの同意が必要です。"
+        };
+    }
+
+
+    return {
+
+        valid: true,
+
+        value: {
+            materialId,
+            company,
+            customerName,
+            email,
+            consent
+        }
+    };
 }
 
 
 /* =========================================
-   Azure clients
+   Materials Table
 ========================================= */
 
-function getStorageConnectionString() {
+async function getPublishedMaterial(
+    connectionString,
+    materialId
+) {
 
-    const connectionString =
-        process.env
-            .DOWNLOAD_STORAGE_CONNECTION_STRING;
-
-    if (!connectionString) {
-        throw new Error(
-            "DOWNLOAD_STORAGE_CONNECTION_STRING " +
-            "is not configured."
+    const tableClient =
+        TableClient.fromConnectionString(
+            connectionString,
+            MATERIALS_TABLE_NAME
         );
+
+
+    try {
+
+        const entity =
+            await tableClient.getEntity(
+                "materials",
+                materialId
+            );
+
+
+        if (
+            String(
+                entity.status || ""
+            ).toLowerCase() !==
+            "published"
+        ) {
+
+            return null;
+        }
+
+
+        const blobName =
+            String(
+                entity.blobName || ""
+            ).trim();
+
+
+        if (!blobName) {
+
+            throw new Error(
+                "Material blobName is empty."
+            );
+        }
+
+
+        return {
+
+            id:
+                materialId,
+
+            title:
+                String(
+                    entity.title || ""
+                ).trim(),
+
+            category:
+                String(
+                    entity.category || ""
+                ).trim(),
+
+            categoryName:
+                String(
+                    entity.categoryName || ""
+                ).trim(),
+
+            description:
+                String(
+                    entity.description || ""
+                ).trim(),
+
+            blobName,
+
+            originalFileName:
+                String(
+                    entity.originalFileName ||
+                    entity.blobName ||
+                    "document.pdf"
+                ).trim()
+        };
+
+
+    } catch (error) {
+
+        if (
+            error?.statusCode === 404
+        ) {
+
+            return null;
+        }
+
+
+        throw error;
     }
-
-    return connectionString;
-}
-
-
-function getTableClient(
-    connectionString
-) {
-    const tableName =
-        process.env.DOWNLOAD_LOG_TABLE ||
-        DEFAULT_TABLE_NAME;
-
-    return TableClient.fromConnectionString(
-        connectionString,
-        tableName
-    );
-}
-
-
-function getContainerClient(
-    connectionString
-) {
-    const containerName =
-        process.env.DOWNLOAD_CONTAINER ||
-        DEFAULT_CONTAINER_NAME;
-
-    const blobServiceClient =
-        BlobServiceClient.fromConnectionString(
-            connectionString
-        );
-
-    return blobServiceClient
-        .getContainerClient(containerName);
 }
 
 
 /* =========================================
-   Download log
+   Download Log
 ========================================= */
 
-async function saveDownloadLog({
-    tableClient,
-    materialId,
-    blobName,
-    company,
-    customerName,
-    email,
-    consent,
-    request
-}) {
+async function saveDownloadLog(
+    connectionString,
+    logTableName,
+    request,
+    input,
+    material
+) {
 
-    /*
-     * PartitionKey:
-     * 資料単位で履歴を検索できるようmaterialIdを使用
-     *
-     * RowKey:
-     * 時刻とUUIDを組み合わせて重複を防止
-     */
+    const tableClient =
+        TableClient.fromConnectionString(
+            connectionString,
+            logTableName
+        );
+
 
     const now =
         new Date();
 
-    const rowKey =
-        `${now.toISOString()}_${crypto.randomUUID()}`;
 
     const forwardedFor =
-        request.headers.get(
-            "x-forwarded-for"
-        ) || "";
+        String(
+            request.headers.get(
+                "x-forwarded-for"
+            ) || ""
+        )
+            .split(",")[0]
+            .trim();
+
 
     const userAgent =
-        request.headers.get(
-            "user-agent"
-        ) || "";
+        normalizeText(
+            request.headers.get(
+                "user-agent"
+            ) || "",
+            1024
+        );
+
 
     const entity = {
+
         partitionKey:
-            materialId,
+            material.id,
 
         rowKey:
-            rowKey,
+            `${now.getTime()}-${crypto.randomUUID()}`,
 
         materialId:
-            materialId,
+            material.id,
+
+        title:
+            material.title,
+
+        category:
+            material.category,
+
+        categoryName:
+            material.categoryName,
 
         blobName:
-            blobName,
+            material.blobName,
+
+        originalFileName:
+            material.originalFileName,
 
         company:
-            company,
+            input.company,
 
         customerName:
-            customerName,
+            input.customerName,
 
         email:
-            email,
+            input.email,
 
         consent:
-            consent,
+            input.consent,
 
         downloadedAtUtc:
             now.toISOString(),
 
         sourceIp:
-            forwardedFor.slice(0, 200),
+            forwardedFor,
 
-        userAgent:
-            userAgent.slice(0, 500)
+        userAgent
     };
+
 
     await tableClient.createEntity(
         entity
@@ -264,83 +463,94 @@ async function saveDownloadLog({
 
 
 /* =========================================
-   Temporary download address
+   SAS URL
 ========================================= */
 
-async function createDownloadUrl({
-    containerClient,
-    blobName
-}) {
+async function createDownloadUrl(
+    connectionString,
+    containerName,
+    material,
+    sasMinutes
+) {
+
+    const blobServiceClient =
+        BlobServiceClient
+            .fromConnectionString(
+                connectionString
+            );
+
+
+    const containerClient =
+        blobServiceClient
+            .getContainerClient(
+                containerName
+            );
+
 
     const blobClient =
-        containerClient.getBlobClient(
-            blobName
-        );
+        containerClient
+            .getBlobClient(
+                material.blobName
+            );
 
-    /*
-     * 対象Blobが存在するかを確認します。
-     */
 
     const exists =
         await blobClient.exists();
 
+
     if (!exists) {
+
         const error =
             new Error(
-                "対象資料が見つかりません。"
+                "The material blob was not found."
             );
 
         error.code =
-            "MaterialNotFound";
+            "BlobNotFound";
 
         throw error;
     }
 
 
-    const configuredMinutes =
-        Number(
-            process.env.DOWNLOAD_SAS_MINUTES
-        );
-
-    const sasMinutes =
-        Number.isFinite(configuredMinutes) &&
-        configuredMinutes > 0 &&
-        configuredMinutes <= 60
-            ? configuredMinutes
-            : DEFAULT_SAS_MINUTES;
-
-
     const startsOn =
         new Date(
-            Date.now() - 60 * 1000
+            Date.now() -
+            60 * 1000
         );
+
 
     const expiresOn =
         new Date(
             Date.now() +
-            sasMinutes * 60 * 1000
+            sasMinutes *
+            60 *
+            1000
         );
 
 
     /*
-     * APIが使用しているBlobClientは
-     * Storage接続文字列から生成されているため、
-     * 読み取り専用SAS URLを生成できます。
+     * PDFをブラウザー表示ではなく
+     * ダウンロードとして扱わせます。
      */
 
+    const encodedFileName =
+        encodeURIComponent(
+            material.originalFileName
+        );
+
+
     return blobClient.generateSasUrl({
+
         permissions:
-            BlobSASPermissions.parse("r"),
+            "r",
 
-        startsOn:
-            startsOn,
+        startsOn,
 
-        expiresOn:
-            expiresOn,
+        expiresOn,
 
         contentDisposition:
-            `attachment; filename*=UTF-8''` +
-            encodeURIComponent(blobName),
+            "attachment; filename*=UTF-8''" +
+            encodedFileName,
 
         contentType:
             "application/pdf"
@@ -349,7 +559,7 @@ async function createDownloadUrl({
 
 
 /* =========================================
-   HTTP handler
+   Handler
 ========================================= */
 
 async function downloadHandler(
@@ -362,254 +572,122 @@ async function downloadHandler(
     );
 
 
-    /*
-     * POST以外を拒否します。
-     */
-
-    if (request.method !== "POST") {
-        return jsonResponse(
-            405,
-            {
-                success: false,
-                message:
-                    "許可されていないリクエストです。"
-            }
-        );
-    }
-
-
-    let body;
-
-    try {
-        body =
-            await request.json();
-
-    } catch {
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "リクエスト形式が正しくありません。"
-            }
-        );
-    }
-
-
-    const materialId =
-        normalizeString(
-            body.materialId,
-            100
-        );
-
-    const company =
-        normalizeString(
-            body.company,
-            100
-        );
-
-    const customerName =
-        normalizeString(
-            body.name,
-            100
-        );
-
-    const email =
-        normalizeString(
-            body.email,
-            254
-        )
-            .toLowerCase();
-
-    const consent =
-        body.consent === true;
-
-
-    /*
-     * API側でも必ず検証します。
-     * フロントエンドの検証だけでは不十分です。
-     */
-
-    if (!materialId) {
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "対象資料を特定できません。"
-            }
-        );
-    }
-
-    if (!company) {
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "会社名を入力してください。"
-            }
-        );
-    }
-
-    if (!customerName) {
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "氏名を入力してください。"
-            }
-        );
-    }
-
-    if (
-        !email ||
-        !isValidEmail(email)
-    ) {
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "メールアドレスの形式を確認してください。"
-            }
-        );
-    }
-
-    if (!consent) {
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "個人情報の取り扱いへの同意が必要です。"
-            }
-        );
-    }
-
-
     try {
 
-        const materialMap =
-            getMaterialMap();
-
-        const blobName =
-            materialMap[materialId];
+        let body;
 
 
-        /*
-         * materialIdは、API側で設定された
-         * 資料マスターに存在するものだけ許可します。
-         */
+        try {
 
-        if (
-            typeof blobName !== "string" ||
-            !blobName.trim()
-        ) {
+            body =
+                await request.json();
+
+        } catch {
+
             return jsonResponse(
-                404,
+                400,
                 {
                     success: false,
                     message:
-                        "対象資料が登録されていません。"
+                        "リクエスト内容を確認できませんでした。"
                 }
             );
         }
 
 
-        const connectionString =
-            getStorageConnectionString();
-
-
-        /*
-         * Azure Table Storage
-         */
-
-        const tableClient =
-            getTableClient(
-                connectionString
+        const validation =
+            validatePayload(
+                body
             );
 
+
+        if (!validation.valid) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        validation.message
+                }
+            );
+        }
+
+
+        const config =
+            getConfiguration();
+
+
         /*
-         * テーブルが未作成の場合に作成します。
-         * 既に存在する場合は409を無視します。
+         * 信頼できるMaterialsテーブルから
+         * 資料情報とblobNameを取得します。
          */
 
-        try {
-            await tableClient.createTable();
+        const material =
+            await getPublishedMaterial(
+                config.connectionString,
+                validation.value.materialId
+            );
 
-        } catch (error) {
-            if (
-                error.statusCode !== 409
-            ) {
-                throw error;
-            }
+
+        if (!material) {
+
+            return jsonResponse(
+                404,
+                {
+                    success: false,
+                    message:
+                        "指定された資料は存在しないか、" +
+                        "現在公開されていません。"
+                }
+            );
         }
 
 
         /*
-         * Azure Blob Storage
+         * Blobの存在確認と
+         * 読み取り専用SAS URLの生成
          */
 
-        const containerClient =
-            getContainerClient(
-                connectionString
+        const downloadUrl =
+            await createDownloadUrl(
+                config.connectionString,
+                config.containerName,
+                material,
+                config.sasMinutes
             );
 
 
         /*
-         * SASを先に生成し、対象Blobが存在することを確認。
+         * SAS発行後、レスポンスを返す前に
+         * DownloadLogsへ記録します。
          */
 
-        const downloadUrl =
-            await createDownloadUrl({
-                containerClient:
-                    containerClient,
-
-                blobName:
-                    blobName
-            });
-
-
-        /*
-         * PDF配布前に履歴を保存します。
-         * 保存に失敗した場合はURLを返しません。
-         */
-
-        await saveDownloadLog({
-            tableClient:
-                tableClient,
-
-            materialId:
-                materialId,
-
-            blobName:
-                blobName,
-
-            company:
-                company,
-
-            customerName:
-                customerName,
-
-            email:
-                email,
-
-            consent:
-                consent,
-
-            request:
-                request
-        });
+        await saveDownloadLog(
+            config.connectionString,
+            config.logTableName,
+            request,
+            validation.value,
+            material
+        );
 
 
         return jsonResponse(
             200,
             {
-                success: true,
-                downloadUrl:
-                    downloadUrl
+                success:
+                    true,
+
+                materialId:
+                    material.id,
+
+                title:
+                    material.title,
+
+                downloadUrl,
+
+                expiresInMinutes:
+                    config.sasMinutes
             }
         );
 
@@ -623,15 +701,16 @@ async function downloadHandler(
 
 
         if (
-            error.code ===
-            "MaterialNotFound"
+            error?.code ===
+            "BlobNotFound"
         ) {
+
             return jsonResponse(
                 404,
                 {
                     success: false,
                     message:
-                        "対象資料が見つかりません。"
+                        "ダウンロード対象のPDFが見つかりませんでした。"
                 }
             );
         }
@@ -642,7 +721,7 @@ async function downloadHandler(
             {
                 success: false,
                 message:
-                    "ダウンロード処理に失敗しました。"
+                    "ダウンロード処理中にエラーが発生しました。"
             }
         );
     }
@@ -650,7 +729,7 @@ async function downloadHandler(
 
 
 /* =========================================
-   Function registration
+   Function Registration
 ========================================= */
 
 app.http(
