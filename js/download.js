@@ -1,70 +1,77 @@
 "use strict";
 
-/*
- * Download Form
- *
- * 入力情報をAzure Static Web AppsのAPIへ送信し、
- * API側で履歴を保存した後にPDFを配布します。
- */
+
+/* =========================================
+   Configuration
+========================================= */
+
+const MATERIALS_API_URL =
+    "/api/materials";
+
+const DOWNLOAD_API_URL =
+    "/api/download";
 
 
 /* =========================================
-   API settings
+   DOM Elements
 ========================================= */
 
-const downloadApiUrl = "/api/download";
-
-
-/* =========================================
-   URL parameters
-========================================= */
-
-const params =
-    new URLSearchParams(window.location.search);
-
-const materialId =
-    params.get("id") || "";
-
-const filePath =
-    params.get("file") || "";
-
-const materialTitle =
-    params.get("title") || "資料";
-
-const materialCategory =
-    params.get("category") || "展示会資料";
-
-
-/* =========================================
-   DOM elements
-========================================= */
-
-const form =
-    document.getElementById("download-form");
-
-const materialIdInput =
-    document.getElementById("material-id");
-
-const materialTitleElement =
+const pageLoadingElement =
     document.getElementById(
-        "download-material-title"
+        "download-page-loading"
     );
 
-const materialCategoryElement =
+const pageErrorElement =
     document.getElementById(
-        "download-material-category"
+        "download-page-error"
     );
 
-const companyInput =
-    document.getElementById("company");
+const contentElement =
+    document.getElementById(
+        "download-content"
+    );
 
-const nameInput =
-    document.getElementById("name");
+const categoryTopElement =
+    document.getElementById(
+        "download-category-top"
+    );
 
-const emailInput =
-    document.getElementById("email");
+const documentTitleElement =
+    document.getElementById(
+        "selected-document-title"
+    );
 
-const consentInput =
+const documentDescriptionElement =
+    document.getElementById(
+        "selected-document-description"
+    );
+
+const backLinkElement =
+    document.getElementById(
+        "back-to-material"
+    );
+
+const formElement =
+    document.getElementById(
+        "download-form"
+    );
+
+const companyElement =
+    document.getElementById(
+        "company"
+    );
+
+const customerNameElement =
+    document.getElementById(
+        "customer-name"
+    );
+
+const emailElement =
+    document.getElementById(
+        "email"
+    );
+
+const consentElement =
     document.getElementById(
         "privacy-consent"
     );
@@ -74,9 +81,9 @@ const submitButton =
         "download-submit"
     );
 
-const submitButtonText =
+const submitLabelElement =
     document.getElementById(
-        "submit-button-text"
+        "download-submit-label"
     );
 
 const processingElement =
@@ -94,55 +101,252 @@ const apiErrorElement =
         "download-error"
     );
 
-const backLink =
+const companyErrorElement =
     document.getElementById(
-        "back-to-material"
+        "company-error"
+    );
+
+const customerNameErrorElement =
+    document.getElementById(
+        "customer-name-error"
+    );
+
+const emailErrorElement =
+    document.getElementById(
+        "email-error"
+    );
+
+const consentErrorElement =
+    document.getElementById(
+        "consent-error"
     );
 
 
 /* =========================================
-   Initial display
+   State
 ========================================= */
 
-function initializeDownloadPage() {
-
-    materialIdInput.value =
-        materialId;
-
-    materialTitleElement.textContent =
-        materialTitle;
-
-    materialCategoryElement.textContent =
-        materialCategory;
+let currentMaterial = null;
 
 
-    /*
-     * 資料詳細へ戻るリンクを設定します。
-     */
+/* =========================================
+   Utility
+========================================= */
 
-    const detailParams =
-        new URLSearchParams({
-            id: materialId,
-            file: filePath,
-            title: materialTitle,
-            category: materialCategory
-        });
+function hideElement(element) {
 
-    backLink.href =
-        `./material.html?${detailParams.toString()}`;
+    if (element) {
+        element.hidden = true;
+    }
+}
 
 
-    /*
-     * 資料IDが存在しない場合は送信不可にします。
-     */
+function showElement(element) {
 
-    if (!materialId) {
-        submitButton.disabled = true;
+    if (element) {
+        element.hidden = false;
+    }
+}
 
-        showApiError(
-            "対象資料を特定できません。資料一覧から選択し直してください。"
+
+function getMaterialId() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return String(
+        params.get("id") || ""
+    ).trim();
+}
+
+
+function normalizeMaterial(material) {
+
+    return {
+
+        id:
+            String(
+                material?.id ?? ""
+            ).trim(),
+
+        title:
+            String(
+                material?.title ?? ""
+            ).trim(),
+
+        category:
+            String(
+                material?.category ?? "other"
+            ).trim() || "other",
+
+        categoryName:
+            String(
+                material?.categoryName ?? "その他"
+            ).trim() || "その他",
+
+        description:
+            String(
+                material?.description ?? ""
+            ).trim()
+    };
+}
+
+
+function isValidEmail(value) {
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(value);
+}
+
+
+/* =========================================
+   Page State
+========================================= */
+
+function showPageLoading() {
+
+    showElement(
+        pageLoadingElement
+    );
+
+    hideElement(
+        pageErrorElement
+    );
+
+    hideElement(
+        contentElement
+    );
+}
+
+
+function showPageError() {
+
+    hideElement(
+        pageLoadingElement
+    );
+
+    hideElement(
+        contentElement
+    );
+
+    showElement(
+        pageErrorElement
+    );
+}
+
+
+function showPageContent() {
+
+    hideElement(
+        pageLoadingElement
+    );
+
+    hideElement(
+        pageErrorElement
+    );
+
+    showElement(
+        contentElement
+    );
+}
+
+
+/* =========================================
+   Processing State
+========================================= */
+
+function setProcessing(isProcessing) {
+
+    const formControls = [
+        companyElement,
+        customerNameElement,
+        emailElement,
+        consentElement,
+        submitButton
+    ];
+
+
+    formControls.forEach(
+        (control) => {
+
+            if (control) {
+                control.disabled =
+                    isProcessing;
+            }
+        }
+    );
+
+
+    if (submitLabelElement) {
+
+        submitLabelElement.textContent =
+            isProcessing
+                ? "準備しています"
+                : "同意してダウンロード";
+    }
+
+
+    if (isProcessing) {
+
+        showElement(
+            processingElement
+        );
+
+    } else {
+
+        hideElement(
+            processingElement
         );
     }
+}
+
+
+/* =========================================
+   Messages
+========================================= */
+
+function clearMessages() {
+
+    hideElement(
+        companyErrorElement
+    );
+
+    hideElement(
+        customerNameErrorElement
+    );
+
+    hideElement(
+        emailErrorElement
+    );
+
+    hideElement(
+        consentErrorElement
+    );
+
+    hideElement(
+        apiErrorElement
+    );
+
+    hideElement(
+        successElement
+    );
+}
+
+
+function showApiError(message) {
+
+    if (!apiErrorElement) {
+        return;
+    }
+
+
+    apiErrorElement.textContent =
+        message ||
+        "ダウンロードを開始できませんでした。";
+
+    apiErrorElement.hidden = false;
 }
 
 
@@ -150,213 +354,308 @@ function initializeDownloadPage() {
    Validation
 ========================================= */
 
-function setFieldError(
-    fieldName,
-    message
-) {
-    const errorElement =
-        document.getElementById(
-            `${fieldName}-error`
-        );
-
-    if (errorElement) {
-        errorElement.textContent =
-            message;
-    }
-}
-
-
-function clearErrors() {
-
-    setFieldError("company", "");
-    setFieldError("name", "");
-    setFieldError("email", "");
-    setFieldError("consent", "");
-
-    apiErrorElement.hidden = true;
-}
-
-
-function isValidEmail(emailAddress) {
-
-    /*
-     * 詳細なメールアドレス検証は
-     * API側でも必ず実施します。
-     */
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(emailAddress);
-}
-
-
 function validateForm() {
 
-    clearErrors();
+    clearMessages();
 
-    let isValid = true;
 
     const company =
-        companyInput.value.trim();
+        String(
+            companyElement?.value || ""
+        ).trim();
 
     const customerName =
-        nameInput.value.trim();
+        String(
+            customerNameElement?.value || ""
+        ).trim();
 
     const email =
-        emailInput.value.trim();
+        String(
+            emailElement?.value || ""
+        ).trim();
+
+    const consent =
+        Boolean(
+            consentElement?.checked
+        );
+
+
+    let firstInvalidElement = null;
 
 
     if (!company) {
-        setFieldError(
-            "company",
-            "会社名を入力してください。"
+
+        showElement(
+            companyErrorElement
         );
 
-        isValid = false;
+        firstInvalidElement =
+            firstInvalidElement ||
+            companyElement;
     }
 
 
     if (!customerName) {
-        setFieldError(
-            "name",
-            "氏名を入力してください。"
+
+        showElement(
+            customerNameErrorElement
         );
 
-        isValid = false;
+        firstInvalidElement =
+            firstInvalidElement ||
+            customerNameElement;
     }
 
 
-    if (!email) {
-        setFieldError(
-            "email",
-            "メールアドレスを入力してください。"
+    if (
+        !email ||
+        !isValidEmail(email)
+    ) {
+
+        showElement(
+            emailErrorElement
         );
 
-        isValid = false;
-
-    } else if (!isValidEmail(email)) {
-
-        setFieldError(
-            "email",
-            "メールアドレスの形式を確認してください。"
-        );
-
-        isValid = false;
+        firstInvalidElement =
+            firstInvalidElement ||
+            emailElement;
     }
 
 
-    if (!consentInput.checked) {
-        setFieldError(
-            "consent",
-            "個人情報の取り扱いへの同意が必要です。"
+    if (!consent) {
+
+        showElement(
+            consentErrorElement
         );
 
-        isValid = false;
+        firstInvalidElement =
+            firstInvalidElement ||
+            consentElement;
     }
 
 
-    return isValid;
+    if (firstInvalidElement) {
+
+        firstInvalidElement.focus();
+
+        return false;
+    }
+
+
+    return true;
 }
 
 
 /* =========================================
-   Display control
+   Materials API
 ========================================= */
 
-function setProcessing(isProcessing) {
+async function fetchMaterials() {
 
-    submitButton.disabled =
-        isProcessing;
+    const response =
+        await fetch(
+            MATERIALS_API_URL,
+            {
+                method: "GET",
 
-    companyInput.disabled =
-        isProcessing;
+                headers: {
+                    "Accept":
+                        "application/json"
+                },
 
-    nameInput.disabled =
-        isProcessing;
+                cache:
+                    "no-store"
+            }
+        );
 
-    emailInput.disabled =
-        isProcessing;
 
-    consentInput.disabled =
-        isProcessing;
+    if (!response.ok) {
 
-    processingElement.hidden =
-        !isProcessing;
+        throw new Error(
+            "Materials API HTTP error: " +
+            response.status
+        );
+    }
 
-    submitButtonText.textContent =
-        isProcessing
-            ? "準備しています"
-            : "同意してダウンロード";
+
+    const result =
+        await response.json();
+
+
+    if (
+        result?.success !== true ||
+        !Array.isArray(
+            result.materials
+        )
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "Invalid materials response."
+        );
+    }
+
+
+    return result.materials;
 }
 
 
-function showApiError(message) {
+async function getMaterial(materialId) {
 
-    apiErrorElement.textContent =
-        message;
+    const materials =
+        await fetchMaterials();
 
-    apiErrorElement.hidden = false;
+
+    return materials
+        .map(
+            normalizeMaterial
+        )
+        .find(
+            (material) =>
+                material.id ===
+                materialId
+        ) || null;
 }
 
 
 /* =========================================
-   API request
+   Render Material
+========================================= */
+
+function renderMaterial(material) {
+
+    if (categoryTopElement) {
+
+        categoryTopElement.textContent =
+            material.categoryName;
+    }
+
+
+    if (documentTitleElement) {
+
+        documentTitleElement.textContent =
+            material.title;
+    }
+
+
+    if (documentDescriptionElement) {
+
+        documentDescriptionElement.textContent =
+            material.description ||
+            "選択した資料をダウンロードします。";
+    }
+
+
+    if (backLinkElement) {
+
+        backLinkElement.href =
+            "./material.html?id=" +
+            encodeURIComponent(
+                material.id
+            );
+    }
+
+
+    document.title =
+        material.title +
+        "｜資料ダウンロード｜INABATA";
+}
+
+
+/* =========================================
+   Download API
 ========================================= */
 
 async function requestDownload() {
 
-    const requestBody = {
-        materialId: materialId,
-        company: companyInput.value.trim(),
-        name: nameInput.value.trim(),
-        email: emailInput.value.trim(),
-        consent: consentInput.checked
+    if (!currentMaterial) {
+
+        throw new Error(
+            "資料情報を確認できませんでした。"
+        );
+    }
+
+
+    const payload = {
+
+        materialId:
+            currentMaterial.id,
+
+        company:
+            String(
+                companyElement.value
+            ).trim(),
+
+        customerName:
+            String(
+                customerNameElement.value
+            ).trim(),
+
+        email:
+            String(
+                emailElement.value
+            ).trim(),
+
+        consent:
+            Boolean(
+                consentElement.checked
+            )
     };
 
 
     const response =
         await fetch(
-            downloadApiUrl,
+            DOWNLOAD_API_URL,
             {
-                method: "POST",
+                method:
+                    "POST",
 
                 headers: {
                     "Content-Type":
+                        "application/json",
+
+                    "Accept":
                         "application/json"
                 },
 
-                body: JSON.stringify(
-                    requestBody
-                )
+                body:
+                    JSON.stringify(
+                        payload
+                    )
             }
         );
 
 
-    /*
-     * APIが返した内容を取得します。
-     * エラー応答がJSONでない場合にも対応します。
-     */
+    let result = null;
 
-    let result = {};
 
     try {
+
         result =
             await response.json();
+
     } catch {
-        result = {};
+
+        throw new Error(
+            "APIから有効な応答を取得できませんでした。"
+        );
     }
 
 
-    if (!response.ok) {
+    if (
+        !response.ok ||
+        result?.success !== true
+    ) {
 
-        const errorMessage =
-            result.message ||
-            "ダウンロード処理に失敗しました。";
-
-        throw new Error(errorMessage);
+        throw new Error(
+            result?.message ||
+            "ダウンロードを開始できませんでした。"
+        );
     }
 
 
     if (!result.downloadUrl) {
+
         throw new Error(
             "ダウンロードURLを取得できませんでした。"
         );
@@ -364,13 +663,27 @@ async function requestDownload() {
 
 
     /*
-     * APIが履歴保存後に返した
-     * ダウンロードURLへ移動します。
+     * APIが返した短時間有効なSAS URLを開きます。
+     * Content-Dispositionがattachmentなら、
+     * 元ページを維持したままダウンロードされます。
      */
 
-    window.location.assign(
-        result.downloadUrl
+    const downloadLink =
+        document.createElement("a");
+
+    downloadLink.href =
+        result.downloadUrl;
+
+    downloadLink.style.display =
+        "none";
+
+    document.body.appendChild(
+        downloadLink
     );
+
+    downloadLink.click();
+
+    downloadLink.remove();
 }
 
 
@@ -382,41 +695,38 @@ async function handleSubmit(event) {
 
     event.preventDefault();
 
+
     if (!validateForm()) {
         return;
     }
 
-    /*
-     * 前回の成功メッセージを消す
-     */
-    successElement.hidden = true;
 
     setProcessing(true);
+
 
     try {
 
         await requestDownload();
 
-        /*
-         * ダウンロード開始成功
-         */
-        successElement.hidden = false;
+        showElement(
+            successElement
+        );
+
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Download request failed:",
+            error
+        );
 
         showApiError(
-            error.message ||
-            "ダウンロードを開始できませんでした。"
+            error.message
         );
+
 
     } finally {
 
-        /*
-         * 成功・失敗にかかわらず
-         * 「準備しています」を解除
-         */
         setProcessing(false);
     }
 }
@@ -426,11 +736,93 @@ async function handleSubmit(event) {
    Initialization
 ========================================= */
 
-if (form) {
-    form.addEventListener(
-        "submit",
-        handleSubmit
+async function initializeDownloadPage() {
+
+    showPageLoading();
+
+    clearMessages();
+
+
+    const materialId =
+        getMaterialId();
+
+
+    if (!materialId) {
+
+        console.error(
+            "Material ID was not specified."
+        );
+
+        showPageError();
+
+        return;
+    }
+
+
+    try {
+
+        currentMaterial =
+            await getMaterial(
+                materialId
+            );
+
+
+        if (!currentMaterial) {
+
+            console.error(
+                "Material was not found:",
+                materialId
+            );
+
+            showPageError();
+
+            return;
+        }
+
+
+        renderMaterial(
+            currentMaterial
+        );
+
+        showPageContent();
+
+
+        if (formElement) {
+
+            formElement.addEventListener(
+                "submit",
+                handleSubmit
+            );
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Failed to initialize download page:",
+            error
+        );
+
+        showPageError();
+    }
+}
+
+
+/* =========================================
+   Start
+========================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeDownloadPage
     );
+
+} else {
 
     initializeDownloadPage();
 }
