@@ -263,8 +263,8 @@ function createMaterialCard(
 
     article.innerHTML = `
         <a
-            class="material-card-link"
             href="${detailUrl}"
+            class="material-card-link"
             aria-label="${escapeHtml(
                 material.title
             )}の詳細を見る"
@@ -296,12 +296,7 @@ function createMaterialCard(
                         ? `
                             <p class="material-card-description">
                                 ${escapeHtml(
-                                    material.description
-                                )}
-                            </p>
-                        `
-                        : ""
-                }
+                                    material        }
 
                 <span
                     class="material-card-detail"
