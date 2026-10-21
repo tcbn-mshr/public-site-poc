@@ -2088,3 +2088,263 @@ a {
         width: 100%;
     }
 }
+
+
+/* =========================================
+   Download Page - Mobile Final Fix
+========================================= */
+
+@media (max-width: 860px) {
+
+    /*
+     * ページ全体の横スクロールを防止
+     */
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+
+    /*
+     * Download Hero
+     */
+
+    .download-hero {
+        width: 100%;
+        box-sizing: border-box;
+
+        padding: 48px 20px;
+    }
+
+    .download-hero-inner {
+        width: 100%;
+        max-width: none;
+
+        margin: 0;
+    }
+
+    .download-page-title {
+        font-size: 36px;
+        line-height: 1.35;
+
+        overflow-wrap: anywhere;
+    }
+
+    .download-page-description {
+        max-width: 100%;
+
+        font-size: 14px;
+        line-height: 1.9;
+    }
+
+
+    /*
+     * Download Main
+     */
+
+    .download-section {
+        width: 100%;
+
+        box-sizing: border-box;
+
+        padding: 48px 20px 64px;
+    }
+
+    .download-inner {
+        display: flex !important;
+        flex-direction: column !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin: 0 !important;
+
+        gap: 48px;
+    }
+
+
+    /*
+     * Selected Document
+     */
+
+    .selected-document {
+        order: 1;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        box-sizing: border-box;
+    }
+
+    .selected-document-visual {
+        width: 100%;
+
+        min-height: 220px;
+    }
+
+    .selected-document-pdf {
+        width: 90px;
+        height: 120px;
+    }
+
+    .selected-document-body {
+        padding: 24px 20px;
+    }
+
+    .selected-document-title {
+        font-size: 22px;
+    }
+
+
+    /*
+     * Form
+     */
+
+    .download-form-area {
+        order: 2;
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        box-sizing: border-box;
+    }
+
+    #download-form {
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+    .form-field {
+        width: 100%;
+
+        box-sizing: border-box;
+
+        margin-bottom: 26px;
+    }
+
+    .form-field input[type="text"],
+    .form-field input[type="email"] {
+        width: 100% !important;
+        max-width: 100% !important;
+
+        box-sizing: border-box;
+
+        height: 52px;
+
+        padding: 0 14px;
+    }
+
+
+    /*
+     * Privacy Consent
+     */
+
+    .form-field-consent {
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+    .consent-label {
+        display: flex;
+
+        width: 100%;
+
+        align-items: flex-start;
+
+        gap: 10px;
+
+        box-sizing: border-box;
+
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .consent-label input[type="checkbox"] {
+        flex: 0 0 18px !important;
+
+        width: 18px !important;
+        height: 18px !important;
+
+        min-width: 18px !important;
+        min-height: 18px !important;
+
+        margin: 3px 0 0 0 !important;
+    }
+
+    .consent-label span {
+        flex: 1;
+
+        min-width: 0;
+    }
+
+
+    /*
+     * Download Button
+     */
+
+    #download-submit {
+        width: 100%;
+
+        max-width: 100%;
+
+        box-sizing: border-box;
+
+        min-height: 54px;
+
+        justify-content: space-between;
+    }
+
+
+    /*
+     * Status / Error
+     */
+
+    .download-status,
+    .download-api-error {
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .download-hero {
+        padding:
+            42px 20px 48px;
+    }
+
+    .download-page-title {
+        font-size: 34px;
+    }
+
+    .download-page-description {
+        margin-top: 26px;
+    }
+
+    .download-section {
+        padding:
+            40px 20px 56px;
+    }
+
+    .download-inner {
+        gap: 40px;
+    }
+
+    .selected-document-visual {
+        min-height: 200px;
+    }
+
+    .download-form-title {
+        font-size: 27px;
+    }
+
+}
