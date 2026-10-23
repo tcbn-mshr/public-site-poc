@@ -138,6 +138,11 @@ function normalizeMaterial(material) {
                 material?.categoryName ?? "その他"
             ).trim() || "その他",
 
+        summary:
+            String(
+             　 material?.summary ?? ""
+            ).trim(),
+       
         description:
             String(
                 material?.description ?? ""
@@ -278,7 +283,7 @@ function createMaterialCard(material) {
             "material-card-description";
 
         description.textContent =
-            material.description;
+            material.summary;
 
         body.appendChild(
             description
