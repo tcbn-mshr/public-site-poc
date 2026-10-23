@@ -1,524 +1,617 @@
 "use strict";
 
-/*
- * Exhibition Materials
- * PDF list and material card control
- */
+
+/* =========================================
+   Configuration
+========================================= */
+
+const MATERIALS_API_URL = "/api/materials";
 
 
 /* =========================================
-   Azure Blob Storage settings
+   DOM Elements
 ========================================= */
 
-const storageBaseUrl =
-    "https://satenjikaiweb.blob.core.windows.net/files";
+const materialsGrid =
+    document.getElementById("materials-grid");
 
-const containerListUrl =
-    `${storageBaseUrl}?restype=container&comp=list`;
-
-
-/* =========================================
-   DOM elements
-========================================= */
-
-const materialsList =
-    document.getElementById("materials-list");
-
-const loadingElement =
+const materialsLoading =
     document.getElementById("materials-loading");
 
-const errorElement =
+const materialsError =
     document.getElementById("materials-error");
 
+const materialsEmpty =
+    document.getElementById("materials-empty");
+
 const categoryButtons =
-    document.querySelectorAll(".category-button");
+    Array.from(
+        document.querySelectorAll("[data-category]")
+    );
 
 
 /* =========================================
-   Category definitions
-
-   PDFをフォルダーに格納した場合、
-   先頭のフォルダー名をカテゴリーとして扱います。
-
-   例:
-   electronics/product-a.pdf
-   chemicals/product-b.pdf
-   life/product-c.pdf
+   State
 ========================================= */
 
-const categoryDefinitions = {
-    electronics: {
-        name: "情報電子",
-        aliases: [
-            "electronics",
-            "information-electronics"
-        ]
-    },
+let allMaterials = [];
 
-    chemicals: {
-        name: "化学品",
-        aliases: [
-            "chemicals",
-            "chemical"
-        ]
-    },
+let selectedCategory = "all";
 
-    life: {
-        name: "生活産業",
-        aliases: [
-            "life",
-            "life-industry"
-        ]
+
+/* =========================================
+   Utility
+========================================= */
+
+function hideElement(element) {
+
+    if (element) {
+        element.hidden = true;
     }
-};
-
-
-/* =========================================
-   Internal state
-========================================= */
-
-let materials = [];
-
-
-/* =========================================
-   Utility functions
-========================================= */
-
-/**
- * Blob上のファイルパスを安全なURLへ変換します。
- *
- * 例:
- * electronics/sample file.pdf
- * 　↓
- * electronics/sample%20file.pdf
- */
-function encodeBlobPath(filePath) {
-    return filePath
-        .split("/")
-        .map(pathPart => encodeURIComponent(pathPart))
-        .join("/");
 }
 
 
-/**
- * ファイルパスからファイル名だけを取得します。
- *
- * 例:
- * electronics/product-a.pdf
- * 　↓
- * product-a.pdf
- */
-function getFileName(filePath) {
-    const pathParts = filePath.split("/");
+function showElement(element) {
 
-    return pathParts[pathParts.length - 1];
-}
-
-
-/**
- * PDFファイル名から拡張子を除去します。
- */
-function removePdfExtension(fileName) {
-    return fileName.replace(/\.pdf$/i, "");
-}
-
-
-/**
- * ファイル名から表示用タイトルを生成します。
- *
- * 例:
- * product-a_catalog.pdf
- * 　↓
- * product a catalog
- *
- * 正式な資料名は、今後materials.jsonから
- * 取得する方式へ変更できます。
- */
-function createDisplayTitle(filePath) {
-    const fileName = getFileName(filePath);
-    const nameWithoutExtension =
-        removePdfExtension(fileName);
-
-    const convertedName = nameWithoutExtension
-        .replace(/[_-]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-
-    return convertedName || "名称未設定の資料";
-}
-
-
-/**
- * ファイルパスからカテゴリーを判定します。
- *
- * 現在PDFがfilesコンテナー直下にある場合は、
- * uncategorizedとして扱います。
- */
-function getCategoryFromPath(filePath) {
-    const normalizedPath =
-        filePath.toLowerCase();
-
-    const firstDirectory =
-        normalizedPath.includes("/")
-            ? normalizedPath.split("/")[0]
-            : "";
-
-    for (const [categoryKey, definition]
-        of Object.entries(categoryDefinitions)) {
-
-        if (
-            definition.aliases.includes(firstDirectory)
-        ) {
-            return {
-                key: categoryKey,
-                name: definition.name
-            };
-        }
+    if (element) {
+        element.hidden = false;
     }
+}
+
+
+/* =========================================
+   UI States
+========================================= */
+
+function showLoading() {
+
+    showElement(materialsLoading);
+
+    hideElement(materialsError);
+    hideElement(materialsEmpty);
+
+    if (materialsGrid) {
+        materialsGrid.innerHTML = "";
+    }
+}
+
+
+function hideLoading() {
+
+    hideElement(materialsLoading);
+}
+
+
+function showError() {
+
+    hideLoading();
+
+    hideElement(materialsEmpty);
+
+    showElement(materialsError);
+
+    if (materialsGrid) {
+        materialsGrid.innerHTML = "";
+    }
+}
+
+
+function showEmpty() {
+
+    hideLoading();
+
+    hideElement(materialsError);
+
+    showElement(materialsEmpty);
+
+    if (materialsGrid) {
+        materialsGrid.innerHTML = "";
+    }
+}
+
+
+/* =========================================
+   Normalize
+========================================= */
+
+function normalizeMaterial(material) {
 
     return {
-        key: "uncategorized",
-        name: "展示会資料"
-    };
-}
 
+        id:
+            String(
+                material?.id ?? ""
+            ).trim(),
 
-/**
- * Blobファイル情報から画面表示用の資料情報を作ります。
- */
-function createMaterial(filePath, index) {
-    const category =
-        getCategoryFromPath(filePath);
+        title:
+            String(
+                material?.title ?? ""
+            ).trim(),
 
-    const encodedPath =
-        encodeBlobPath(filePath);
+        category:
+            String(
+                material?.category ?? "other"
+            ).trim() || "other",
 
-    return {
-        id: `material-${index + 1}`,
-        filePath: filePath,
-        fileName: getFileName(filePath),
-        title: createDisplayTitle(filePath),
-        category: category.key,
-        categoryName: category.name,
-        pdfUrl: `${storageBaseUrl}/${encodedPath}`
+        categoryName:
+            String(
+                material?.categoryName ?? "その他"
+            ).trim() || "その他",
+
+        summary:
+            String(
+             　 material?.summary ?? ""
+            ).trim(),
+       
+        description:
+            String(
+                material?.description ?? ""
+            ).trim()
     };
 }
 
 
 /* =========================================
-   Card creation
+   Create Material Card
 ========================================= */
 
-/**
- * 1件の資料カードを生成します。
- */
 function createMaterialCard(material) {
+
+    /*
+     * article
+     */
+
     const article =
         document.createElement("article");
 
-    article.className = "material-card";
+    article.className =
+        "material-card";
+
     article.dataset.category =
         material.category;
 
 
-    /* Card image area */
+    /*
+     * Link
+     */
 
-    const imageArea =
+    const link =
+        document.createElement("a");
+
+    link.className =
+        "material-card-link";
+
+    link.href =
+        "./material.html?id=" +
+        encodeURIComponent(material.id);
+
+    link.setAttribute(
+        "aria-label",
+        material.title + "の詳細を見る"
+    );
+
+
+    /*
+     * Visual
+     */
+
+    const visual =
         document.createElement("div");
 
-    imageArea.className =
-        "material-card-image";
+    visual.className =
+        "material-card-visual";
+
 
     const fileType =
         document.createElement("span");
 
     fileType.className =
-        "material-file-type";
+        "material-card-file-type";
 
-    fileType.textContent = "PDF";
+    fileType.textContent =
+        "PDF";
 
-    imageArea.appendChild(fileType);
+    fileType.setAttribute(
+        "aria-hidden",
+        "true"
+    );
 
 
-    /* Card content */
+    visual.appendChild(
+        fileType
+    );
 
-    const content =
+
+    /*
+     * Body
+     */
+
+    const body =
         document.createElement("div");
 
-    content.className =
-        "material-card-content";
+    body.className =
+        "material-card-body";
 
+
+    /*
+     * Category
+     */
 
     const category =
         document.createElement("p");
 
     category.className =
-        "material-category";
+        "material-card-category";
 
     category.textContent =
         material.categoryName;
 
 
+    /*
+     * Title
+     */
+
     const title =
-        document.createElement("h3");
+        document.createElement("h2");
 
     title.className =
-        "material-title";
+        "material-card-title";
 
     title.textContent =
         material.title;
 
 
-    const description =
-        document.createElement("p");
+    body.appendChild(
+        category
+    );
 
-    description.className =
-        "material-description";
-
-    description.textContent =
-        "製品・技術資料の詳細をご確認いただけます。";
+    body.appendChild(
+        title
+    );
 
 
-    const detailLink =
-        document.createElement("a");
+    /*
+     * Description
+     */
 
-    detailLink.className =
-        "material-link";
+    if (material.description) {
 
-    const queryParameters =
-        new URLSearchParams({
-            id: material.id,
-            file: material.filePath,
-            title: material.title,
-            category: material.categoryName
-        });
+        const description =
+            document.createElement("p");
 
-    detailLink.href =
-        `./material.html?${queryParameters.toString()}`;
+        description.className =
+            "material-card-description";
 
-    const linkText =
+        description.textContent =
+            material.summary;
+
+        body.appendChild(
+            description
+        );
+    }
+
+
+    /*
+     * Detail
+     */
+
+    const detail =
         document.createElement("span");
 
-    linkText.textContent =
-        "詳細を見る";
+    detail.className =
+        "material-card-detail";
 
-    const arrow =
-        document.createElement("span");
-
-    arrow.setAttribute(
+    detail.setAttribute(
         "aria-hidden",
         "true"
     );
 
-    arrow.textContent = "→";
 
-    detailLink.appendChild(linkText);
-    detailLink.appendChild(arrow);
+    const detailText =
+        document.createTextNode(
+            "詳細を見る "
+        );
 
 
-    content.appendChild(category);
-    content.appendChild(title);
-    content.appendChild(description);
-    content.appendChild(detailLink);
+    const arrow =
+        document.createElement("span");
 
-    article.appendChild(imageArea);
-    article.appendChild(content);
+    arrow.className =
+        "material-card-arrow";
+
+    arrow.textContent =
+        "→";
+
+
+    detail.appendChild(
+        detailText
+    );
+
+    detail.appendChild(
+        arrow
+    );
+
+
+    body.appendChild(
+        detail
+    );
+
+
+    /*
+     * Assemble
+     */
+
+    link.appendChild(
+        visual
+    );
+
+    link.appendChild(
+        body
+    );
+
+    article.appendChild(
+        link
+    );
+
 
     return article;
 }
 
 
 /* =========================================
-   Material rendering
+   Filter
 ========================================= */
 
-/**
- * 指定されたカテゴリーの資料を表示します。
- */
-function renderMaterials(category = "all") {
-    materialsList.innerHTML = "";
+function getFilteredMaterials() {
 
-    const filteredMaterials =
-        category === "all"
-            ? materials
-            : materials.filter(
-                material =>
-                    material.category === category
-            );
+    if (selectedCategory === "all") {
 
-    if (filteredMaterials.length === 0) {
-        const emptyMessage =
-            document.createElement("p");
+        return allMaterials;
+    }
 
-        emptyMessage.className =
-            "materials-empty";
 
-        emptyMessage.textContent =
-            category === "all"
-                ? "公開中のPDF資料はありません。"
-                : "該当するカテゴリーの資料はありません。";
+    return allMaterials.filter(
+        (material) =>
+            material.category ===
+            selectedCategory
+    );
+}
 
-        materialsList.appendChild(
-            emptyMessage
+
+/* =========================================
+   Render
+========================================= */
+
+function renderMaterials() {
+
+    if (!materialsGrid) {
+
+        console.error(
+            "materials-grid was not found."
         );
 
         return;
     }
 
+
+    const materials =
+        getFilteredMaterials();
+
+
+    materialsGrid.innerHTML = "";
+
+
+    if (materials.length === 0) {
+
+        showEmpty();
+
+        return;
+    }
+
+
+    hideLoading();
+
+    hideElement(materialsError);
+    hideElement(materialsEmpty);
+
+
     const fragment =
         document.createDocumentFragment();
 
-    filteredMaterials.forEach(material => {
-        const card =
-            createMaterialCard(material);
 
-        fragment.appendChild(card);
-    });
+    materials.forEach(
+        (material) => {
 
-    materialsList.appendChild(fragment);
+            const card =
+                createMaterialCard(
+                    material
+                );
+
+            fragment.appendChild(
+                card
+            );
+        }
+    );
+
+
+    materialsGrid.appendChild(
+        fragment
+    );
 }
 
 
 /* =========================================
-   Category filter
+   Category Filter
 ========================================= */
+
+function updateCategoryButtons() {
+
+    categoryButtons.forEach(
+        (button) => {
+
+            const category =
+                button.dataset.category ||
+                "all";
+
+            const selected =
+                category ===
+                selectedCategory;
+
+
+            button.classList.toggle(
+                "is-active",
+                selected
+            );
+
+
+            button.setAttribute(
+                "aria-pressed",
+                String(selected)
+            );
+        }
+    );
+}
+
+
+function handleCategoryClick(event) {
+
+    selectedCategory =
+        event.currentTarget
+            .dataset.category ||
+        "all";
+
+
+    updateCategoryButtons();
+
+    renderMaterials();
+}
+
 
 function initializeCategoryFilter() {
-    categoryButtons.forEach(button => {
-        button.addEventListener(
-            "click",
-            () => {
-                categoryButtons.forEach(
-                    otherButton => {
-                        otherButton.classList.remove(
-                            "active"
-                        );
-                    }
-                );
 
-                button.classList.add("active");
+    categoryButtons.forEach(
+        (button) => {
 
-                const selectedCategory =
-                    button.dataset.category;
+            button.addEventListener(
+                "click",
+                handleCategoryClick
+            );
+        }
+    );
 
-                renderMaterials(
-                    selectedCategory
-                );
-            }
-        );
-    });
+
+    updateCategoryButtons();
 }
 
 
 /* =========================================
-   Loading and error display
+   API
 ========================================= */
 
-function showLoading() {
-    loadingElement.hidden = false;
-    errorElement.hidden = true;
-}
+async function fetchMaterials() {
 
-function hideLoading() {
-    loadingElement.hidden = true;
-}
+    const response =
+        await fetch(
+            MATERIALS_API_URL,
+            {
+                method: "GET",
 
-function showError(message) {
-    hideLoading();
+                headers: {
+                    "Accept":
+                        "application/json"
+                },
 
-    materialsList.innerHTML = "";
+                cache:
+                    "no-store"
+            }
+        );
 
-    errorElement.textContent = message;
-    errorElement.hidden = false;
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Materials API HTTP error: " +
+            response.status
+        );
+    }
+
+
+    const result =
+        await response.json();
+
+
+    if (result?.success !== true) {
+
+        throw new Error(
+            result?.message ||
+            "Materials API returned an error."
+        );
+    }
+
+
+    if (
+        !Array.isArray(
+            result.materials
+        )
+    ) {
+
+        throw new Error(
+            "Invalid materials response."
+        );
+    }
+
+
+    return result.materials;
 }
 
 
 /* =========================================
-   Blob Storage access
+   Load
 ========================================= */
 
 async function loadMaterials() {
+
     showLoading();
 
+
     try {
-        const response =
-            await fetch(containerListUrl);
 
-        if (!response.ok) {
-            throw new Error(
-                `Blob一覧の取得に失敗しました: ` +
-                `HTTP ${response.status}`
-            );
-        }
+        const materials =
+            await fetchMaterials();
 
-        const xmlText =
-            await response.text();
 
-        const parser =
-            new DOMParser();
-
-        const xml =
-            parser.parseFromString(
-                xmlText,
-                "application/xml"
-            );
-
-        const parserError =
-            xml.querySelector("parsererror");
-
-        if (parserError) {
-            throw new Error(
-                "Blob一覧のXML解析に失敗しました。"
-            );
-        }
-
-        const blobElements =
-            Array.from(
-                xml.getElementsByTagName("Blob")
-            );
-
-        const pdfFiles =
-            blobElements
-                .map(blob => {
-                    const nameElement =
-                        blob.getElementsByTagName(
-                            "Name"
-                        )[0];
-
-                    return nameElement
-                        ? nameElement.textContent
-                        : "";
-                })
-                .filter(filePath =>
-                    filePath
-                        .toLowerCase()
-                        .endsWith(".pdf")
+        allMaterials =
+            materials
+                .map(
+                    normalizeMaterial
                 )
-                .sort((fileA, fileB) =>
-                    fileA.localeCompare(
-                        fileB,
-                        "ja"
-                    )
+                .filter(
+                    (material) =>
+                        material.id &&
+                        material.title
                 );
 
-        materials =
-            pdfFiles.map(
-                (filePath, index) =>
-                    createMaterial(
-                        filePath,
-                        index
-                    )
-            );
 
-        hideLoading();
-        renderMaterials("all");
+        allMaterials.sort(
+            (a, b) =>
+                a.title.localeCompare(
+                    b.title,
+                    "ja"
+                )
+        );
+
+
+        renderMaterials();
+
 
     } catch (error) {
-        console.error(error);
 
-        showError(
-            "資料一覧を取得できませんでした。"
+        console.error(
+            "Failed to load materials:",
+            error
         );
+
+        showError();
     }
 }
 
@@ -528,20 +621,30 @@ async function loadMaterials() {
 ========================================= */
 
 function initializeMaterialsPage() {
-    if (
-        !materialsList ||
-        !loadingElement ||
-        !errorElement
-    ) {
-        console.error(
-            "資料一覧画面のHTML要素が見つかりません。"
-        );
+
+    if (!materialsGrid) {
 
         return;
     }
 
+
     initializeCategoryFilter();
+
     loadMaterials();
 }
 
-initializeMaterialsPage();
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeMaterialsPage
+    );
+
+} else {
+
+    initializeMaterialsPage();
+}

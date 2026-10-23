@@ -1,88 +1,370 @@
 "use strict";
 
-/*
- * Material Detail Page
- *
- * materials.html から渡されたURLパラメーターを取得し、
- * 資料詳細画面へ表示します。
- */
-
 
 /* =========================================
-   URL Parameters
+   Configuration
 ========================================= */
 
-const params =
-    new URLSearchParams(window.location.search);
-
-const materialId =
-    params.get("id") || "";
-
-const filePath =
-    params.get("file") || "";
-
-const materialTitle =
-    params.get("title") || "資料";
-
-const materialCategory =
-    params.get("category") || "展示会資料";
+const MATERIALS_API_URL =
+    "/api/materials";
 
 
 /* =========================================
    DOM Elements
 ========================================= */
 
+const loadingElement =
+    document.getElementById(
+        "material-loading"
+    );
+
+const errorElement =
+    document.getElementById(
+        "material-error"
+    );
+
+const contentElement =
+    document.getElementById(
+        "material-content"
+    );
+
+const categoryTopElement =
+    document.getElementById(
+        "material-category-top"
+    );
+
+const titleTopElement =
+    document.getElementById(
+        "material-title-top"
+    );
+
 const titleElement =
     document.getElementById(
-        "material-detail-title"
+        "material-title"
     );
 
-const categoryElement =
+const descriptionElement =
     document.getElementById(
-        "material-category"
+        "material-description"
     );
 
-const downloadPageLink =
+const downloadLinkElement =
     document.getElementById(
-        "download-page-link"
+        "material-download-link"
     );
 
 
 /* =========================================
-   Material Information
+   URL Parameter
 ========================================= */
 
-function displayMaterialInformation() {
+function getMaterialId() {
 
-    if (titleElement) {
-        titleElement.textContent =
-            materialTitle;
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return String(
+        params.get("id") || ""
+    ).trim();
+}
+
+
+/* =========================================
+   UI State
+========================================= */
+
+function hideElement(element) {
+
+    if (element) {
+        element.hidden = true;
+    }
+}
+
+
+function showElement(element) {
+
+    if (element) {
+        element.hidden = false;
+    }
+}
+
+
+function showLoading() {
+
+    showElement(
+        loadingElement
+    );
+
+    hideElement(
+        errorElement
+    );
+
+    hideElement(
+        contentElement
+    );
+}
+
+
+function showError() {
+
+    hideElement(
+        loadingElement
+    );
+
+    hideElement(
+        contentElement
+    );
+
+    showElement(
+        errorElement
+    );
+}
+
+
+function showContent() {
+
+    hideElement(
+        loadingElement
+    );
+
+    hideElement(
+        errorElement
+    );
+
+    showElement(
+        contentElement
+    );
+}
+
+
+/* =========================================
+   API
+========================================= */
+
+async function fetchMaterials() {
+
+    const response =
+        await fetch(
+            MATERIALS_API_URL,
+            {
+                method:
+                    "GET",
+
+                headers: {
+                    "Accept":
+                        "application/json"
+                },
+
+                cache:
+                    "no-store"
+            }
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Materials API HTTP error: " +
+            response.status
+        );
     }
 
-    if (categoryElement) {
-        categoryElement.textContent =
-            materialCategory;
+
+    const result =
+        await response.json();
+
+
+    if (
+        result?.success !== true
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "Materials API returned an error."
+        );
+    }
+
+
+    if (
+        !Array.isArray(
+            result.materials
+        )
+    ) {
+
+        throw new Error(
+            "Invalid materials response."
+        );
+    }
+
+
+    return result.materials;
+}
+
+
+/* =========================================
+   Normalize
+========================================= */
+
+function normalizeMaterial(
+    material
+) {
+
+    return {
+
+        id:
+            String(
+                material?.id ?? ""
+            ).trim(),
+
+        title:
+            String(
+                material?.title ?? ""
+            ).trim(),
+
+        category:
+            String(
+                material?.category ??
+                "other"
+            ).trim() || "other",
+
+        categoryName:
+            String(
+                material?.categoryName ??
+                "その他"
+            ).trim() || "その他",
+
+        summary:
+            String(
+                material?.summary ?? ""
+            ).trim(),
+
+        description:
+            String(
+                material?.description ??
+                ""
+            ).trim()
+    };
+}
+
+
+/* =========================================
+   Find Material
+========================================= */
+
+async function getMaterial(
+    materialId
+) {
+
+    const materials =
+        await fetchMaterials();
+
+
+    const normalizedMaterials =
+        materials.map(
+            normalizeMaterial
+        );
+
+
+    return normalizedMaterials.find(
+        (material) =>
+            material.id ===
+            materialId
+    ) || null;
+}
+
+
+/* =========================================
+   Render Material
+========================================= */
+
+function renderMaterial(
+    material
+) {
+
+    /*
+     * Hero category
+     */
+
+    if (categoryTopElement) {
+
+        categoryTopElement.textContent =
+            material.categoryName;
     }
 
 
     /*
-     * 次のdownload.htmlへ
-     * 同じ資料情報を引き継ぎます。
+     * Hero title
      */
 
-    if (downloadPageLink) {
+    if (titleTopElement) {
 
-        const downloadParams =
-            new URLSearchParams({
-                id: materialId,
-                file: filePath,
-                title: materialTitle,
-                category: materialCategory
-            });
-
-        downloadPageLink.href =
-            `./download.html?${downloadParams.toString()}`;
+        titleTopElement.textContent =
+            material.title;
     }
+
+
+    /*
+     * Document title
+     */
+
+    if (titleElement) {
+
+        titleElement.textContent =
+            material.title;
+    }
+
+
+    /*
+     * Description
+     */
+
+    if (descriptionElement) {
+
+        if (
+            material.description
+        ) {
+
+            descriptionElement.textContent =
+                material.description;
+
+        } else {
+
+            descriptionElement.textContent =
+                "資料の詳細をご確認のうえ、" +
+                "ダウンロードページへお進みください。";
+        }
+    }
+
+
+    /*
+     * Download page
+     *
+     * 重要：
+     * title / category / file は渡しません。
+     *
+     * 今後はmaterialIdだけを
+     * サーバー側の資料マスターと照合します。
+     */
+
+    if (downloadLinkElement) {
+
+        downloadLinkElement.href =
+            "./download.html?id=" +
+            encodeURIComponent(
+                material.id
+            );
+    }
+
+
+    /*
+     * Browser title
+     */
+
+    document.title =
+        material.title +
+        "｜展示会資料｜INABATA";
 }
 
 
@@ -90,4 +372,82 @@ function displayMaterialInformation() {
    Initialization
 ========================================= */
 
-displayMaterialInformation();
+async function initializeMaterialPage() {
+
+    showLoading();
+
+
+    const materialId =
+        getMaterialId();
+
+
+    if (!materialId) {
+
+        console.error(
+            "Material ID was not specified."
+        );
+
+        showError();
+
+        return;
+    }
+
+
+    try {
+
+        const material =
+            await getMaterial(
+                materialId
+            );
+
+
+        if (!material) {
+
+            console.error(
+                "Material was not found:",
+                materialId
+            );
+
+            showError();
+
+            return;
+        }
+
+
+        renderMaterial(
+            material
+        );
+
+        showContent();
+
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load material:",
+            error
+        );
+
+        showError();
+    }
+}
+
+
+/* =========================================
+   Start
+========================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeMaterialPage
+    );
+
+} else {
+
+    initializeMaterialPage();
+}

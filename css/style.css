@@ -344,63 +344,65 @@ a {
    Responsive
 ----------------------------------------- */
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
 
-    .header-inner {
-        height: 72px;
-
-        padding: 0 16px;
+    .download-section {
+        padding:
+            56px 16px;
     }
 
-   .site-logo-image {
-      width: 170px;
-   }
+    .download-inner {
+        grid-template-columns: 1fr;
 
-    .header-nav {
-        gap: 18px;
+        gap: 48px;
     }
 
-    .header-nav a {
-        font-size: 13px;
+    .download-form-area {
+        max-width: none;
     }
 
-
-    .hero {
-        min-height: auto;
-    }
-
-    .hero-inner {
-        padding: 80px 20px;
-    }
-
-    .hero h1 {
-        font-size: 42px;
-    }
-
-    .hero-description {
-        font-size: 15px;
-    }
-
-
-    .primary-button {
-        width: 100%;
-        max-width: 320px;
-    }
-
-
-    .introduction {
-        padding: 75px 20px;
-    }
-
-
-    .footer-inner {
-        flex-direction: column;
-
-        align-items: flex-start;
+    .selected-document {
+        max-width: none;
     }
 
 }
 
+
+@media (max-width: 600px) {
+
+    .download-hero {
+        padding:
+            48px 16px;
+    }
+
+    .download-page-title {
+        font-size: 36px;
+    }
+
+    .selected-document-visual {
+        min-height: 220px;
+    }
+
+    .category-filter {
+        gap: 8px;
+    }
+
+    .category-filter-button {
+        padding:
+            8px 12px;
+
+        font-size: 12px;
+    }
+
+    #download-submit {
+        width: 100%;
+    }
+
+    .consent-label {
+        font-size: 13px;
+    }
+
+}
 
 
 /* =========================================
@@ -458,9 +460,9 @@ a {
 }
 
 
-/* -----------------------------------------
+/* =========================================
    Category Filter
------------------------------------------ */
+========================================= */
 
 .category-filter {
     display: flex;
@@ -468,33 +470,34 @@ a {
 
     gap: 10px;
 
-    margin-bottom: 50px;
+    margin:
+        28px 0 48px;
 }
 
-.category-button {
-    padding: 11px 24px;
+.category-filter-button {
+    min-height: 42px;
+
+    padding:
+        9px 18px;
 
     color: #333;
     background: #fff;
 
-    border: 1px solid #ccc;
+    font-family: inherit;
+    font-size: 13px;
+
+    border: 1px solid #bbb;
 
     cursor: pointer;
 
-    font-family: inherit;
-    font-size: 14px;
-
     transition:
         color 0.2s ease,
-        background 0.2s ease,
+        background-color 0.2s ease,
         border-color 0.2s ease;
 }
 
-.category-button:hover {
-    border-color: #222;
-}
-
-.category-button.active {
+.category-filter-button:hover,
+.category-filter-button.is-active {
     color: #fff;
     background: #222;
 
@@ -520,118 +523,124 @@ a {
    Material Card
 ----------------------------------------- */
 
+.materials-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(280px, 1fr)
+        );
+
+    gap: 28px;
+}
+
 .material-card {
-    display: flex;
-    flex-direction: column;
+    min-width: 0;
 
     background: #fff;
 
-    border: 1px solid #e2e2e2;
+    border: 1px solid #e1e1e1;
 
     transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .material-card:hover {
-    transform: translateY(-4px);
+    transform:
+        translateY(-3px);
 
     box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.08);
+        0 12px 30px
+        rgba(0, 0, 0, 0.07);
 }
 
+.material-card-link {
+    display: block;
 
-/* Card Image */
+    height: 100%;
 
-.material-card-image {
-    aspect-ratio: 16 / 10;
+    color: inherit;
+
+    text-decoration: none;
+}
+
+.material-card-visual {
+    min-height: 180px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    overflow: hidden;
-
-    color: #777;
-    background: #f2f3f4;
+    background: #f3f4f5;
 }
 
-.material-card-image img {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    object-fit: cover;
-}
-
-
-/* Card Content */
-
-.material-card-content {
-    flex: 1;
-
-    padding: 24px;
+.material-card-file-type {
+    width: 70px;
+    height: 90px;
 
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    background: #595959;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    box-shadow:
+        8px 12px 20px
+        rgba(0, 0, 0, 0.12);
 }
 
-.material-category {
-    margin: 0 0 10px;
+.material-card-body {
+    padding: 26px;
+}
 
-    color: #777;
+.material-card-category {
+    margin: 0 0 14px;
+
+    color: #666;
 
     font-size: 12px;
 
     letter-spacing: 0.08em;
 }
 
-.material-title {
-    margin: 0 0 15px;
+.material-card-title {
+    margin: 0 0 16px;
 
-    font-size: 18px;
-    font-weight: 500;
+    color: #222;
 
-    line-height: 1.6;
+    font-size: 22px;
+    font-weight: 600;
 }
 
-.material-description {
-    margin: 0 0 25px;
+.material-card-description {
+    margin:
+        0 0 24px;
 
-    color: #666;
+    color: #555;
 
-    font-size: 14px;
+    font-size: 13px;
 
     line-height: 1.8;
 }
 
+.material-card-detail {
+    display: inline-flex;
 
-/* Card Link */
+    gap: 10px;
 
-.material-link {
-    margin-top: auto;
-
-    padding-top: 18px;
-
-    display: flex;
     align-items: center;
-    justify-content: space-between;
 
-    border-top: 1px solid #ddd;
+    color: #222;
 
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
 }
-
-.material-link span {
-    transition: transform 0.2s ease;
-}
-
-.material-card:hover .material-link span {
-    transform: translateX(4px);
-}
-
 
 /* -----------------------------------------
    Loading / Error
@@ -1407,6 +1416,935 @@ a {
         flex: 1;
 
         min-width: 0;
+    }
+
+}
+
+
+/* =========================================
+   Form - Current Layout Fix
+========================================= */
+
+.download-form-area {
+    width: 100%;
+    max-width: 680px;
+}
+
+.form-field {
+    margin-bottom: 32px;
+}
+
+.form-field > label:not(.consent-label) {
+    display: block;
+    margin-bottom: 10px;
+
+    color: #222;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* Input */
+
+.form-field input[type="text"],
+.form-field input[type="email"] {
+    box-sizing: border-box;
+
+    display: block;
+
+    width: 100%;
+    height: 52px;
+
+    padding: 0 16px;
+
+    color: #222;
+    background: #fff;
+
+    font-family: inherit;
+    font-size: 15px;
+
+    border: 1px solid #bbb;
+    border-radius: 0;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-field input[type="text"]:focus,
+.form-field input[type="email"]:focus {
+    border-color: #222;
+
+    box-shadow:
+        0 0 0 1px #222;
+}
+
+
+/* Required */
+
+.required-mark {
+    color: #b60018;
+}
+
+
+/* =========================================
+   Privacy Consent
+========================================= */
+
+.form-field-consent {
+    margin-top: 8px;
+    margin-bottom: 32px;
+}
+
+.consent-label {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 400;
+
+    line-height: 1.7;
+}
+
+
+/*
+ * 他のinput指定に負けないよう
+ * checkboxを明示的にリセット
+ */
+
+.consent-label input[type="checkbox"] {
+    appearance: auto;
+    -webkit-appearance: checkbox;
+
+    flex: 0 0 auto;
+
+    width: 18px !important;
+    height: 18px !important;
+
+    min-width: 18px;
+    min-height: 18px;
+
+    margin: 3px 0 0 0;
+    padding: 0;
+
+    cursor: pointer;
+
+    box-shadow: none;
+
+    accent-color: #222;
+}
+
+.consent-label span {
+    display: inline;
+}
+
+.consent-label a {
+    color: #222;
+
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.consent-label a:hover {
+    opacity: 0.65;
+}
+
+
+/* =========================================
+   Download Button
+========================================= */
+
+#download-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 24px;
+
+    min-width: 230px;
+    min-height: 56px;
+
+    padding: 14px 24px;
+
+    color: #fff;
+    background: #222;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    border: 1px solid #222;
+    border-radius: 0;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+#download-submit:hover {
+    color: #222;
+    background: #fff;
+}
+
+#download-submit:disabled {
+    cursor: wait;
+
+    opacity: 0.55;
+}
+
+
+/* =========================================
+   Download Status
+========================================= */
+
+.download-status {
+    margin-top: 16px;
+
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.download-success {
+    color: #35663d;
+}
+
+.download-api-error,
+.form-error {
+    margin-top: 8px;
+
+    color: #b60018;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/* =========================================
+   Download Layout
+========================================= */
+
+.download-section {
+    padding: 88px 24px;
+}
+
+.download-inner {
+    display: grid;
+
+    grid-template-columns:
+        minmax(300px, 448px)
+        minmax(420px, 680px);
+
+    justify-content: center;
+
+    gap: 80px;
+
+    width: 100%;
+    max-width: 1280px;
+
+    margin: 0 auto;
+}
+
+
+/* Selected document */
+
+.selected-document {
+    border: 1px solid #e1e1e1;
+
+    background: #fff;
+}
+
+.selected-document-visual {
+    min-height: 280px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f2f3f4;
+}
+
+.selected-document-pdf {
+    width: 110px;
+    height: 140px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    background: #595959;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    box-shadow:
+        14px 18px 24px rgba(0, 0, 0, 0.12);
+}
+
+.selected-document-body {
+    padding: 30px;
+}
+
+.selected-document-title {
+    margin:
+        20px 0 14px;
+
+    color: #222;
+
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.selected-document-description {
+    margin:
+        0 0 24px;
+
+    color: #555;
+
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.selected-document-back {
+    color: #222;
+
+    font-size: 13px;
+
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+
+/* =========================================
+   Download Hero
+========================================= */
+
+.download-hero {
+    padding: 72px 24px;
+
+    background: #f3f4f5;
+}
+
+.download-hero-inner {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto;
+}
+
+.download-hero-category {
+    margin:
+        18px 0 26px;
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+.download-page-title {
+    margin: 0;
+
+    color: #222;
+
+    font-size: clamp(
+        36px,
+        5vw,
+        56px
+    );
+
+    font-weight: 500;
+
+    letter-spacing: 0.02em;
+}
+
+.download-page-description {
+    margin:
+        36px 0 0;
+
+    color: #444;
+
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+
+/* =========================================
+   Material Detail - Final Layout Fix
+========================================= */
+
+.material-detail-hero {
+    padding: 72px 24px;
+
+    background: #f3f4f5;
+}
+
+.material-detail-hero-inner {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto;
+}
+
+.material-detail-category {
+    margin: 18px 0 26px;
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+.material-detail-title {
+    margin: 0;
+
+    color: #222;
+
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 500;
+
+    letter-spacing: 0.02em;
+}
+
+
+/* Detail section */
+
+.material-detail-section {
+    padding: 88px 24px;
+}
+
+.material-detail-inner {
+    display: grid;
+
+    grid-template-columns:
+        minmax(320px, 560px)
+        minmax(320px, 480px);
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 80px;
+
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+}
+
+
+/* PDF visual */
+
+.material-detail-visual {
+    min-height: 420px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f2f3f4;
+}
+
+.material-detail-pdf {
+    width: 150px;
+    height: 200px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    background: #595959;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    box-shadow:
+        14px 18px 24px
+        rgba(0, 0, 0, 0.12);
+}
+
+
+/* Detail information */
+
+.material-detail-information {
+    min-width: 0;
+}
+
+.material-detail-document-title {
+    margin: 22px 0 22px;
+
+    color: #222;
+
+    font-size: 30px;
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+.material-detail-description {
+    margin: 0 0 36px;
+
+    color: #555;
+
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+#material-download-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 32px;
+
+    min-width: 230px;
+    min-height: 56px;
+
+    padding: 14px 24px;
+
+    box-sizing: border-box;
+
+    color: #fff;
+    background: #222;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    border: 1px solid #222;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+#material-download-link:hover {
+    color: #222;
+    background: #fff;
+}
+
+
+/* =========================================
+   Materials Page - Final Layout Fix
+========================================= */
+
+.materials-hero {
+    padding: 72px 24px;
+
+    background: #fff;
+}
+
+.materials-hero-inner {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto;
+}
+
+.materials-page-title {
+    margin: 30px 0 22px;
+
+    color: #222;
+
+    font-size: clamp(36px, 5vw, 52px);
+    font-weight: 500;
+
+    letter-spacing: 0.02em;
+}
+
+.materials-page-description {
+    max-width: 720px;
+
+    margin: 0;
+
+    color: #444;
+
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+
+.materials-section {
+    padding: 64px 24px 96px;
+}
+
+.materials-section-inner {
+    width: 100%;
+    max-width: 1180px;
+
+    margin: 0 auto;
+}
+
+
+/* Heading */
+
+#materials-heading {
+    margin: 0;
+}
+
+
+/* State messages */
+
+.materials-message {
+    margin: 30px 0;
+
+    color: #555;
+
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.materials-message-error {
+    color: #b60018;
+}
+
+
+/* =========================================
+   Accessibility
+========================================= */
+
+.visually-hidden {
+    position: absolute !important;
+
+    width: 1px !important;
+    height: 1px !important;
+
+    padding: 0 !important;
+    margin: -1px !important;
+
+    overflow: hidden !important;
+
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+
+    border: 0 !important;
+}
+
+
+/* =========================================
+   Material / Materials Responsive
+========================================= */
+
+@media (max-width: 860px) {
+
+    .material-detail-inner {
+        grid-template-columns: 1fr;
+
+        gap: 48px;
+    }
+
+    .material-detail-visual {
+        min-height: 320px;
+    }
+
+    .material-detail-information {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .materials-hero,
+    .material-detail-hero {
+        padding:
+            48px 16px;
+    }
+
+    .materials-section,
+    .material-detail-section {
+        padding:
+            48px 16px 64px;
+    }
+
+    .materials-page-title,
+    .material-detail-title {
+        font-size: 36px;
+    }
+
+    .material-detail-visual {
+        min-height: 260px;
+    }
+
+    .material-detail-pdf {
+        width: 110px;
+        height: 145px;
+    }
+
+    .material-detail-document-title {
+        font-size: 25px;
+    }
+
+    #material-download-link {
+        width: 100%;
+    }
+}
+
+
+/* =========================================
+   Download Page - Mobile Final Fix
+========================================= */
+
+@media (max-width: 860px) {
+
+    /*
+     * ページ全体の横スクロールを防止
+     */
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+
+    /*
+     * Download Hero
+     */
+
+    .download-hero {
+        width: 100%;
+        box-sizing: border-box;
+
+        padding: 48px 20px;
+    }
+
+    .download-hero-inner {
+        width: 100%;
+        max-width: none;
+
+        margin: 0;
+    }
+
+    .download-page-title {
+        font-size: 36px;
+        line-height: 1.35;
+
+        overflow-wrap: anywhere;
+    }
+
+    .download-page-description {
+        max-width: 100%;
+
+        font-size: 14px;
+        line-height: 1.9;
+    }
+
+
+    /*
+     * Download Main
+     */
+
+    .download-section {
+        width: 100%;
+
+        box-sizing: border-box;
+
+        padding: 48px 20px 64px;
+    }
+
+    .download-inner {
+        display: flex !important;
+        flex-direction: column !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin: 0 !important;
+
+        gap: 48px;
+    }
+
+
+    /*
+     * Selected Document
+     */
+
+    .selected-document {
+        order: 1;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        box-sizing: border-box;
+    }
+
+    .selected-document-visual {
+        width: 100%;
+
+        min-height: 220px;
+    }
+
+    .selected-document-pdf {
+        width: 90px;
+        height: 120px;
+    }
+
+    .selected-document-body {
+        padding: 24px 20px;
+    }
+
+    .selected-document-title {
+        font-size: 22px;
+    }
+
+
+    /*
+     * Form
+     */
+
+    .download-form-area {
+        order: 2;
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        box-sizing: border-box;
+    }
+
+    #download-form {
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+    .form-field {
+        width: 100%;
+
+        box-sizing: border-box;
+
+        margin-bottom: 26px;
+    }
+
+    .form-field input[type="text"],
+    .form-field input[type="email"] {
+        width: 100% !important;
+        max-width: 100% !important;
+
+        box-sizing: border-box;
+
+        height: 52px;
+
+        padding: 0 14px;
+    }
+
+
+    /*
+     * Privacy Consent
+     */
+
+    .form-field-consent {
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+    .consent-label {
+        display: flex;
+
+        width: 100%;
+
+        align-items: flex-start;
+
+        gap: 10px;
+
+        box-sizing: border-box;
+
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .consent-label input[type="checkbox"] {
+        flex: 0 0 18px !important;
+
+        width: 18px !important;
+        height: 18px !important;
+
+        min-width: 18px !important;
+        min-height: 18px !important;
+
+        margin: 3px 0 0 0 !important;
+    }
+
+    .consent-label span {
+        flex: 1;
+
+        min-width: 0;
+    }
+
+
+    /*
+     * Download Button
+     */
+
+    #download-submit {
+        width: 100%;
+
+        max-width: 100%;
+
+        box-sizing: border-box;
+
+        min-height: 54px;
+
+        justify-content: space-between;
+    }
+
+
+    /*
+     * Status / Error
+     */
+
+    .download-status,
+    .download-api-error {
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .download-hero {
+        padding:
+            42px 20px 48px;
+    }
+
+    .download-page-title {
+        font-size: 34px;
+    }
+
+    .download-page-description {
+        margin-top: 26px;
+    }
+
+    .download-section {
+        padding:
+            40px 20px 56px;
+    }
+
+    .download-inner {
+        gap: 40px;
+    }
+
+    .selected-document-visual {
+        min-height: 200px;
+    }
+
+    .download-form-title {
+        font-size: 27px;
     }
 
 }
