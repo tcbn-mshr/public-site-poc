@@ -235,6 +235,11 @@ function normalizeMaterial(
                 "その他"
             ).trim() || "その他",
 
+        summary:
+            String(
+                material?.summary ?? ""
+            ).trim(),
+
         description:
             String(
                 material?.description ??
