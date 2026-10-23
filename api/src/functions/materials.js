@@ -105,6 +105,9 @@ async function materialsHandler(
                 categoryName:
                     entity.categoryName || "",
 
+                summary:
+                    entity.summary || "",
+
                 description:
                     entity.description || ""
             });
