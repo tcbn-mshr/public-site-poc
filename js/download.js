@@ -541,7 +541,7 @@ function renderMaterial(material) {
     if (documentDescriptionElement) {
 
         documentDescriptionElement.textContent =
-            material.description ||
+            material.summary ||
             "選択した資料をダウンロードします。";
     }
 
