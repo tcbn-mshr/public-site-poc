@@ -1,1 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
 
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="展示会資料 管理サイト"
+    >
+
+    <title>資料管理｜INABATA</title>
+
+    ../css/admin.css
+</head>
+
+
+<body>
+
+    <!-- Header -->
+
+    <header class="admin-header">
+
+        <div class="admin-header-inner">
+
+            ../index.html
+                ../assets/images/Iktagline_jp_01_RGB.png
+            </a>
+
+            <div class="admin-header-title">
+                展示会資料 管理サイト
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- Main -->
+
+    <main class="admin-main">
+
+        <div class="admin-container">
+
+
+            <!-- Page heading -->
+
+            <div class="admin-page-heading">
+
+                <div>
+
+                    <p class="admin-label">
+                        MATERIAL MANAGEMENT
+                    </p>
+
+                    <h1>
+                        資料管理
+                    </h1>
+
+                    <p class="admin-description">
+                        展示会サイトで公開する資料を
+                        登録・編集・管理します。
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="create-material-button"
+                    class="admin-primary-button"
+                    disabled
+                    title="新規登録機能は次のSTEPで実装します"
+                >
+                    ＋ 新しい資料を登録
+                </button>
+
+            </div>
+
+
+            <!-- Filter -->
+
+            <div class="admin-filter-area">
+
+                <label
+                    for="material-search"
+                    class="visually-hidden"
+                >
+                    資料を検索
+                </label>
+
+                <input
+                    type="search"
+                    id="material-search"
+                    class="admin-search"
+                    placeholder="資料名・説明文で検索"
+                >
+
+
+                <label
+                    for="status-filter"
+                    class="visually-hidden"
+                >
+                    公開状態
+                </label>
+
+                <select
+                    id="status-filter"
+                    class="admin-select"
+                >
+                    <option value="all">
+                        すべての状態
+                    </option>
+
+                    <option value="published">
+                        公開中
+                    </option>
+
+                    <option value="draft">
+                        下書き
+                    </option>
+                </select>
+
+            </div>
+
+
+            <!-- Loading -->
+
+            <div
+                id="admin-loading"
+                class="admin-message"
+                role="status"
+            >
+                資料を読み込んでいます...
+            </div>
+
+
+            <!-- Error -->
+
+            <div
+                id="admin-error"
+                class="admin-message admin-message-error"
+                role="alert"
+                hidden
+            >
+                資料一覧を取得できませんでした。
+            </div>
+
+
+            <!-- Empty -->
+
+            <div
+                id="admin-empty"
+                class="admin-message"
+                role="status"
+                hidden
+            >
+                該当する資料はありません。
+            </div>
+
+
+            <!-- Desktop header -->
+
+            <div
+                class="admin-list-header"
+                aria-hidden="true"
+            >
+                <div>資料</div>
+                <div>カテゴリー</div>
+                <div>状態</div>
+                <div>更新日時</div>
+                <div>操作</div>
+            </div>
+
+
+            <!-- Materials -->
+
+            <section
+                id="admin-material-list"
+                class="admin-material-list"
+                aria-label="登録資料一覧"
+                aria-live="polite"
+            >
+            </section>
+
+
+            <!-- Notice -->
+
+            <div class="admin-development-note">
+
+                <strong>
+                    管理画面 v1 開発中
+                </strong>
+
+                <p>
+                    現在は資料一覧の参照機能を実装しています。
+                    登録・編集・公開切替・削除機能は
+                    次のSTEPで有効化します。
+                </p>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    ../js/admin.jsscript>
+
+</body>
+
+</html>
