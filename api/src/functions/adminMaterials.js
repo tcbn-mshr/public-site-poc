@@ -16,9 +16,11 @@ async function adminMaterialsHandler(
 
 
     return {
+
         status: 200,
 
         headers: {
+
             "Content-Type":
                 "application/json; charset=utf-8",
 
@@ -27,7 +29,9 @@ async function adminMaterialsHandler(
         },
 
         jsonBody: {
+
             success: true,
+
             message:
                 "Admin Materials API is working."
         }
@@ -46,7 +50,7 @@ app.http(
             "anonymous",
 
         route:
-            "admin/materials",
+            "admin-materials",
 
         handler:
             adminMaterialsHandler
