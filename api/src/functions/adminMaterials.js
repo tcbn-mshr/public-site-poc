@@ -6,7 +6,7 @@ const {
 
 
 app.http(
-    "adminmaterials",
+    "manage-materials",
     {
         methods: [
             "GET"
@@ -15,11 +15,14 @@ app.http(
         authLevel:
             "anonymous",
 
+        route:
+            "manage-materials",
+
         handler:
             async (request, context) => {
 
                 context.log(
-                    "adminmaterials test API called."
+                    "Manage materials test API called."
                 );
 
 
@@ -28,6 +31,7 @@ app.http(
                     status: 200,
 
                     headers: {
+
                         "Content-Type":
                             "application/json; charset=utf-8",
 
@@ -40,7 +44,7 @@ app.http(
                         success: true,
 
                         message:
-                            "adminmaterials function is working."
+                            "Manage Materials API is working."
                     }
                 };
             }
