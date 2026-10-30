@@ -5,42 +5,8 @@ const {
 } = require("@azure/functions");
 
 
-async function adminMaterialsHandler(
-    request,
-    context
-) {
-
-    context.log(
-        "Admin materials test API called."
-    );
-
-
-    return {
-
-        status: 200,
-
-        headers: {
-
-            "Content-Type":
-                "application/json; charset=utf-8",
-
-            "Cache-Control":
-                "no-store"
-        },
-
-        jsonBody: {
-
-            success: true,
-
-            message:
-                "Admin Materials API is working."
-        }
-    };
-}
-
-
 app.http(
-    "admin-materials",
+    "adminmaterials",
     {
         methods: [
             "GET"
@@ -49,10 +15,34 @@ app.http(
         authLevel:
             "anonymous",
 
-        route:
-            "admin-materials",
-
         handler:
-            adminMaterialsHandler
+            async (request, context) => {
+
+                context.log(
+                    "adminmaterials test API called."
+                );
+
+
+                return {
+
+                    status: 200,
+
+                    headers: {
+                        "Content-Type":
+                            "application/json; charset=utf-8",
+
+                        "Cache-Control":
+                            "no-store"
+                    },
+
+                    jsonBody: {
+
+                        success: true,
+
+                        message:
+                            "adminmaterials function is working."
+                    }
+                };
+            }
     }
 );
