@@ -6,7 +6,7 @@
 ========================================= */
 
 const ADMIN_MATERIALS_API =
-    "/api/admin/materials";
+    "/api/admin-materials";
 
 
 /* =========================================
