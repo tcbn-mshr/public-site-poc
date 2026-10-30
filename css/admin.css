@@ -894,13 +894,3 @@ select {
     }
 
 }
-
-
-/* =========================================
-   Hidden elements
-========================================= */
-
-.admin-field-error[hidden],
-.admin-form-error[hidden] {
-    display: none !important;
-}
