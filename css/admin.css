@@ -572,3 +572,325 @@ select {
     }
 
 }
+
+
+/* =========================================
+   Admin Edit Page
+========================================= */
+
+.admin-primary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+
+    text-decoration: none;
+}
+
+
+.admin-edit-container {
+    max-width: 1000px;
+}
+
+
+.admin-breadcrumb {
+    margin-bottom: 34px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: #666;
+
+    font-size: 13px;
+}
+
+
+.admin-breadcrumb a {
+    color: #333;
+
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+
+.admin-edit-heading {
+    margin-bottom: 36px;
+}
+
+
+.admin-edit-heading h1 {
+    margin: 0;
+
+    font-size: 34px;
+    font-weight: 600;
+}
+
+
+/* Form */
+
+.admin-edit-form {
+    display: grid;
+
+    gap: 24px;
+}
+
+
+.admin-form-section {
+    padding: 30px;
+
+    background: #fff;
+
+    border: 1px solid #dedede;
+}
+
+
+.admin-form-section h2 {
+    margin:
+        0 0 20px;
+
+    font-size: 20px;
+    font-weight: 600;
+}
+
+
+.admin-form-field {
+    margin-top: 24px;
+}
+
+
+.admin-form-field > label {
+    display: block;
+
+    margin-bottom: 9px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.admin-required {
+    color: #b40020;
+}
+
+
+.admin-form-field input[type="text"],
+.admin-form-field input[type="file"],
+.admin-form-field select,
+.admin-form-field textarea {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    color: #222;
+    background: #fff;
+
+    border: 1px solid #aaa;
+
+    border-radius: 0;
+
+    font: inherit;
+}
+
+
+.admin-form-field input[type="text"],
+.admin-form-field select {
+    min-height: 48px;
+
+    padding: 0 14px;
+}
+
+
+.admin-form-field input[type="file"] {
+    padding: 12px;
+}
+
+
+.admin-form-field textarea {
+    padding: 12px 14px;
+
+    resize: vertical;
+
+    line-height: 1.7;
+}
+
+
+.admin-form-field input:focus,
+.admin-form-field select:focus,
+.admin-form-field textarea:focus {
+    border-color: #222;
+
+    outline: 2px solid
+        rgba(0, 0, 0, 0.1);
+
+    outline-offset: 1px;
+}
+
+
+.admin-field-help {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 12px;
+
+    line-height: 1.7;
+}
+
+
+.admin-field-footer {
+    margin-top: 7px;
+
+    display: flex;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    color: #777;
+
+    font-size: 12px;
+}
+
+
+.admin-field-error {
+    margin: 7px 0 0;
+
+    color: #b40020;
+
+    font-size: 12px;
+}
+
+
+/* Status */
+
+.admin-status-options {
+    margin: 20px 0 0;
+    padding: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+
+    border: 0;
+}
+
+
+.admin-radio-card {
+    padding: 18px;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    cursor: pointer;
+
+    border: 1px solid #bbb;
+}
+
+
+.admin-radio-card input {
+    width: 18px;
+    height: 18px;
+
+    flex: 0 0 auto;
+
+    margin-top: 3px;
+
+    accent-color: #222;
+}
+
+
+.admin-radio-card span {
+    display: grid;
+
+    gap: 4px;
+}
+
+
+.admin-radio-card small {
+    color: #666;
+
+    font-size: 12px;
+}
+
+
+/* Form error */
+
+.admin-form-error {
+    padding: 14px 16px;
+
+    color: #940019;
+    background: #fff1f3;
+
+    border-left: 4px solid #b40020;
+}
+
+
+/* Actions */
+
+.admin-edit-actions {
+    padding-top: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 12px;
+}
+
+
+.admin-secondary-link {
+    min-width: 130px;
+    min-height: 42px;
+
+    padding: 9px 18px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #222;
+    background: #fff;
+
+    text-decoration: none;
+
+    border: 1px solid #aaa;
+}
+
+
+/* Responsive */
+
+@media (max-width: 640px) {
+
+    .admin-form-section {
+        padding: 22px 18px;
+    }
+
+
+    .admin-status-options {
+        grid-template-columns: 1fr;
+    }
+
+
+    .admin-field-footer {
+        display: block;
+    }
+
+
+    .admin-edit-actions {
+        flex-direction: column-reverse;
+    }
+
+
+    .admin-secondary-link,
+    .admin-edit-actions .admin-primary-button {
+        width: 100%;
+    }
+
+}
