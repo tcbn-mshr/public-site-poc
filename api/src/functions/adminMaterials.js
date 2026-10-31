@@ -1,10 +1,11 @@
 "use strict";
 
+const crypto =
+    require("node:crypto");
 
 const {
     app
 } = require("@azure/functions");
-
 
 const {
     TableClient
@@ -17,6 +18,32 @@ const {
 
 const MATERIALS_TABLE_NAME =
     "Materials";
+
+
+const CATEGORY_MAP = {
+
+    electronics:
+        "情報電子",
+
+    chemicals:
+        "化学品",
+
+    life:
+        "生活産業",
+
+    plastics:
+        "合成樹脂",
+
+    other:
+        "その他"
+};
+
+
+const VALID_STATUS =
+    new Set([
+        "draft",
+        "published"
+    ]);
 
 
 /* =========================================
@@ -75,22 +102,26 @@ function getConnectionString() {
 
 
 /* =========================================
-   Value Helpers
+   Utility
 ========================================= */
 
-function getText(
-    value
+function normalizeText(
+    value,
+    maximumLength
 ) {
 
     return String(
         value ?? ""
-    ).trim();
+    )
+        .trim()
+        .slice(
+            0,
+            maximumLength
+        );
 }
 
 
-function getDateText(
-    value
-) {
+function getDateText(value) {
 
     if (!value) {
         return "";
@@ -124,6 +155,410 @@ function getDateText(
 
 
 /* =========================================
+   GET
+========================================= */
+
+async function getMaterials(
+    tableClient
+) {
+
+    const entities =
+        tableClient.listEntities({
+
+            queryOptions: {
+
+                filter:
+                    "PartitionKey eq 'materials'"
+            }
+        });
+
+
+    const materials = [];
+
+
+    for await (
+        const entity of entities
+    ) {
+
+        materials.push({
+
+            id:
+                normalizeText(
+                    entity.rowKey,
+                    128
+                ),
+
+            title:
+                normalizeText(
+                    entity.title,
+                    150
+                ),
+
+            category:
+                normalizeText(
+                    entity.category,
+                    50
+                ),
+
+            categoryName:
+                normalizeText(
+                    entity.categoryName,
+                    100
+                ),
+
+            summary:
+                normalizeText(
+                    entity.summary,
+                    250
+                ),
+
+            description:
+                normalizeText(
+                    entity.description,
+                    2000
+                ),
+
+            originalFileName:
+                normalizeText(
+                    entity.originalFileName,
+                    255
+                ),
+
+            blobName:
+                normalizeText(
+                    entity.blobName,
+                    500
+                ),
+
+            status:
+                normalizeText(
+                    entity.status,
+                    20
+                ) || "draft",
+
+            createdAtUtc:
+                getDateText(
+                    entity.createdAtUtc
+                ),
+
+            createdBy:
+                normalizeText(
+                    entity.createdBy,
+                    200
+                ),
+
+            updatedAtUtc:
+                getDateText(
+                    entity.updatedAtUtc
+                ),
+
+            updatedBy:
+                normalizeText(
+                    entity.updatedBy,
+                    200
+                )
+        });
+    }
+
+
+    materials.sort(
+        (a, b) =>
+            a.title.localeCompare(
+                b.title,
+                "ja"
+            )
+    );
+
+
+    return jsonResponse(
+        200,
+        {
+            success: true,
+            materials
+        }
+    );
+}
+
+
+/* =========================================
+   POST Validation
+========================================= */
+
+function validateCreateBody(body) {
+
+    const title =
+        normalizeText(
+            body?.title,
+            150
+        );
+
+    const category =
+        normalizeText(
+            body?.category,
+            50
+        );
+
+    const summary =
+        normalizeText(
+            body?.summary,
+            250
+        );
+
+    const description =
+        normalizeText(
+            body?.description,
+            2000
+        );
+
+    const status =
+        normalizeText(
+            body?.status,
+            20
+        ) || "draft";
+
+
+    if (!title) {
+
+        return {
+            valid: false,
+            message:
+                "資料名を入力してください。"
+        };
+    }
+
+
+    if (
+        !Object.prototype.hasOwnProperty.call(
+            CATEGORY_MAP,
+            category
+        )
+    ) {
+
+        return {
+            valid: false,
+            message:
+                "カテゴリーを確認してください。"
+        };
+    }
+
+
+    if (!summary) {
+
+        return {
+            valid: false,
+            message:
+                "一覧用説明を入力してください。"
+        };
+    }
+
+
+    if (!description) {
+
+        return {
+            valid: false,
+            message:
+                "詳細説明を入力してください。"
+        };
+    }
+
+
+    if (
+        !VALID_STATUS.has(
+            status
+        )
+    ) {
+
+        return {
+            valid: false,
+            message:
+                "公開状態を確認してください。"
+        };
+    }
+
+
+    return {
+
+        valid: true,
+
+        value: {
+
+            title,
+
+            category,
+
+            categoryName:
+                CATEGORY_MAP[
+                    category
+                ],
+
+            summary,
+
+            description,
+
+            status
+        }
+    };
+}
+
+
+/* =========================================
+   POST
+========================================= */
+
+async function createMaterial(
+    request,
+    tableClient
+) {
+
+    let body;
+
+
+    try {
+
+        body =
+            await request.json();
+
+    } catch {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    "リクエスト内容を確認できませんでした。"
+            }
+        );
+    }
+
+
+    const validation =
+        validateCreateBody(
+            body
+        );
+
+
+    if (!validation.valid) {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    validation.message
+            }
+        );
+    }
+
+
+    const now =
+        new Date()
+            .toISOString();
+
+
+    const materialId =
+        crypto.randomUUID();
+
+
+    /*
+     * STEP 6ではまだPDFをBlobへ保存しません。
+     *
+     * blobName / originalFileName は
+     * PDFアップロード実装後に設定します。
+     */
+
+    const entity = {
+
+        partitionKey:
+            "materials",
+
+        rowKey:
+            materialId,
+
+        title:
+            validation.value.title,
+
+        category:
+            validation.value.category,
+
+        categoryName:
+            validation.value.categoryName,
+
+        summary:
+            validation.value.summary,
+
+        description:
+            validation.value.description,
+
+        status:
+            validation.value.status,
+
+        blobName:
+            "",
+
+        originalFileName:
+            "",
+
+        createdAtUtc:
+            now,
+
+        createdBy:
+            "",
+
+        updatedAtUtc:
+            now,
+
+        updatedBy:
+            ""
+    };
+
+
+    await tableClient.createEntity(
+        entity
+    );
+
+
+    return jsonResponse(
+        201,
+        {
+
+            success:
+                true,
+
+            material: {
+
+                id:
+                    materialId,
+
+                title:
+                    entity.title,
+
+                category:
+                    entity.category,
+
+                categoryName:
+                    entity.categoryName,
+
+                summary:
+                    entity.summary,
+
+                description:
+                    entity.description,
+
+                status:
+                    entity.status,
+
+                createdAtUtc:
+                    entity.createdAtUtc,
+
+                updatedAtUtc:
+                    entity.updatedAtUtc
+            }
+        }
+    );
+}
+
+
+/* =========================================
    Handler
 ========================================= */
 
@@ -133,7 +568,8 @@ async function manageMaterialsHandler(
 ) {
 
     context.log(
-        "Manage materials API request received."
+        "Manage materials API request:",
+        request.method
     );
 
 
@@ -150,117 +586,35 @@ async function manageMaterialsHandler(
             );
 
 
-        /*
-         * 管理画面では
-         * published / draft の両方を取得します。
-         */
-
-        const entities =
-            tableClient.listEntities({
-
-                queryOptions: {
-
-                    filter:
-                        "PartitionKey eq 'materials'"
-                }
-            });
-
-
-        const materials = [];
-
-
-        for await (
-            const entity of entities
+        if (
+            request.method ===
+            "GET"
         ) {
 
-            materials.push({
-
-                id:
-                    getText(
-                        entity.rowKey
-                    ),
-
-                title:
-                    getText(
-                        entity.title
-                    ),
-
-                category:
-                    getText(
-                        entity.category
-                    ),
-
-                categoryName:
-                    getText(
-                        entity.categoryName
-                    ),
-
-                summary:
-                    getText(
-                        entity.summary
-                    ),
-
-                description:
-                    getText(
-                        entity.description
-                    ),
-
-                originalFileName:
-                    getText(
-                        entity.originalFileName
-                    ),
-
-                status:
-                    getText(
-                        entity.status
-                    ) || "draft",
-
-                createdAtUtc:
-                    getDateText(
-                        entity.createdAtUtc
-                    ),
-
-                createdBy:
-                    getText(
-                        entity.createdBy
-                    ),
-
-                updatedAtUtc:
-                    getDateText(
-                        entity.updatedAtUtc
-                    ),
-
-                updatedBy:
-                    getText(
-                        entity.updatedBy
-                    )
-            });
+            return await getMaterials(
+                tableClient
+            );
         }
 
 
-        /*
-         * 現段階ではタイトル順。
-         * 将来sortOrderを追加可能。
-         */
+        if (
+            request.method ===
+            "POST"
+        ) {
 
-        materials.sort(
-            (a, b) =>
-                a.title.localeCompare(
-                    b.title,
-                    "ja"
-                )
-        );
+            return await createMaterial(
+                request,
+                tableClient
+            );
+        }
 
 
         return jsonResponse(
-            200,
+            405,
             {
-
-                success:
-                    true,
-
-                materials:
-                    materials
+                success: false,
+                message:
+                    "許可されていないリクエストです。"
             }
         );
 
@@ -276,12 +630,9 @@ async function manageMaterialsHandler(
         return jsonResponse(
             500,
             {
-
-                success:
-                    false,
-
+                success: false,
                 message:
-                    "管理用資料一覧を取得できませんでした。"
+                    "資料管理処理中にエラーが発生しました。"
             }
         );
     }
@@ -297,7 +648,8 @@ app.http(
     {
 
         methods: [
-            "GET"
+            "GET",
+            "POST"
         ],
 
         authLevel:
