@@ -2,7 +2,15 @@
 
 
 /* =========================================
-   DOM
+   Configuration
+========================================= */
+
+const MANAGE_MATERIALS_API =
+    "/api/manage-materials";
+
+
+/* =========================================
+   DOM Elements
 ========================================= */
 
 const form =
@@ -50,6 +58,11 @@ const formErrorElement =
         "admin-form-error"
     );
 
+const saveButton =
+    document.getElementById(
+        "material-save-button"
+    );
+
 
 /* =========================================
    Utility
@@ -88,7 +101,7 @@ function getErrorElement(fieldName) {
 
 
 /* =========================================
-   Counters
+   Character Counters
 ========================================= */
 
 function updateSummaryCounter() {
@@ -122,18 +135,26 @@ function updateDescriptionCounter() {
 
 
 /* =========================================
-   Validation
+   Error Control
 ========================================= */
 
 function clearErrors() {
 
-    [
+    const fieldNames = [
+
         "material-file",
+
         "material-title",
+
         "material-category",
+
         "material-summary",
+
         "material-description"
-    ].forEach(
+    ];
+
+
+    fieldNames.forEach(
         (fieldName) => {
 
             hideElement(
@@ -145,11 +166,22 @@ function clearErrors() {
     );
 
 
+    if (formErrorElement) {
+
+        formErrorElement.textContent =
+            "入力内容を確認してください。";
+    }
+
+
     hideElement(
         formErrorElement
     );
 }
 
+
+/* =========================================
+   PDF Validation
+========================================= */
 
 function validatePdf() {
 
@@ -159,11 +191,23 @@ function validatePdf() {
 
     if (!file) {
 
-        showElement(
+        const errorElement =
             getErrorElement(
                 "material-file"
-            )
+            );
+
+
+        if (errorElement) {
+
+            errorElement.textContent =
+                "PDFファイルを選択してください。";
+        }
+
+
+        showElement(
+            errorElement
         );
+
 
         return false;
     }
@@ -194,13 +238,14 @@ function validatePdf() {
         if (errorElement) {
 
             errorElement.textContent =
-                "PDFファイルを選択してください。";
+                "PDF形式のファイルを選択してください。";
         }
 
 
         showElement(
             errorElement
         );
+
 
         return false;
     }
@@ -210,25 +255,60 @@ function validatePdf() {
 }
 
 
+/* =========================================
+   Publication Status
+========================================= */
+
+function getSelectedStatus() {
+
+    const selected =
+        document.querySelector(
+            'input[name="status"]:checked'
+        );
+
+
+    return selected
+        ? selected.value
+        : "draft";
+}
+
+
+/* =========================================
+   Form Validation
+========================================= */
+
 function validateForm() {
 
     clearErrors();
 
 
-    let valid = true;
+    let valid =
+        true;
 
-    let firstInvalidElement = null;
 
+    let firstInvalidElement =
+        null;
+
+
+    /*
+     * PDF
+     */
 
     if (!validatePdf()) {
 
-        valid = false;
+        valid =
+            false;
+
 
         firstInvalidElement =
             firstInvalidElement ||
             fileElement;
     }
 
+
+    /*
+     * Title
+     */
 
     if (!getText(titleElement)) {
 
@@ -238,13 +318,20 @@ function validateForm() {
             )
         );
 
-        valid = false;
+
+        valid =
+            false;
+
 
         firstInvalidElement =
             firstInvalidElement ||
             titleElement;
     }
 
+
+    /*
+     * Category
+     */
 
     if (!getText(categoryElement)) {
 
@@ -254,13 +341,20 @@ function validateForm() {
             )
         );
 
-        valid = false;
+
+        valid =
+            false;
+
 
         firstInvalidElement =
             firstInvalidElement ||
             categoryElement;
     }
 
+
+    /*
+     * Summary
+     */
 
     if (!getText(summaryElement)) {
 
@@ -270,13 +364,20 @@ function validateForm() {
             )
         );
 
-        valid = false;
+
+        valid =
+            false;
+
 
         firstInvalidElement =
             firstInvalidElement ||
             summaryElement;
     }
 
+
+    /*
+     * Description
+     */
 
     if (!getText(descriptionElement)) {
 
@@ -286,7 +387,10 @@ function validateForm() {
             )
         );
 
-        valid = false;
+
+        valid =
+            false;
+
 
         firstInvalidElement =
             firstInvalidElement ||
@@ -294,7 +398,18 @@ function validateForm() {
     }
 
 
+    /*
+     * Validation Error
+     */
+
     if (!valid) {
+
+        if (formErrorElement) {
+
+            formErrorElement.textContent =
+                "入力内容を確認してください。";
+        }
+
 
         showElement(
             formErrorElement
@@ -313,13 +428,151 @@ function validateForm() {
 
 
 /* =========================================
+   Saving State
+========================================= */
+
+function setSaving(
+    isSaving
+) {
+
+    if (!saveButton) {
+        return;
+    }
+
+
+    saveButton.disabled =
+        isSaving;
+
+
+    saveButton.textContent =
+        isSaving
+            ? "保存しています..."
+            : "保存する";
+}
+
+
+/* =========================================
+   API Request
+========================================= */
+
+async function createMaterial() {
+
+    /*
+     * STEP 6ではPDF本体を送信しません。
+     *
+     * Materials Tableへ登録するのは
+     * 資料メタデータのみです。
+     */
+
+    const payload = {
+
+        title:
+            getText(
+                titleElement
+            ),
+
+        category:
+            getText(
+                categoryElement
+            ),
+
+        summary:
+            getText(
+                summaryElement
+            ),
+
+        description:
+            getText(
+                descriptionElement
+            ),
+
+        status:
+            getSelectedStatus()
+    };
+
+
+    const response =
+        await fetch(
+            MANAGE_MATERIALS_API,
+            {
+
+                method:
+                    "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(
+                        payload
+                    )
+            }
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+    } catch {
+
+        throw new Error(
+            "APIから有効な応答を取得できませんでした。"
+        );
+    }
+
+
+    if (
+        !response.ok ||
+        result?.success !== true
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "資料を登録できませんでした。"
+        );
+    }
+
+
+    if (
+        !result.material ||
+        !result.material.id
+    ) {
+
+        throw new Error(
+            "登録された資料IDを取得できませんでした。"
+        );
+    }
+
+
+    return result.material;
+}
+
+
+/* =========================================
    Submit
 ========================================= */
 
-function handleSubmit(event) {
+async function handleSubmit(
+    event
+) {
 
     event.preventDefault();
 
+
+    /*
+     * Validation
+     */
 
     if (!validateForm()) {
         return;
@@ -327,17 +580,77 @@ function handleSubmit(event) {
 
 
     /*
-     * STEP 5ではまだ保存しません。
-     *
-     * STEP 6でここを
-     * POST /api/manage-materials
-     * に置き換えます。
+     * 過去のAPIエラー表示を消します。
      */
 
-    window.alert(
-        "入力チェックは正常です。\n" +
-        "Materialsへの保存はSTEP 6で実装します。"
+    hideElement(
+        formErrorElement
     );
+
+
+    setSaving(
+        true
+    );
+
+
+    try {
+
+        /*
+         * Materials Tableへ
+         * メタデータを新規登録
+         */
+
+        const material =
+            await createMaterial();
+
+
+        /*
+         * STEP 6確認用
+         */
+
+        window.alert(
+            "資料情報を登録しました。\n" +
+            "資料ID: " +
+            material.id
+        );
+
+
+        /*
+         * 登録成功後、
+         * 管理一覧へ戻ります。
+         */
+
+        window.location.href =
+            "./index.html";
+
+
+    } catch (error) {
+
+        console.error(
+            "Material creation failed:",
+            error
+        );
+
+
+        if (formErrorElement) {
+
+            formErrorElement.textContent =
+                error.message ||
+                "資料を登録できませんでした。";
+        }
+
+
+        showElement(
+            formErrorElement
+        );
+
+
+    } finally {
+
+        setSaving(
+            false
+        );
+    }
 }
 
 
@@ -379,3 +692,5 @@ if (form) {
 updateSummaryCounter();
 
 updateDescriptionCounter();
+
+clearErrors();
