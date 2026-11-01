@@ -559,6 +559,238 @@ async function createMaterial(
 
 
 /* =========================================
+   PUT - PDF Information
+========================================= */
+
+async function updateMaterialPdf(
+    request,
+    tableClient
+) {
+
+    let body;
+
+
+    try {
+
+        body =
+            await request.json();
+
+    } catch {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    "リクエスト内容を確認できませんでした。"
+            }
+        );
+    }
+
+
+    const materialId =
+        normalizeText(
+            body?.id,
+            128
+        );
+
+    const blobName =
+        normalizeText(
+            body?.blobName,
+            500
+        );
+
+    const originalFileName =
+        normalizeText(
+            body?.originalFileName,
+            255
+        );
+
+
+    /*
+     * Required fields
+     */
+
+    if (!materialId) {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    "資料IDが指定されていません。"
+            }
+        );
+    }
+
+
+    if (!blobName) {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    "Blob名が指定されていません。"
+            }
+        );
+    }
+
+
+    if (!originalFileName) {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    "元のPDFファイル名が指定されていません。"
+            }
+        );
+    }
+
+
+    /*
+     * PDFのみ許可
+     */
+
+    if (
+        !originalFileName
+            .toLowerCase()
+            .endsWith(".pdf")
+    ) {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    "PDFファイルを指定してください。"
+            }
+        );
+    }
+
+
+    /*
+     * STEP 7ではBlobパスを
+     * システム生成形式に限定します。
+     */
+
+    const expectedBlobName =
+        `materials/${materialId}/document.pdf`;
+
+
+    if (
+        blobName !==
+        expectedBlobName
+    ) {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    "Blob名が正しくありません。"
+            }
+        );
+    }
+
+
+    /*
+     * 対象資料が存在するか確認
+     */
+
+    try {
+
+        await tableClient.getEntity(
+            "materials",
+            materialId
+        );
+
+    } catch (error) {
+
+        if (
+            error?.statusCode === 404
+        ) {
+
+            return jsonResponse(
+                404,
+                {
+                    success: false,
+                    message:
+                        "対象資料が見つかりません。"
+                }
+            );
+        }
+
+
+        throw error;
+    }
+
+
+    /*
+     * PDF関連情報だけ更新
+     *
+     * mergeを使うことで、
+     * title / summary / descriptionなどを
+     * 上書きしません。
+     */
+
+    const now =
+        new Date()
+            .toISOString();
+
+
+    await tableClient.updateEntity(
+        {
+
+            partitionKey:
+                "materials",
+
+            rowKey:
+                materialId,
+
+            blobName:
+                blobName,
+
+            originalFileName:
+                originalFileName,
+
+            updatedAtUtc:
+                now
+        },
+
+        "Merge"
+    );
+
+
+    return jsonResponse(
+        200,
+        {
+
+            success:
+                true,
+
+            material: {
+
+                id:
+                    materialId,
+
+                blobName:
+                    blobName,
+
+                originalFileName:
+                    originalFileName,
+
+                updatedAtUtc:
+                    now
+            }
+        }
+    );
+}
+
+
+/* =========================================
    Handler
 ========================================= */
 
@@ -609,6 +841,18 @@ async function manageMaterialsHandler(
         }
 
 
+        if (
+            request.method ===
+            "PUT"
+        ) {
+
+            return await updateMaterialPdf(
+                request,
+                tableClient
+            );
+        }
+
+        
         return jsonResponse(
             405,
             {
