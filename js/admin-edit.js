@@ -8,6 +8,8 @@
 const MANAGE_MATERIALS_API =
     "/api/manage-materials";
 
+const MANAGE_UPLOAD_API =
+    "/api/manage-upload";
 
 /* =========================================
    DOM Elements
@@ -560,6 +562,194 @@ async function createMaterial() {
 
 
 /* =========================================
+   Request Upload URL
+========================================= */
+
+async function requestUploadUrl(
+    materialId,
+    file
+) {
+
+    const response =
+        await fetch(
+            MANAGE_UPLOAD_API,
+            {
+                method:
+                    "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+                        materialId:
+                            materialId,
+
+                        originalFileName:
+                            file.name
+                    })
+            }
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+    } catch {
+
+        throw new Error(
+            "PDFアップロードURLを取得できませんでした。"
+        );
+    }
+
+
+    if (
+        !response.ok ||
+        result?.success !== true
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "PDFアップロードの準備に失敗しました。"
+        );
+    }
+
+
+    if (
+        !result.uploadUrl ||
+        !result.blobName
+    ) {
+
+        throw new Error(
+            "PDFアップロード情報が正しくありません。"
+        );
+    }
+
+
+    return result;
+}
+
+
+/* =========================================
+   Upload PDF
+========================================= */
+
+async function uploadPdf(
+    u*loadUrl,
+    file
+) {
+
+    const r*sponse =
+        await fetch(
+    *       uploadUrl,
+            {
+  *             method:
+             *      "PUT",
+
+                head*rs: {
+                    "x-ms-blob-type":
+                        "BlockBlob",
+
+                    "Content-Type":
+                        "application/pdf"
+                },
+
+                body:
+                    file
+            }
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "PDFファイルをアップロードできませんでした。"
+        );
+    }
+}
+
+
+/* =========================================
+   Update PDF Information
+========================================= */
+
+async function updateMate*ialPdf(
+    materialId,
+    blobNa*e,
+    originalFileName
+) {
+
+    c*nst response =
+        await fetch*
+            MANAGE_MATERIALS_API,*            {
+                meth*d:
+                    "PUT",
+
+   *            headers: {
+           *        "Content-Type":
+          *             "application/json",
+
+*                   "Accept":
+     *                  "application/jso*"
+                },
+
+            *   body:
+                    JSON.*tringify({
+                       *id:
+                            ma*erialId,
+
+                        *lobName:
+                         *  blobName,
+
+                     *  originalFileName:
+              *             originalFileName
+    *               })
+            }
+  *     );
+
+
+    let result;
+
+
+    tr* {
+
+        result =
+            a*ait response.json();
+
+    } catch *
+
+        throw new Error(
+       *    "PDF情報を更新できませんでした。"
+        );*    }
+
+
+    if (
+        !response*ok ||
+        result?.success !== *rue
+    ) {
+
+        throw new Err*r(
+            result?.message ||
+*           "PDF情報をMaterialsへ登録できませんでした。"
+        );
+    }
+
+
+    return result.material;
+}
+
+
+/* =========================================
    Submit
 ========================================= */
 
@@ -570,18 +760,19 @@ async function handleSubmit(
     event.preventDefault();
 
 
-    /*
-     * Validation
-     */
-
     if (!validateForm()) {
         return;
     }
 
 
-    /*
-     * 過去のAPIエラー表示を消します。
-     */
+    const file =
+        fileElement?.files?.[0];
+
+
+    if (!file) {
+        return;
+    }
+
 
     hideElement(
         formErrorElement
@@ -596,8 +787,8 @@ async function handleSubmit(
     try {
 
         /*
-         * Materials Tableへ
-         * メタデータを新規登録
+         * STEP 1
+         * Materialsへ下書き登録
          */
 
         const material =
@@ -605,51 +796,81 @@ async function handleSubmit(
 
 
         /*
-         * STEP 6確認用
+         * STEP 2
+         * 書込SAS URL取得
          */
 
-        window.alert(
-            "資料情報を登録しました。\n" +
-            "資料ID: " +
-            material.id
+        const uploadInfo =
+            await requestUploadUrl(
+                material.id,
+                file
+            );
+
+
+        /*
+         * STEP 3
+         * PDF本体をBlobへ直接PUT
+         */
+
+        await uploadPdf(
+            uploadInfo.uploadUrl,
+            file
         );
 
 
         /*
-         * 登録成功後、
-         * 管理一覧へ戻ります。
+         * STEP 4
+         * MaterialsへBlob情報を反映
          */
 
-        window.location.href =
-            "/admin/index.html";
-
-
-    } catch (error) {
-
-        console.error(
-            "Material creation failed:",
-            error
+        await updateMaterialPdf(
+            material.id,
+            uploadInfo.blobName,
+            uploadInfo.originalFileName
         );
 
 
-        if (formErrorElement) {
+        /*
+         * STEP 5
+         * 完了
+         */
 
-            formErrorElement.textContent =
-                error.message ||
-                "資料を登録できませんでした。";
+        window.alert(
+  *         "資料を登録しました。\n" +
+        *   "PDFのアップロードも完了しました。"
+        );*
+
+        window.location.href =
+ *          "/admin/index.html";
+
+
+ *  } catch (error) {
+
+        conso*e.error(
+            "Material reg*stration failed:",
+            err*r
+        );
+
+
+        if (
+      *     formErrorElement
+        ) {
+*            formErrorElement.textC*ntent =
+                error.mess*ge ||
+                "資料を登録できませんで*た。";
         }
 
 
-        showElement(
+        showEleme*t(
             formErrorElement
-        );
+  *     );
 
 
     } finally {
 
-        setSaving(
+       *setSaving(
             false
-        );
+     *  );
     }
 }
 
