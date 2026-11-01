@@ -93,23 +93,87 @@ async function materialsHandler(
              */
 
             materials.push({
+
                 id:
-                    entity.rowKey,
-
-                title:
-                    entity.title || "",
-
+                    String(
+                        entity.rowKey || ""
+                    ).trim(),
+            
                 category:
-                    entity.category || "",
-
+                    String(
+                        entity.category || ""
+                    ).trim(),
+            
                 categoryName:
-                    entity.categoryName || "",
-
+                    String(
+                        entity.categoryName || ""
+                    ).trim(),
+            
+            
+                /* =====================================
+                   Legacy fields
+                ===================================== */
+            
+                title:
+                    String(
+                        entity.title || ""
+                    ).trim(),
+            
                 summary:
-                    entity.summary || "",
-
+                    String(
+                        entity.summary || ""
+                    ).trim(),
+            
                 description:
-                    entity.description || ""
+                    String(
+                        entity.description || ""
+                    ).trim(),
+            
+            
+                /* =====================================
+                   Japanese
+                ===================================== */
+            
+                titleJa:
+                    String(
+                        entity.titleJa ||
+                        entity.title ||
+                        ""
+                    ).trim(),
+            
+                summaryJa:
+                    String(
+                        entity.summaryJa ||
+                        entity.summary ||
+                        ""
+                    ).trim(),
+            
+                descriptionJa:
+                    String(
+                        entity.descriptionJa ||
+                        entity.description ||
+                        ""
+                    ).trim(),
+            
+            
+                /* =====================================
+                   English
+                ===================================== */
+            
+                titleEn:
+                    String(
+                        entity.titleEn || ""
+                    ).trim(),
+            
+                summaryEn:
+                    String(
+                        entity.summaryEn || ""
+                    ).trim(),
+            
+                descriptionEn:
+                    String(
+                        entity.descriptionEn || ""
+                    ).trim()
             });
         }
 
