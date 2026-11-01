@@ -10,7 +10,7 @@ const ADMIN_MATERIALS_API =
 
 
 /* =========================================
-   DOM
+   DOM Elements
 ========================================= */
 
 const loadingElement =
@@ -118,6 +118,11 @@ function normalizeMaterial(material) {
                 material?.originalFileName
             ),
 
+        blobName:
+            normalize(
+                material?.blobName
+            ),
+
         status:
             normalize(
                 material?.status
@@ -198,7 +203,66 @@ function getStatusClass(status) {
 
 
 /* =========================================
-   Update Material Status
+   GET Materials
+========================================= */
+
+async function fetchMaterials() {
+
+    const response =
+        await fetch(
+            ADMIN_MATERIALS_API,
+            {
+                method:
+                    "GET",
+
+                headers: {
+                    "Accept":
+                        "application/json"
+                },
+
+                cache:
+                    "no-store"
+            }
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+    } catch {
+
+        throw new Error(
+            "資料一覧APIから有効な応答を取得できませんでした。"
+        );
+    }
+
+
+    if (
+        !response.ok ||
+        result?.success !== true ||
+        !Array.isArray(
+            result.materials
+        )
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "資料一覧を取得できませんでした。"
+        );
+    }
+
+
+    return result.materials;
+}
+
+
+/* =========================================
+   Update Status
 ========================================= */
 
 async function updateMaterialStatus(
@@ -333,61 +397,6 @@ async function deleteMaterial(
 
 
 /* =========================================
-   API
-========================================= */
-
-async function fetchMaterials() {
-
-    const response =
-        await fetch(
-            ADMIN_MATERIALS_API,
-            {
-                method:
-                    "GET",
-
-                headers: {
-                    "Accept":
-                        "application/json"
-                },
-
-                cache:
-                    "no-store"
-            }
-        );
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            "Admin Materials API HTTP error: " +
-            response.status
-        );
-    }
-
-
-    const result =
-        await response.json();
-
-
-    if (
-        result?.success !== true ||
-        !Array.isArray(
-            result.materials
-        )
-    ) {
-
-        throw new Error(
-            result?.message ||
-            "Invalid admin materials response."
-        );
-    }
-
-
-    return result.materials;
-}
-
-
-/* =========================================
    Filter
 ========================================= */
 
@@ -447,7 +456,7 @@ function getFilteredMaterials() {
 
 
 /* =========================================
-   Row
+   Create Material Row
 ========================================= */
 
 function createMaterialRow(material) {
@@ -461,7 +470,9 @@ function createMaterialRow(material) {
         "admin-material-row";
 
 
-    /* Material */
+    /* =====================================
+       Material
+    ===================================== */
 
     const materialMain =
         document.createElement(
@@ -538,7 +549,9 @@ function createMaterialRow(material) {
     );
 
 
-    /* Category */
+    /* =====================================
+       Category
+    ===================================== */
 
     const category =
         document.createElement(
@@ -553,7 +566,9 @@ function createMaterialRow(material) {
         "未設定";
 
 
-    /* Status */
+    /* =====================================
+       Status
+    ===================================== */
 
     const status =
         document.createElement(
@@ -572,7 +587,9 @@ function createMaterialRow(material) {
         );
 
 
-    /* Date */
+    /* =====================================
+       Updated Date
+    ===================================== */
 
     const updated =
         document.createElement(
@@ -589,7 +606,9 @@ function createMaterialRow(material) {
         );
 
 
-    /* Actions */
+    /* =====================================
+       Actions
+    ===================================== */
 
     const actions =
         document.createElement(
@@ -599,6 +618,10 @@ function createMaterialRow(material) {
     actions.className =
         "admin-material-actions";
 
+
+    /* =====================================
+       Edit Button
+    ===================================== */
 
     const editButton =
         document.createElement(
@@ -614,18 +637,23 @@ function createMaterialRow(material) {
     editButton.textContent =
         "編集";
 
+
     editButton.addEventListener(
         "click",
         () => {
 
-           window.location.href =
-               "/admin/edit.html?id=" +
-               encodeURIComponent(
-                   material.id
-               );
+            window.location.href =
+                "/admin/edit.html?id=" +
+                encodeURIComponent(
+                    material.id
+                );
         }
     );
 
+
+    /* =====================================
+       Publish / Unpublish Button
+    ===================================== */
 
     const publishButton =
         document.createElement(
@@ -645,206 +673,206 @@ function createMaterialRow(material) {
             ? "非公開にする"
             : "公開する";
 
-   publishButton.addEventListener(
-    "click",
-    async () => {
 
-        const nextStatus =
-            material.status ===
-            "published"
-                ? "draft"
-                : "published";
+    publishButton.addEventListener(
+        "click",
+        async () => {
 
-
-        const actionLabel =
-            nextStatus ===
-            "published"
-                ? "公開"
-                : "非公開";
+            const nextStatus =
+                material.status ===
+                "published"
+                    ? "draft"
+                    : "published";
 
 
-        const confirmed =
-            window.confirm(
-                `「${material.title}」を${actionLabel}にしますか？`
-            );
-
-
-        if (!confirmed) {
-            return;
-        }
-
-
-        publishButton.disabled =
-            true;
-
-
-        try {
-
-            await updateMaterialStatus(
-                material.id,
-                nextStatus
-            );
-
-
-            window.alert(
+            const actionLabel =
                 nextStatus ===
                 "published"
-                    ? "資料を公開しました。"
-                    : "資料を非公開にしました。"
-            );
+                    ? "公開"
+                    : "非公開";
 
 
-            /*
-             * 最新のMaterialsを再取得します。
-             */
-
-            await initializeAdminPage();
-
-
-        } catch (error) {
-
-            console.error(
-                "Material status update failed:",
-                error
-            );
+            const confirmed =
+                window.confirm(
+                    `「${material.title}」を` +
+                    `${actionLabel}にしますか？`
+                );
 
 
-            window.alert(
-                error.message ||
-                "公開状態を変更できませんでした。"
-            );
+            if (!confirmed) {
+                return;
+            }
 
-
-        } finally {
 
             publishButton.disabled =
-                false;
+                true;
+
+
+            try {
+
+                await updateMaterialStatus(
+                    material.id,
+                    nextStatus
+                );
+
+
+                window.alert(
+                    nextStatus ===
+                    "published"
+                        ? "資料を公開しました。"
+                        : "資料を非公開にしました。"
+                );
+
+
+                await reloadMaterials();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Material status update failed:",
+                    error
+                );
+
+
+                window.alert(
+                    error.message ||
+                    "公開状態を変更できませんでした。"
+                );
+
+
+            } finally {
+
+                publishButton.disabled =
+                    false;
+            }
         }
-    }
-);
-
-
-/* =========================================
-   Delete Button
-========================================= */
-
-const deleteButton =
-    document.createElement(
-        "button"
     );
 
-deleteButton.type =
-    "button";
 
-deleteButton.className =
-    "admin-action-button admin-action-button-delete";
+    /* =====================================
+       Delete Button
+    ===================================== */
 
-deleteButton.textContent =
-    "削除";
+    const deleteButton =
+        document.createElement(
+            "button"
+        );
 
+    deleteButton.type =
+        "button";
 
-deleteButton.addEventListener(
-    "click",
-    async () => {
+    deleteButton.className =
+        "admin-action-button " +
+        "admin-action-button-delete";
 
-        const confirmed =
-            window.confirm(
-                `「${material.title}」を削除しますか？\n\n` +
-                "PDFファイルも削除されます。\n" +
-                "この操作は元に戻せません。"
-            );
-
-
-        if (!confirmed) {
-            return;
-        }
+    deleteButton.textContent =
+        "削除";
 
 
-        deleteButton.disabled =
-            true;
+    deleteButton.addEventListener(
+        "click",
+        async () => {
+
+            const confirmed =
+                window.confirm(
+                    `「${material.title}」を削除しますか？\n\n` +
+                    "PDFファイルも削除されます。\n" +
+                    "この操作は元に戻せません。"
+                );
 
 
-        try {
+            if (!confirmed) {
+                return;
+            }
 
-            await deleteMaterial(
-                material.id
-            );
-
-
-            window.alert(
-                "資料を削除しました。"
-            );
-
-
-            await initializeAdminPage();
-
-
-        } catch (error) {
-
-            console.error(
-                "Material deletion failed:",
-                error
-            );
-
-
-            window.alert(
-                error.message ||
-                "資料を削除できませんでした。"
-            );
-
-
-        } finally {
 
             deleteButton.disabled =
-                false;
+                true;
+
+
+            try {
+
+                await deleteMaterial(
+                    material.id
+                );
+
+
+                window.alert(
+                    "資料を削除しました。"
+                );
+
+
+                await reloadMaterials();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Material deletion failed:",
+                    error
+                );
+
+
+                window.alert(
+                    error.message ||
+                    "資料を削除できませんでした。"
+                );
+
+
+            } finally {
+
+                deleteButton.disabled =
+                    false;
+            }
         }
-    }
-);
+    );
 
 
-/* =========================================
-   Assemble Actions
-========================================= */
+    /* =====================================
+       Assemble Actions
+    ===================================== */
 
-actions.appendChild(
-    editButton
-);
+    actions.appendChild(
+        editButton
+    );
 
-actions.appendChild(
-    publishButton
-);
+    actions.appendChild(
+        publishButton
+    );
 
-actions.appendChild(
-    deleteButton
-);
-
-
-/* =========================================
-   Assemble Row
-========================================= */
-
-row.appendChild(
-    materialMain
-);
-
-row.appendChild(
-    category
-);
-
-row.appendChild(
-    status
-);
-
-row.appendChild(
-    updated
-);
-
-row.appendChild(
-    actions
-);
+    actions.appendChild(
+        deleteButton
+    );
 
 
-return row;
+    /* =====================================
+       Assemble Row
+    ===================================== */
+
+    row.appendChild(
+        materialMain
+    );
+
+    row.appendChild(
+        category
+    );
+
+    row.appendChild(
+        status
+    );
+
+    row.appendChild(
+        updated
+    );
+
+    row.appendChild(
+        actions
+    );
+
+
+    return row;
+}
 
 
 /* =========================================
@@ -906,6 +934,31 @@ function renderMaterials() {
 
 
 /* =========================================
+   Reload Materials
+========================================= */
+
+async function reloadMaterials() {
+
+    const materials =
+        await fetchMaterials();
+
+
+    allMaterials =
+        materials
+            .map(
+                normalizeMaterial
+            )
+            .filter(
+                (material) =>
+                    material.id
+            );
+
+
+    renderMaterials();
+}
+
+
+/* =========================================
    Initialization
 ========================================= */
 
@@ -926,27 +979,12 @@ async function initializeAdminPage() {
 
     try {
 
-        const materials =
-            await fetchMaterials();
-
-
-        allMaterials =
-            materials
-                .map(
-                    normalizeMaterial
-                )
-                .filter(
-                    (material) =>
-                        material.id
-                );
+        await reloadMaterials();
 
 
         hideElement(
             loadingElement
         );
-
-
-        renderMaterials();
 
 
     } catch (error) {
