@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -11,10 +11,10 @@
 
     <meta
         name="description"
-        content="展示会資料の詳細をご確認いただけます。"
+        content="View details of the selected exhibition material."
     >
 
-    <title>資料詳細｜INABATA</title>
+    <title>Material Details | INABATA</title>
 
     <link
         rel="stylesheet"
@@ -25,9 +25,7 @@
 
 <body>
 
-    <!-- =====================================
-         Header
-    ====================================== -->
+    <!-- Header -->
 
     <header class="site-header">
 
@@ -36,7 +34,6 @@
             <a
                 href="./index.html"
                 class="site-logo"
-                aria-label="INABATA トップページ"
             >
                 <img
                     src="./assets/images/Iktagline_jp_01_RGB.png"
@@ -48,21 +45,51 @@
 
             <nav
                 class="header-nav"
-                aria-label="メインナビゲーション"
+                aria-label="Main navigation"
             >
-                <a href="./materials.html">
-                    資料一覧
+                <a
+                    href="./materials.html"
+                    data-i18n="nav.materials"
+                >
+                    Materials
                 </a>
             </nav>
+
+
+            <div
+                class="language-switcher"
+                aria-label="Language"
+            >
+                <button
+                    type="button"
+                    class="language-switcher-button"
+                    data-language="ja"
+                    aria-pressed="false"
+                >
+                    日本語
+                </button>
+
+                <span
+                    class="language-switcher-separator"
+                    aria-hidden="true"
+                >
+                    |
+                </span>
+
+                <button
+                    type="button"
+                    class="language-switcher-button is-active"
+                    data-language="en"
+                    aria-pressed="true"
+                >
+                    English
+                </button>
+            </div>
 
         </div>
 
     </header>
 
-
-    <!-- =====================================
-         Main
-    ====================================== -->
 
     <main>
 
@@ -72,8 +99,9 @@
             id="material-loading"
             class="material-state-message"
             role="status"
+            data-i18n="detail.loading"
         >
-            資料情報を読み込んでいます...
+            Loading material information...
         </div>
 
 
@@ -85,40 +113,38 @@
             role="alert"
             hidden
         >
-            <h1>
-                資料情報を取得できませんでした。
-            </h1>
 
-            <p>
-                資料が存在しないか、
-                一時的に情報を取得できない状態です。
-            </p>
+            <h1 data-i18n="detail.error">
+                Unable to load the material information.
+            </h1>
 
             <p>
                 <a
                     href="./materials.html"
-                    class="button button-secondary"
+                    data-i18n="detail.back"
                 >
-                    資料一覧へ戻る
+                    Back to Materials
                 </a>
             </p>
+
         </div>
 
 
-        <!-- Material content -->
+        <!-- Content -->
 
         <div
             id="material-content"
             hidden
         >
 
-            <!-- Detail Hero -->
-
             <section class="material-detail-hero">
 
                 <div class="material-detail-hero-inner">
 
-                    <p class="section-label">
+                    <p
+                        class="section-label"
+                        data-i18n="detail.label"
+                    >
                         MATERIAL DETAIL
                     </p>
 
@@ -137,13 +163,9 @@
             </section>
 
 
-            <!-- Detail Content -->
-
             <section class="material-detail-section">
 
                 <div class="material-detail-inner">
-
-                    <!-- PDF Visual -->
 
                     <div class="material-detail-visual">
 
@@ -157,11 +179,12 @@
                     </div>
 
 
-                    <!-- Information -->
-
                     <div class="material-detail-information">
 
-                        <p class="section-label">
+                        <p
+                            class="section-label"
+                            data-i18n="detail.document"
+                        >
                             DOCUMENT
                         </p>
 
@@ -181,7 +204,10 @@
                             href="#"
                             class="button button-primary"
                         >
-                            資料をダウンロード
+                            <span data-i18n="detail.download">
+                                Download Material
+                            </span>
+
                             <span aria-hidden="true">
                                 →
                             </span>
@@ -198,9 +224,7 @@
     </main>
 
 
-    <!-- =====================================
-         Footer
-    ====================================== -->
+    <!-- Footer -->
 
     <footer class="site-footer">
 
@@ -208,39 +232,43 @@
 
             <nav
                 class="footer-links"
-                aria-label="フッターナビゲーション"
+                aria-label="Footer navigation"
             >
 
                 <a
                     href="https://www.inabata.co.jp/privacy/"
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-i18n="footer.privacy"
                 >
-                    個人情報保護方針
+                    Privacy Policy
                 </a>
 
                 <a
                     href="https://www.inabata.co.jp/privacy/handling.html"
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-i18n="footer.handling"
                 >
-                    個人情報の取扱いについて
+                    Handling of Personal Information
                 </a>
 
                 <a
                     href="https://www.inabata.co.jp/cookiepolicy"
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-i18n="footer.cookie"
                 >
-                    Cookieポリシー
+                    Cookie Policy
                 </a>
 
                 <a
                     href="https://www.inabata.co.jp/sitepolicy/"
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-i18n="footer.site"
                 >
-                    サイトポリシー
+                    Site Policy
                 </a>
 
             </nav>
@@ -255,73 +283,7 @@
     </footer>
 
 
-    <!-- =====================================
-         Cookie Consent
-    ====================================== -->
-
-    <div
-        id="cookie-banner"
-        class="cookie-banner"
-        role="dialog"
-        aria-labelledby="cookie-title"
-        aria-describedby="cookie-description"
-        hidden
-    >
-
-        <div class="cookie-banner-inner">
-
-            <div class="cookie-message">
-
-                <h2 id="cookie-title">
-                    Cookieの利用について
-                </h2>
-
-                <p id="cookie-description">
-                    当サイトでは、サイトの利用状況の把握等のため
-                    Cookieを使用する場合があります。
-                    Cookieの使用について設定できます。
-                </p>
-
-                <a
-                    href="https://www.inabata.co.jp/cookiepolicy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Cookieポリシー
-                </a>
-
-            </div>
-
-
-            <div class="cookie-actions">
-
-                <button
-                    type="button"
-                    id="cookie-reject"
-                    class="cookie-button cookie-button-secondary"
-                >
-                    拒否する
-                </button>
-
-                <button
-                    type="button"
-                    id="cookie-accept"
-                    class="cookie-button cookie-button-primary"
-                >
-                    すべて許可する
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =====================================
-         JavaScript
-    ====================================== -->
-
+    <script src="./js/i18n.js"></script>
     <script src="./js/material.js"></script>
     <script src="./js/consent.js"></script>
 
