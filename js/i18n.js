@@ -13,10 +13,14 @@ const DEFAULT_LANGUAGE =
 
 
 /* =========================================
-   Messages
+   Translations
 ========================================= */
 
 const translations = {
+
+    /* =====================================
+       English
+    ===================================== */
 
     en: {
 
@@ -38,7 +42,9 @@ const translations = {
             "Site Policy",
 
 
-        /* Top */
+        /* =================================
+           Top Page
+        ================================= */
 
         "top.label":
             "EXHIBITION MATERIALS",
@@ -53,7 +59,9 @@ const translations = {
             "View Materials",
 
 
-        /* Materials */
+        /* =================================
+           Materials Page
+        ================================= */
 
         "materials.label":
             "MATERIALS",
@@ -86,7 +94,9 @@ const translations = {
             "View Details",
 
 
-        /* Material Detail */
+        /* =================================
+           Material Detail
+        ================================= */
 
         "detail.label":
             "MATERIAL DETAIL",
@@ -107,7 +117,9 @@ const translations = {
             "Back to Materials",
 
 
-        /* Download */
+        /* =================================
+           Download Page
+        ================================= */
 
         "download.label":
             "DOWNLOAD",
@@ -133,41 +145,68 @@ const translations = {
         "download.requiredNote":
             "* Required fields",
 
+
+        /* Company */
+
         "download.company":
             "Company",
-
-        "download.department":
-            "Department",
-
-        "download.name":
-            "Name",
-
-        "download.email":
-            "Email Address",
-
-        "download.phone":
-            "Phone Number",
-
-        "download.optional":
-            "Optional",
 
         "download.companyError":
             "Please enter your company name.",
 
+
+        /* Department */
+
+        "download.department":
+            "Department",
+
+
+        /* Name */
+
+        "download.name":
+            "Name",
+
         "download.nameError":
             "Please enter your name.",
+
+
+        /* Email */
+
+        "download.email":
+            "Email Address",
 
         "download.emailError":
             "Please enter a valid email address.",
 
-        "download.consent":
-            "I have read and agree to the Handling of Personal Information.",
+
+        /* Phone */
+
+        "download.phone":
+            "Phone Number",
+
+
+        /* Optional */
+
+        "download.optional":
+            "Optional",
+
+
+        /* Consent */
+
+        "download.handling":
+            "Handling of Personal Information",
+
+        "download.consentPrefix":
+            "I have read and agree to the ",
 
         "download.consentSuffix":
-            " has been reviewed and agreed to.",
-       
+            ".",
+
         "download.consentError":
             "You must agree to the Handling of Personal Information.",
+
+
+        /* Download operation */
 
         "download.submit":
             "Agree and Download",
@@ -182,7 +221,9 @@ const translations = {
             "Unable to start the download. Please review your information and try again.",
 
 
-        /* Cookie */
+        /* =================================
+           Cookie
+        ================================= */
 
         "cookie.title":
             "Use of Cookies",
@@ -200,6 +241,10 @@ const translations = {
             "Accept All"
     },
 
+
+    /* =====================================
+       Japanese
+    ===================================== */
 
     ja: {
 
@@ -221,7 +266,9 @@ const translations = {
             "サイトポリシー",
 
 
-        /* Top */
+        /* =================================
+           Top Page
+        ================================= */
 
         "top.label":
             "EXHIBITION MATERIALS",
@@ -236,7 +283,9 @@ const translations = {
             "資料を見る",
 
 
-        /* Materials */
+        /* =================================
+           Materials Page
+        ================================= */
 
         "materials.label":
             "MATERIALS",
@@ -269,7 +318,9 @@ const translations = {
             "詳細を見る",
 
 
-        /* Material Detail */
+        /* =================================
+           Material Detail
+        ================================= */
 
         "detail.label":
             "MATERIAL DETAIL",
@@ -290,7 +341,9 @@ const translations = {
             "資料一覧へ戻る",
 
 
-        /* Download */
+        /* =================================
+           Download Page
+        ================================= */
 
         "download.label":
             "DOWNLOAD",
@@ -316,41 +369,68 @@ const translations = {
         "download.requiredNote":
             "* は必須項目です。",
 
+
+        /* Company */
+
         "download.company":
             "会社名",
-
-        "download.department":
-            "部署名",
-
-        "download.name":
-            "氏名",
-
-        "download.email":
-            "メールアドレス",
-
-        "download.phone":
-            "電話番号",
-
-        "download.optional":
-            "任意",
 
         "download.companyError":
             "会社名を入力してください。",
 
+
+        /* Department */
+
+        "download.department":
+            "部署名",
+
+
+        /* Name */
+
+        "download.name":
+            "氏名",
+
         "download.nameError":
             "氏名を入力してください。",
+
+
+        /* Email */
+
+        "download.email":
+            "メールアドレス",
 
         "download.emailError":
             "正しいメールアドレスを入力してください。",
 
-        "download.consent":
-            "個人情報の取り扱いを確認し、同意します。",
+
+        /* Phone */
+
+        "download.phone":
+            "電話番号",
+
+
+        /* Optional */
+
+        "download.optional":
+            "任意",
+
+
+        /* Consent */
+
+        "download.handling":
+            "個人情報の取扱いについて",
+
+        "download.consentPrefix":
+            "「",
 
         "download.consentSuffix":
-            "を確認し、同意します。",
-       
+            "」を確認し、同意します。",
+
         "download.consentError":
-            "個人情報の取り扱いへの同意が必要です。",
+            "個人情報の取扱いへの同意が必要です。",
+
+
+        /* Download operation */
 
         "download.submit":
             "同意してダウンロード",
@@ -365,7 +445,9 @@ const translations = {
             "ダウンロードを開始できませんでした。入力内容をご確認のうえ、もう一度お試しください。",
 
 
-        /* Cookie */
+        /* =================================
+           Cookie
+        ================================= */
 
         "cookie.title":
             "Cookieの利用について",
@@ -386,65 +468,32 @@ const translations = {
 
 
 /* =========================================
-   Language
+   Current Language
 ========================================= */
 
 function getCurrentLanguage() {
 
-    const saved =
+    const savedLanguage =
         localStorage.getItem(
             LANGUAGE_STORAGE_KEY
         );
 
 
     if (
-        saved === "ja" ||
-        saved === "en"
+        savedLanguage === "ja" ||
+        savedLanguage === "en"
     ) {
 
-        return saved;
+        return savedLanguage;
     }
 
 
     /*
-     * 初回アクセスは必ずEnglish
+     * First visit:
+     * English is always the default.
      */
 
     return DEFAULT_LANGUAGE;
-}
-
-
-function setLanguage(language) {
-
-    if (
-        language !== "ja" &&
-        language !== "en"
-    ) {
-        return;
-    }
-
-
-    localStorage.setItem(
-        LANGUAGE_STORAGE_KEY,
-        language
-    );
-
-
-    applyLanguage(
-        language
-    );
-
-
-    window.dispatchEvent(
-        new CustomEvent(
-            "inabata-language-change",
-            {
-                detail: {
-                    language
-                }
-            }
-        )
-    );
 }
 
 
@@ -457,18 +506,58 @@ function translate(
     language = getCurrentLanguage()
 ) {
 
-    return (
-        translations?.[language]?.[key] ??
-        translations?.en?.[key] ??
-        key
-    );
+    const languageMessages =
+        translations[language] || {};
+
+
+    const englishMessages =
+        translations.en || {};
+
+
+    if (
+        Object.prototype.hasOwnProperty.call(
+            languageMessages,
+            key
+        )
+    ) {
+
+        return languageMessages[key];
+    }
+
+
+    if (
+        Object.prototype.hasOwnProperty.call(
+            englishMessages,
+            key
+        )
+    ) {
+
+        return englishMessages[key];
+    }
+
+
+    return key;
 }
 
 
+/* =========================================
+   Apply Language
+========================================= */
+
 function applyLanguage(language) {
 
+    if (
+        language !== "ja" &&
+        language !== "en"
+    ) {
+
+        language =
+            DEFAULT_LANGUAGE;
+    }
+
+
     /*
-     * HTML language
+     * HTML lang
      */
 
     document.documentElement.lang =
@@ -488,6 +577,11 @@ function applyLanguage(language) {
 
                 const key =
                     element.dataset.i18n;
+
+
+                if (!key) {
+                    return;
+                }
 
 
                 element.textContent =
@@ -515,8 +609,45 @@ function applyLanguage(language) {
                         .i18nPlaceholder;
 
 
+                if (!key) {
+                    return;
+                }
+
+
                 element.setAttribute(
                     "placeholder",
+                    translate(
+                        key,
+                        language
+                    )
+                );
+            }
+        );
+
+
+    /*
+     * aria-label
+     */
+
+    document
+        .querySelectorAll(
+            "[data-i18n-aria-label]"
+        )
+        .forEach(
+            (element) => {
+
+                const key =
+                    element.dataset
+                        .i18nAriaLabel;
+
+
+                if (!key) {
+                    return;
+                }
+
+
+                element.setAttribute(
+                    "aria-label",
                     translate(
                         key,
                         language
@@ -537,21 +668,21 @@ function applyLanguage(language) {
         .forEach(
             (button) => {
 
-                const selected =
+                const isSelected =
                     button.dataset.language ===
                     language;
 
 
                 button.classList.toggle(
                     "is-active",
-                    selected
+                    isSelected
                 );
 
 
                 button.setAttribute(
                     "aria-pressed",
                     String(
-                        selected
+                        isSelected
                     )
                 );
             }
@@ -560,7 +691,62 @@ function applyLanguage(language) {
 
 
 /* =========================================
-   Events
+   Set Language
+========================================= */
+
+function setLanguage(language) {
+
+    if (
+        language !== "ja" &&
+        language !== "en"
+    ) {
+        return;
+    }
+
+
+    /*
+     * Persist selection
+     */
+
+    localStorage.setItem(
+        LANGUAGE_STORAGE_KEY,
+        language
+    );
+
+
+    /*
+     * Immediately update page
+     */
+
+    applyLanguage(
+        language
+    );
+
+
+    /*
+     * Notify dynamic JavaScript such as
+     * app.js / material.js / download.js.
+     *
+     * Materials multilingual support can
+     * listen for this event later.
+     */
+
+    window.dispatchEvent(
+        new CustomEvent(
+            "inabata-language-change",
+            {
+                detail: {
+                    language:
+                        language
+                }
+            }
+        )
+    );
+}
+
+
+/* =========================================
+   Language Switcher
 ========================================= */
 
 function initializeLanguageSwitcher() {
@@ -576,8 +762,12 @@ function initializeLanguageSwitcher() {
                     "click",
                     () => {
 
+                        const language =
+                            button.dataset.language;
+
+
                         setLanguage(
-                            button.dataset.language
+                            language
                         );
                     }
                 );
@@ -598,14 +788,20 @@ function initializeI18n() {
 
     initializeLanguageSwitcher();
 
+
     applyLanguage(
         language
     );
 }
 
 
+/* =========================================
+   Start
+========================================= */
+
 if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
 ) {
 
     document.addEventListener(
