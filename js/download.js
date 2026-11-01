@@ -586,31 +586,41 @@ async function requestDownload() {
     }
 
 
-    const payload = {
+const payload = {
 
-        materialId:
-            currentMaterial.id,
+    materialId:
+        currentMaterial.id,
 
-        company:
-            String(
-                companyElement.value
-            ).trim(),
+    company:
+        String(
+            companyElement.value
+        ).trim(),
 
-        customerName:
-            String(
-                customerNameElement.value
-            ).trim(),
+    department:
+        String(
+            departmentElement?.value || ""
+        ).trim(),
 
-        email:
-            String(
-                emailElement.value
-            ).trim(),
+    customerName:
+        String(
+            customerNameElement.value
+        ).trim(),
 
-        consent:
-            Boolean(
-                consentElement.checked
-            )
-    };
+    email:
+        String(
+            emailElement.value
+        ).trim(),
+
+    phoneNumber:
+        String(
+            phoneNumberElement?.value || ""
+        ).trim(),
+
+    consent:
+        Boolean(
+            consentElement.checked
+        )
+};
 
 
     const response =
