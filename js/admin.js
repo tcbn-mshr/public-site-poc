@@ -198,6 +198,76 @@ function getStatusClass(status) {
 
 
 /* =========================================
+   Update Material Status
+========================================= */
+
+async function updateMaterialStatus(
+    materialId,
+    status
+) {
+
+    const response =
+        await fetch(
+            ADMIN_MATERIALS_API,
+            {
+                method:
+                    "PUT",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+
+                        id:
+                            materialId,
+
+                        status:
+                            status
+                    })
+            }
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+    } catch {
+
+        throw new Error(
+            "公開状態変更APIから有効な応答を取得できませんでした。"
+        );
+    }
+
+
+    if (
+        !response.ok ||
+        result?.success !== true
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "公開状態を変更できませんでした。"
+        );
+    }
+
+
+    return result.material;
+}
+
+
+/* =========================================
    API
 ========================================= */
 
@@ -510,10 +580,85 @@ function createMaterialRow(material) {
             ? "非公開にする"
             : "公開する";
 
-    publishButton.disabled =
-        true;
+   publishButton.addEventListener(
+    "click",
+    async () => {
+
+        const nextStatus =
+            material.status ===
+            "published"
+                ? "draft"
+                : "published";
 
 
+        const actionLabel =
+            nextStatus ===
+            "published"
+                ? "公開"
+                : "非公開";
+
+
+        const confirmed =
+            window.confirm(
+                `「${material.title}」を${actionLabel}にしますか？`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        publishButton.disabled =
+            true;
+
+
+        try {
+
+            await updateMaterialStatus(
+                material.id,
+                nextStatus
+            );
+
+
+            window.alert(
+                nextStatus ===
+                "published"
+                    ? "資料を公開しました。"
+                    : "資料を非公開にしました。"
+            );
+
+
+            /*
+             * 最新のMaterialsを再取得します。
+             */
+
+            await initializeAdminPage();
+
+
+        } catch (error) {
+
+            console.error(
+                "Material status update failed:",
+                error
+            );
+
+
+            window.alert(
+                error.message ||
+                "公開状態を変更できませんでした。"
+            );
+
+
+        } finally {
+
+            publishButton.disabled =
+                false;
+        }
+    }
+);
+
+   
     actions.appendChild(
         editButton
     );
