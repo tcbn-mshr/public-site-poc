@@ -559,10 +559,10 @@ async function createMaterial(
 
 
 /* =========================================
-   PUT - PDF Information
+   PUT - Update Material
 ========================================= */
 
-async function updateMaterialPdf(
+async function updateMaterial(
     request,
     tableClient
 ) {
@@ -594,22 +594,6 @@ async function updateMaterialPdf(
             128
         );
 
-    const blobName =
-        normalizeText(
-            body?.blobName,
-            500
-        );
-
-    const originalFileName =
-        normalizeText(
-            body?.originalFileName,
-            255
-        );
-
-
-    /*
-     * Required fields
-     */
 
     if (!materialId) {
 
@@ -624,88 +608,20 @@ async function updateMaterialPdf(
     }
 
 
-    if (!blobName) {
-
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "Blob名が指定されていません。"
-            }
-        );
-    }
-
-
-    if (!originalFileName) {
-
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "元のPDFファイル名が指定されていません。"
-            }
-        );
-    }
-
-
     /*
-     * PDFのみ許可
+     * Existing Material
      */
 
-    if (
-        !originalFileName
-            .toLowerCase()
-            .endsWith(".pdf")
-    ) {
+    let currentEntity;
 
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "PDFファイルを指定してください。"
-            }
-        );
-    }
-
-
-    /*
-     * STEP 7ではBlobパスを
-     * システム生成形式に限定します。
-     */
-
-    const expectedBlobName =
-        `materials/${materialId}/document.pdf`;
-
-
-    if (
-        blobName !==
-        expectedBlobName
-    ) {
-
-        return jsonResponse(
-            400,
-            {
-                success: false,
-                message:
-                    "Blob名が正しくありません。"
-            }
-        );
-    }
-
-
-    /*
-     * 対象資料が存在するか確認
-     */
 
     try {
 
-        await tableClient.getEntity(
-            "materials",
-            materialId
-        );
+        currentEntity =
+            await tableClient.getEntity(
+                "materials",
+                materialId
+            );
 
     } catch (error) {
 
@@ -729,37 +645,254 @@ async function updateMaterialPdf(
 
 
     /*
-     * PDF関連情報だけ更新
-     *
-     * mergeを使うことで、
-     * title / summary / descriptionなどを
-     * 上書きしません。
+     * Mergeする項目だけ作成
      */
 
-    const now =
-        new Date()
-            .toISOString();
+    const updateEntity = {
 
+        partitionKey:
+            "materials",
+
+        rowKey:
+            materialId,
+
+        updatedAtUtc:
+            new Date().toISOString()
+    };
+
+
+    /*
+     * Title
+     */
+
+    if (
+        body?.title !== undefined
+    ) {
+
+        const title =
+            normalizeText(
+                body.title,
+                150
+            );
+
+
+        if (!title) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "資料名を入力してください。"
+                }
+            );
+        }
+
+
+        updateEntity.title =
+            title;
+    }
+
+
+    /*
+     * Category
+     */
+
+    if (
+        body?.category !== undefined
+    ) {
+
+        const category =
+            normalizeText(
+                body.category,
+                50
+            );
+
+
+        if (
+            !Object.prototype
+                .hasOwnProperty.call(
+                    CATEGORY_MAP,
+                    category
+                )
+        ) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "カテゴリーを確認してください。"
+                }
+            );
+        }
+
+
+        updateEntity.category =
+            category;
+
+        updateEntity.categoryName =
+            CATEGORY_MAP[
+                category
+            ];
+    }
+
+
+    /*
+     * Summary
+     */
+
+    if (
+        body?.summary !== undefined
+    ) {
+
+        const summary =
+            normalizeText(
+                body.summary,
+                250
+            );
+
+
+        if (!summary) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "一覧用説明を入力してください。"
+                }
+            );
+        }
+
+
+        updateEntity.summary =
+            summary;
+    }
+
+
+    /*
+     * Description
+     */
+
+    if (
+        body?.description !== undefined
+    ) {
+
+        const description =
+            normalizeText(
+                body.description,
+                2000
+            );
+
+
+        if (!description) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "詳細説明を入力してください。"
+                }
+            );
+        }
+
+
+        updateEntity.description =
+            description;
+    }
+
+
+    /*
+     * PDF Information
+     */
+
+    if (
+        body?.blobName !== undefined ||
+        body?.originalFileName !== undefined
+    ) {
+
+        const blobName =
+            normalizeText(
+                body.blobName,
+                500
+            );
+
+        const originalFileName =
+            normalizeText(
+                body.originalFileName,
+                255
+            );
+
+
+        if (
+            !blobName ||
+            !originalFileName
+        ) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "PDF情報が正しくありません。"
+                }
+            );
+        }
+
+
+        const expectedBlobName =
+            `materials/${materialId}/document.pdf`;
+
+
+        if (
+            blobName !==
+            expectedBlobName
+        ) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "Blob名が正しくありません。"
+                }
+            );
+        }
+
+
+        if (
+            !originalFileName
+                .toLowerCase()
+                .endsWith(".pdf")
+        ) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "PDFファイルを指定してください。"
+                }
+            );
+        }
+
+
+        updateEntity.blobName =
+            blobName;
+
+        updateEntity.originalFileName =
+            originalFileName;
+    }
+
+
+    /*
+     * Merge Update
+     */
 
     await tableClient.updateEntity(
-        {
-
-            partitionKey:
-                "materials",
-
-            rowKey:
-                materialId,
-
-            blobName:
-                blobName,
-
-            originalFileName:
-                originalFileName,
-
-            updatedAtUtc:
-                now
-        },
-
+        updateEntity,
         "Merge"
     );
 
@@ -767,23 +900,14 @@ async function updateMaterialPdf(
     return jsonResponse(
         200,
         {
-
-            success:
-                true,
+            success: true,
 
             material: {
-
                 id:
                     materialId,
 
-                blobName:
-                    blobName,
-
-                originalFileName:
-                    originalFileName,
-
                 updatedAtUtc:
-                    now
+                    updateEntity.updatedAtUtc
             }
         }
     );
@@ -842,14 +966,14 @@ async function manageMaterialsHandler(
 
 
         if (
-            request.method ===
-            "PUT"
+                request.method ===
+                "PUT"
         ) {
 
-            return await updateMaterialPdf(
-                request,
-                tableClient
-            );
+                return await updateMaterial(
+                    request,
+                    tableClient
+                );
         }
 
         
