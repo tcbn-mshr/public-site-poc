@@ -163,6 +163,9 @@ const translations = {
         "download.consent":
             "I have read and agree to the Handling of Personal Information.",
 
+        "download.consentSuffix":
+            "has been reviewed and agreed to.",
+       
         "download.consentError":
             "You must agree to the Handling of Personal Information.",
 
@@ -343,6 +346,9 @@ const translations = {
         "download.consent":
             "個人情報の取り扱いを確認し、同意します。",
 
+        "download.consentSuffix":
+            "を確認し、同意します。",
+       
         "download.consentError":
             "個人情報の取り扱いへの同意が必要です。",
 
