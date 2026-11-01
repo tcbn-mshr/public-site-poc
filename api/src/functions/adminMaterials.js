@@ -1056,6 +1056,173 @@ async function updateMaterial(
 
 
 /* =========================================
+   DELETE - Material
+========================================= */
+
+async function deleteMaterial(
+    request,
+    tableClient,
+    connectionString
+) {
+
+    let body;
+
+
+    try {
+
+        body =
+            await request.json();
+
+    } catch {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    "リクエスト内容を確認できませんでした。"
+            }
+        );
+    }
+
+
+    const materialId =
+        normalizeText(
+            body?.id,
+            128
+        );
+
+
+    if (!materialId) {
+
+        return jsonResponse(
+            400,
+            {
+                success: false,
+                message:
+                    "資料IDが指定されていません。"
+            }
+        );
+    }
+
+
+    /*
+     * Materialsから対象資料を取得
+     */
+
+    let entity;
+
+
+    try {
+
+        entity =
+            await tableClient.getEntity(
+                "materials",
+                materialId
+            );
+
+    } catch (error) {
+
+        if (
+            error?.statusCode === 404
+        ) {
+
+            return jsonResponse(
+                404,
+                {
+                    success: false,
+                    message:
+                        "対象資料が見つかりません。"
+                }
+            );
+        }
+
+
+        throw error;
+    }
+
+
+    const blobName =
+        normalizeText(
+            entity.blobName,
+            500
+        );
+
+
+    /*
+     * Blobが登録されている場合は
+     * PDFを削除
+     */
+
+    if (blobName) {
+
+        const blobServiceClient =
+            BlobServiceClient
+                .fromConnectionString(
+                    connectionString
+                );
+
+
+        const containerClient =
+            blobServiceClient
+                .getContainerClient(
+                    getContainerName()
+                );
+
+
+        const blobClient =
+            containerClient
+                .getBlobClient(
+                    blobName
+                );
+
+
+        /*
+         * Blobが存在しなくても
+         * 削除処理自体は続行
+         */
+
+        await blobClient.deleteIfExists({
+            deleteSnapshots:
+                "include"
+        });
+    }
+
+
+    /*
+     * Materialsレコード削除
+     */
+
+    await tableClient.deleteEntity(
+        "materials",
+        materialId
+    );
+
+
+    return jsonResponse(
+        200,
+        {
+            success: true,
+
+            deletedMaterial: {
+                id:
+                    materialId,
+
+                title:
+                    normalizeText(
+                        entity.title,
+                        150
+                    ),
+
+                blobName:
+                    blobName
+            }
+        }
+    );
+}
+
+
+/* =========================================
    Handler
 ========================================= */
 
@@ -1117,6 +1284,19 @@ async function manageMaterialsHandler(
                 );
         }
 
+
+        if (
+                request.method ===
+                "DELETE"
+        ) {
+
+                return await deleteMaterial(
+                    request,
+                    tableClient,
+                    connectionString
+                );
+        }
+
         
         return jsonResponse(
             405,
@@ -1159,7 +1339,8 @@ app.http(
         methods: [
             "GET",
             "POST",
-            "PUT"
+            "PUT",
+            "DELETE"
         ],
 
         authLevel:
