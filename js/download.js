@@ -61,6 +61,11 @@ const companyElement =
         "company"
     );
 
+const departmentElement =
+    document.getElementById(
+        "department"
+    );
+
 const customerNameElement =
     document.getElementById(
         "customer-name"
@@ -69,6 +74,11 @@ const customerNameElement =
 const emailElement =
     document.getElementById(
         "email"
+    );
+
+const phoneNumberElement =
+    document.getElementById(
+        "phone-number"
     );
 
 const consentElement =
