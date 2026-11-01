@@ -314,24 +314,34 @@ function validateForm() {
         null;
 
 
-    /*
-     * PDF
-     */
+   /*
+   * PDF
+   */
 
-    if (!validatePdf()) {
+   /*
+   * 新規登録時のみPDF必須。
+   *
+   * 編集時は新しいPDFを選択しなければ
+   * 既存PDFを維持します。
+   */
 
-        valid =
-            false;
+   if (
+      !isEditMode &&
+      !validatePdf()
+   ) {
 
-        firstInvalidElement =
-            firstInvalidElement ||
-            fileElement;
-    }
+      valid =
+         false;
+
+      firstInvalidElement =
+         firstInvalidElement ||
+         fileElement;
+   }
 
 
-    /*
-     * Title
-     */
+   /*
+   * Title
+   */
 
     if (!getText(titleElement)) {
 
@@ -348,10 +358,10 @@ function validateForm() {
         firstInvalidElement =
             firstInvalidElement ||
             titleElement;
-    }
+   }
 
 
-    /*
+     /*
      * Category
      */
 
@@ -373,7 +383,7 @@ function validateForm() {
     }
 
 
-    /*
+     /*
      * Summary
      */
 
@@ -839,6 +849,95 @@ async function uploadPdf(
 
 
 /* =========================================
+   Update Material Metadata
+========================================= */
+
+async function updateMaterialMetadata() {
+
+    const payload = {
+
+        id:
+            editingMaterialId,
+
+        title:
+            getText(
+                titleElement
+            ),
+
+        category:
+            getText(
+                categoryElement
+            ),
+
+        summary:
+            getText(
+                summaryElement
+            ),
+
+        description:
+            getText(
+                descriptionElement
+            )
+    };
+
+
+    const response =
+        await fetch(
+            MANAGE_MATERIALS_API,
+            {
+                method:
+                    "PUT",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(
+                        payload
+                    )
+            }
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+    } catch {
+
+        throw new Error(
+            "資料更新APIから有効な応答を取得できませんでした。"
+        );
+    }
+
+
+    if (
+        !response.ok ||
+        result?.success !== true
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "資料情報を更新できませんでした。"
+        );
+    }
+
+
+    return result.material;
+}
+
+
+/* =========================================
    STEP 4
    Update Material PDF Information
 ========================================= */
@@ -917,14 +1016,12 @@ async function updateMaterialPdf(
    Submit
 ========================================= */
 
-async function handleSubmit(event) {
+async function handleSubmit(
+    event
+) {
 
     event.preventDefault();
 
-
-    /*
-     * Validate
-     */
 
     if (!validateForm()) {
         return;
@@ -932,12 +1029,8 @@ async function handleSubmit(event) {
 
 
     const file =
-        fileElement?.files?.[0];
-
-
-    if (!file) {
-        return;
-    }
+        fileElement?.files?.[0] ||
+        null;
 
 
     hideElement(
@@ -953,10 +1046,79 @@ async function handleSubmit(event) {
     try {
 
         /*
-         * STEP 1
-         *
-         * Materials Tableへ
-         * 新しい資料をdraftで登録
+         * =====================================
+         * EDIT
+         * =====================================
+         */
+
+        if (isEditMode) {
+
+            /*
+             * Metadata
+             */
+
+            await updateMaterialMetadata();
+
+
+            /*
+             * PDFが選択された場合だけ
+             * Blobを差し替えます。
+             */
+
+            if (file) {
+
+                const uploadInfo =
+                    await requestUploadUrl(
+                        editingMaterialId,
+                        file
+                    );
+
+
+                await uploadPdf(
+                    uploadInfo.uploadUrl,
+                    file
+                );
+
+
+                await updateMaterialPdf(
+                    editingMaterialId,
+                    uploadInfo.blobName,
+                    uploadInfo.originalFileName
+                );
+            }
+
+
+            window.alert(
+                file
+                    ? "資料情報とPDFを更新しました。"
+                    : "資料情報を更新しました。"
+            );
+
+
+            window.location.href =
+                "/admin/index.html";
+
+
+            return;
+        }
+
+
+        /*
+         * =====================================
+         * CREATE
+         * =====================================
+         */
+
+        if (!file) {
+
+            throw new Error(
+                "PDFファイルを選択してください。"
+            );
+        }
+
+
+        /*
+         * Materialsへdraft登録
          */
 
         const material =
@@ -964,9 +1126,7 @@ async function handleSubmit(event) {
 
 
         /*
-         * STEP 2
-         *
-         * Blob書込用SAS URL取得
+         * Upload URL
          */
 
         const uploadInfo =
@@ -977,9 +1137,7 @@ async function handleSubmit(event) {
 
 
         /*
-         * STEP 3
-         *
-         * PDF本体をBlob Storageへ直接PUT
+         * PDF Upload
          */
 
         await uploadPdf(
@@ -989,10 +1147,7 @@ async function handleSubmit(event) {
 
 
         /*
-         * STEP 4
-         *
-         * Materialsへ
-         * blobName / originalFileNameを反映
+         * PDF Information
          */
 
         await updateMaterialPdf(
@@ -1002,19 +1157,11 @@ async function handleSubmit(event) {
         );
 
 
-        /*
-         * Complete
-         */
-
         window.alert(
             "資料を登録しました。\n" +
             "PDFのアップロードも完了しました。"
         );
 
-
-        /*
-         * Admin list
-         */
 
         window.location.href =
             "/admin/index.html";
@@ -1023,16 +1170,18 @@ async function handleSubmit(event) {
     } catch (error) {
 
         console.error(
-            "Material registration failed:",
+            "Material save failed:",
             error
         );
 
 
-        if (formErrorElement) {
+        if (
+            formErrorElement
+        ) {
 
             formErrorElement.textContent =
                 error.message ||
-                "資料を登録できませんでした。";
+                "資料を保存できませんでした。";
         }
 
 
