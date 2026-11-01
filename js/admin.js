@@ -479,8 +479,17 @@ function createMaterialRow(material) {
     editButton.textContent =
         "編集";
 
-    editButton.disabled =
-        true;
+    editButton.addEventListener(
+        "click",
+        () => {
+
+           window.location.href =
+               "/admin/edit.html?id=" +
+               encodeURIComponent(
+                   material.id
+               );
+        }
+    );
 
 
     const publishButton =
