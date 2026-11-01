@@ -11,6 +11,10 @@ const {
     TableClient
 } = require("@azure/data-tables");
 
+const {
+    BlobServiceClient
+} = require("@azure/storage-blob");
+
 
 /* =========================================
    Configuration
@@ -100,6 +104,13 @@ function getConnectionString() {
     return connectionString;
 }
 
+    function getContainerName() {
+
+        return String(
+            process.env.DOWNLOAD_CONTAINER ||
+            "files"
+        ).trim();
+}
 
 /* =========================================
    Utility
@@ -559,6 +570,45 @@ async function createMaterial(
 
 
 /* =========================================
+   Check PDF
+========================================= */
+
+async function materialPdfExists(
+    connectionString,
+    blobName
+) {
+
+    if (!blobName) {
+        return false;
+    }
+
+
+    const blobServiceClient =
+        BlobServiceClient
+            .fromConnectionString(
+                connectionString
+            );
+
+
+    const containerClient =
+        blobServiceClient
+            .getContainerClient(
+                getContainerName()
+            );
+
+
+    const blobClient =
+        containerClient
+            .getBlobClient(
+                blobName
+            );
+
+
+    return await blobClient.exists();
+}
+
+
+/* =========================================
    PUT - Update Material
 ========================================= */
 
@@ -886,6 +936,97 @@ async function updateMaterial(
             originalFileName;
     }
 
+
+        /*
+         * Status
+         */
+
+        if (
+            body?.status !== undefined
+        ) {
+
+            const requestedStatus =
+                normalizeText(
+                    body.status,
+                    20
+            );
+
+
+        if (
+            !VALID_STATUS.has(
+                requestedStatus
+            )
+        ) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "公開状態を確認してください。"
+                }
+            );
+        }
+
+
+        /*
+         * 公開するときだけPDFを確認します。
+         */
+
+        if (
+            requestedStatus ===
+            "published"
+        ) {
+
+            const blobName =
+                normalizeText(
+                    currentEntity.blobName,
+                    500
+            );
+
+
+        if (!blobName) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "PDFが登録されていないため公開できません。"
+                }
+            );
+        }
+
+
+            const connectionString =
+                getConnectionString();
+
+
+            const exists =
+                await materialPdfExists(
+                    connectionString,
+                    blobName
+            );
+
+
+        if (!exists) {
+
+            return jsonResponse(
+                400,
+                {
+                    success: false,
+                    message:
+                        "PDFファイルがBlob Storageに存在しないため公開できません。"
+                }
+            );
+        }
+    }
+
+
+    updateEntity.status =
+        requestedStatus;
+}
+    
 
     /*
      * Merge Update
