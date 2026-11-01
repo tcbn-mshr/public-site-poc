@@ -894,3 +894,33 @@ select {
     }
 
 }
+
+
+/* =========================================
+   Hidden elements
+========================================= */
+
+.admin-field-error[hidden],
+.admin-form-error[hidden] {
+    display: none !important;
+}
+
+
+/* =========================================
+   Delete Button
+========================================= */
+
+.admin-action-button-delete {
+    color: #a40019;
+    background: #fff;
+
+    border-color: #c9a2aa;
+}
+
+
+.admin-action-button-delete:hover {
+    color: #fff;
+    background: #a40019;
+
+    border-color: #a40019;
+}
