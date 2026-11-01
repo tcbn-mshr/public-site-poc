@@ -733,57 +733,14 @@ const deleteButton =
         "button"
     );
 
-
 deleteButton.type =
     "button";
-
 
 deleteButton.className =
     "admin-action-button admin-action-button-delete";
 
-
 deleteButton.textContent =
     "削除";
-   
-   
-    actions.appendChild(
-        editButton
-    );
-
-    actions.appendChild(
-        publishButton
-    );
-
-   actions.appendChild(
-    deleteButton
-    );
-
-   
-    /* Assemble */
-
-    row.appendChild(
-        materialMain
-    );
-
-    row.appendChild(
-        category
-    );
-
-    row.appendChild(
-        status
-    );
-
-    row.appendChild(
-        updated
-    );
-
-    row.appendChild(
-        actions
-    );
-
-
-    return row;
-}
 
 
 deleteButton.addEventListener(
@@ -819,10 +776,6 @@ deleteButton.addEventListener(
             );
 
 
-            /*
-             * Materialsを再取得
-             */
-
             await initializeAdminPage();
 
 
@@ -847,6 +800,51 @@ deleteButton.addEventListener(
         }
     }
 );
+
+
+/* =========================================
+   Assemble Actions
+========================================= */
+
+actions.appendChild(
+    editButton
+);
+
+actions.appendChild(
+    publishButton
+);
+
+actions.appendChild(
+    deleteButton
+);
+
+
+/* =========================================
+   Assemble Row
+========================================= */
+
+row.appendChild(
+    materialMain
+);
+
+row.appendChild(
+    category
+);
+
+row.appendChild(
+    status
+);
+
+row.appendChild(
+    updated
+);
+
+row.appendChild(
+    actions
+);
+
+
+return row;
 
 
 /* =========================================
