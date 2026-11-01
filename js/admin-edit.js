@@ -11,6 +11,7 @@ const MANAGE_MATERIALS_API =
 const MANAGE_UPLOAD_API =
     "/api/manage-upload";
 
+
 /* =========================================
    DOM Elements
 ========================================= */
@@ -143,15 +144,10 @@ function updateDescriptionCounter() {
 function clearErrors() {
 
     const fieldNames = [
-
         "material-file",
-
         "material-title",
-
         "material-category",
-
         "material-summary",
-
         "material-description"
     ];
 
@@ -171,7 +167,7 @@ function clearErrors() {
     if (formErrorElement) {
 
         formErrorElement.textContent =
-            "入力内容を確認してください。";
+            "入力内容を確認してください.";
     }
 
 
@@ -287,7 +283,6 @@ function validateForm() {
     let valid =
         true;
 
-
     let firstInvalidElement =
         null;
 
@@ -300,7 +295,6 @@ function validateForm() {
 
         valid =
             false;
-
 
         firstInvalidElement =
             firstInvalidElement ||
@@ -324,7 +318,6 @@ function validateForm() {
         valid =
             false;
 
-
         firstInvalidElement =
             firstInvalidElement ||
             titleElement;
@@ -346,7 +339,6 @@ function validateForm() {
 
         valid =
             false;
-
 
         firstInvalidElement =
             firstInvalidElement ||
@@ -370,7 +362,6 @@ function validateForm() {
         valid =
             false;
 
-
         firstInvalidElement =
             firstInvalidElement ||
             summaryElement;
@@ -393,16 +384,11 @@ function validateForm() {
         valid =
             false;
 
-
         firstInvalidElement =
             firstInvalidElement ||
             descriptionElement;
     }
 
-
-    /*
-     * Validation Error
-     */
 
     if (!valid) {
 
@@ -433,9 +419,7 @@ function validateForm() {
    Saving State
 ========================================= */
 
-function setSaving(
-    isSaving
-) {
+function setSaving(isSaving) {
 
     if (!saveButton) {
         return;
@@ -454,17 +438,11 @@ function setSaving(
 
 
 /* =========================================
-   API Request
+   STEP 1
+   Create Material
 ========================================= */
 
 async function createMaterial() {
-
-    /*
-     * STEP 6ではPDF本体を送信しません。
-     *
-     * Materials Tableへ登録するのは
-     * 資料メタデータのみです。
-     */
 
     const payload = {
 
@@ -488,8 +466,15 @@ async function createMaterial() {
                 descriptionElement
             ),
 
+        /*
+         * PDFアップロード完了前の外部公開を
+         * 防ぐため、新規登録は必ずdraftで作成します。
+         *
+         * 公開状態の変更は後のSTEPで実装します。
+         */
+
         status:
-            getSelectedStatus()
+            "draft"
     };
 
 
@@ -497,7 +482,6 @@ async function createMaterial() {
         await fetch(
             MANAGE_MATERIALS_API,
             {
-
                 method:
                     "POST",
 
@@ -529,7 +513,7 @@ async function createMaterial() {
     } catch {
 
         throw new Error(
-            "APIから有効な応答を取得できませんでした。"
+            "資料登録APIから有効な応答を取得できませんでした。"
         );
     }
 
@@ -541,7 +525,7 @@ async function createMaterial() {
 
         throw new Error(
             result?.message ||
-            "資料を登録できませんでした。"
+            "資料情報を登録できませんでした。"
         );
     }
 
@@ -562,6 +546,7 @@ async function createMaterial() {
 
 
 /* =========================================
+   STEP 2
    Request Upload URL
 ========================================= */
 
@@ -578,6 +563,7 @@ async function requestUploadUrl(
                     "POST",
 
                 headers: {
+
                     "Content-Type":
                         "application/json",
 
@@ -587,6 +573,7 @@ async function requestUploadUrl(
 
                 body:
                     JSON.stringify({
+
                         materialId:
                             materialId,
 
@@ -641,22 +628,24 @@ async function requestUploadUrl(
 
 
 /* =========================================
+   STEP 3
    Upload PDF
 ========================================= */
 
 async function uploadPdf(
-    u*loadUrl,
+    uploadUrl,
     file
 ) {
 
-    const r*sponse =
+    const response =
         await fetch(
-    *       uploadUrl,
+            uploadUrl,
             {
-  *             method:
-             *      "PUT",
+                method:
+                    "PUT",
 
-                head*rs: {
+                headers: {
+
                     "x-ms-blob-type":
                         "BlockBlob",
 
@@ -680,67 +669,72 @@ async function uploadPdf(
 
 
 /* =========================================
-   Update PDF Information
+   STEP 4
+   Update Material PDF Information
 ========================================= */
 
-async function updateMate*ialPdf(
+async function updateMaterialPdf(
     materialId,
-    blobNa*e,
+    blobName,
     originalFileName
 ) {
 
-    c*nst response =
-        await fetch*
-            MANAGE_MATERIALS_API,*            {
-                meth*d:
+    const response =
+        await fetch(
+            MANAGE_MATERIALS_API,
+            {
+                method:
                     "PUT",
 
-   *            headers: {
-           *        "Content-Type":
-          *             "application/json",
+                headers: {
 
-*                   "Accept":
-     *                  "application/jso*"
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "application/json"
                 },
 
-            *   body:
-                    JSON.*tringify({
-                       *id:
-                            ma*erialId,
+                body:
+                    JSON.stringify({
 
-                        *lobName:
-                         *  blobName,
+                        id:
+                            materialId,
 
-                     *  originalFileName:
-              *             originalFileName
-    *               })
+                        blobName:
+                            blobName,
+
+                        originalFileName:
+                            originalFileName
+                    })
             }
-  *     );
+        );
 
 
     let result;
 
 
-    tr* {
+    try {
 
         result =
-            a*ait response.json();
+            await response.json();
 
-    } catch *
+    } catch {
 
         throw new Error(
-       *    "PDF情報を更新できませんでした。"
-        );*    }
+            "PDF情報更新APIから有効な応答を取得できませんでした。"
+        );
+    }
 
 
     if (
-        !response*ok ||
-        result?.success !== *rue
+        !response.ok ||
+        result?.success !== true
     ) {
 
-        throw new Err*r(
+        throw new Error(
             result?.message ||
-*           "PDF情報をMaterialsへ登録できませんでした。"
+            "PDF情報をMaterialsへ登録できませんでした。"
         );
     }
 
@@ -753,12 +747,14 @@ async function updateMate*ialPdf(
    Submit
 ========================================= */
 
-async function handleSubmit(
-    event
-) {
+async function handleSubmit(event) {
 
     event.preventDefault();
 
+
+    /*
+     * Validate
+     */
 
     if (!validateForm()) {
         return;
@@ -788,7 +784,9 @@ async function handleSubmit(
 
         /*
          * STEP 1
-         * Materialsへ下書き登録
+         *
+         * Materials Tableへ
+         * 新しい資料をdraftで登録
          */
 
         const material =
@@ -797,7 +795,8 @@ async function handleSubmit(
 
         /*
          * STEP 2
-         * 書込SAS URL取得
+         *
+         * Blob書込用SAS URL取得
          */
 
         const uploadInfo =
@@ -809,7 +808,8 @@ async function handleSubmit(
 
         /*
          * STEP 3
-         * PDF本体をBlobへ直接PUT
+         *
+         * PDF本体をBlob Storageへ直接PUT
          */
 
         await uploadPdf(
@@ -820,7 +820,9 @@ async function handleSubmit(
 
         /*
          * STEP 4
-         * MaterialsへBlob情報を反映
+         *
+         * Materialsへ
+         * blobName / originalFileNameを反映
          */
 
         await updateMaterialPdf(
@@ -831,46 +833,49 @@ async function handleSubmit(
 
 
         /*
-         * STEP 5
-         * 完了
+         * Complete
          */
 
         window.alert(
-  *         "資料を登録しました。\n" +
-        *   "PDFのアップロードも完了しました。"
-        );*
-
-        window.location.href =
- *          "/admin/index.html";
-
-
- *  } catch (error) {
-
-        conso*e.error(
-            "Material reg*stration failed:",
-            err*r
+            "資料を登録しました。\n" +
+            "PDFのアップロードも完了しました。"
         );
 
 
-        if (
-      *     formErrorElement
-        ) {
-*            formErrorElement.textC*ntent =
-                error.mess*ge ||
-                "資料を登録できませんで*た。";
+        /*
+         * Admin list
+         */
+
+        window.location.href =
+            "/admin/index.html";
+
+
+    } catch (error) {
+
+        console.error(
+            "Material registration failed:",
+            error
+        );
+
+
+        if (formErrorElement) {
+
+            formErrorElement.textContent =
+                error.message ||
+                "資料を登録できませんでした。";
         }
 
 
-        showEleme*t(
+        showElement(
             formErrorElement
-  *     );
+        );
 
 
     } finally {
 
-       *setSaving(
+        setSaving(
             false
-     *  );
+        );
     }
 }
 
