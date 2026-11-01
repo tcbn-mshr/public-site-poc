@@ -164,7 +164,7 @@ const translations = {
             "I have read and agree to the Handling of Personal Information.",
 
         "download.consentSuffix":
-            "has been reviewed and agreed to.",
+            " has been reviewed and agreed to.",
        
         "download.consentError":
             "You must agree to the Handling of Personal Information.",
