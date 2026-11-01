@@ -609,17 +609,6 @@ async function manageMaterialsHandler(
         }
 
 
-        if (
-            request.method ===
-            "PUT"
-        ) {
-
-            return await updateMaterialPdf(
-                request,
-                tableClient
-            );
-        }
-
         return jsonResponse(
             405,
             {
