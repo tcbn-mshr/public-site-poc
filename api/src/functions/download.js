@@ -181,6 +181,12 @@ function validatePayload(body) {
             200
         );
 
+    const department =
+        normalizeText(
+            body?.department,
+            200
+        );
+
     const customerName =
         normalizeText(
             body?.customerName,
@@ -191,6 +197,12 @@ function validatePayload(body) {
         normalizeText(
             body?.email,
             254
+        );
+
+    const phoneNumber =
+        normalizeText(
+            body?.phoneNumber,
+            50
         );
 
     const consent =
@@ -257,8 +269,10 @@ function validatePayload(body) {
         value: {
             materialId,
             company,
+            department,
             customerName,
             email,
+            phoneNumber,
             consent
         }
     };
@@ -437,11 +451,17 @@ async function saveDownloadLog(
         company:
             input.company,
 
+        department:
+            input.department,
+
         customerName:
             input.customerName,
 
         email:
             input.email,
+
+        phoneNumber:
+            input.phoneNumber,
 
         consent:
             input.consent,
