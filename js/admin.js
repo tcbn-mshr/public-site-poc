@@ -268,6 +268,71 @@ async function updateMaterialStatus(
 
 
 /* =========================================
+   Delete Material
+========================================= */
+
+async function deleteMaterial(
+    materialId
+) {
+
+    const response =
+        await fetch(
+            ADMIN_MATERIALS_API,
+            {
+                method:
+                    "DELETE",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+                        id:
+                            materialId
+                    })
+            }
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+    } catch {
+
+        throw new Error(
+            "削除APIから有効な応答を取得できませんでした。"
+        );
+    }
+
+
+    if (
+        !response.ok ||
+        result?.success !== true
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "資料を削除できませんでした。"
+        );
+    }
+
+
+    return result;
+}
+
+
+/* =========================================
    API
 ========================================= */
 
@@ -658,6 +723,28 @@ function createMaterialRow(material) {
     }
 );
 
+
+/* =========================================
+   Delete Button
+========================================= */
+
+const deleteButton =
+    document.createElement(
+        "button"
+    );
+
+
+deleteButton.type =
+    "button";
+
+
+deleteButton.className =
+    "admin-action-button admin-action-button-delete";
+
+
+deleteButton.textContent =
+    "削除";
+   
    
     actions.appendChild(
         editButton
@@ -667,7 +754,11 @@ function createMaterialRow(material) {
         publishButton
     );
 
+   actions.appendChild(
+    deleteButton
+    );
 
+   
     /* Assemble */
 
     row.appendChild(
@@ -693,6 +784,69 @@ function createMaterialRow(material) {
 
     return row;
 }
+
+
+deleteButton.addEventListener(
+    "click",
+    async () => {
+
+        const confirmed =
+            window.confirm(
+                `「${material.title}」を削除しますか？\n\n` +
+                "PDFファイルも削除されます。\n" +
+                "この操作は元に戻せません。"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        deleteButton.disabled =
+            true;
+
+
+        try {
+
+            await deleteMaterial(
+                material.id
+            );
+
+
+            window.alert(
+                "資料を削除しました。"
+            );
+
+
+            /*
+             * Materialsを再取得
+             */
+
+            await initializeAdminPage();
+
+
+        } catch (error) {
+
+            console.error(
+                "Material deletion failed:",
+                error
+            );
+
+
+            window.alert(
+                error.message ||
+                "資料を削除できませんでした。"
+            );
+
+
+        } finally {
+
+            deleteButton.disabled =
+                false;
+        }
+    }
+);
 
 
 /* =========================================
