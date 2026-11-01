@@ -621,7 +621,7 @@ async function handleSubmit(
          */
 
         window.location.href =
-            "./index.html";
+            "/admin/index.html";
 
 
     } catch (error) {
