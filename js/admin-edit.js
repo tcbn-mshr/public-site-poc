@@ -13,6 +13,33 @@ const MANAGE_UPLOAD_API =
 
 
 /* =========================================
+   Edit Mode
+========================================= */
+
+function getMaterialId() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return String(
+        params.get("id") || ""
+    ).trim();
+}
+
+
+const editingMaterialId =
+    getMaterialId();
+
+
+const isEditMode =
+    Boolean(
+        editingMaterialId
+    );
+
+
+/* =========================================
    DOM Elements
 ========================================= */
 
@@ -434,6 +461,149 @@ function setSaving(isSaving) {
         isSaving
             ? "保存しています..."
             : "保存する";
+}
+
+
+/* =========================================
+   Load Material For Edit
+========================================= */
+
+async function loadMaterialForEdit() {
+
+    if (!isEditMode) {
+        return;
+    }
+
+
+    const response =
+        await fetch(
+            MANAGE_MATERIALS_API,
+            {
+                method:
+                    "GET",
+
+                headers: {
+                    "Accept":
+                        "application/json"
+                },
+
+                cache:
+                    "no-store"
+            }
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+    } catch {
+
+        throw new Error(
+            "資料情報を取得できませんでした。"
+        );
+    }
+
+
+    if (
+        !response.ok ||
+        result?.success !== true ||
+        !Array.isArray(
+            result.materials
+        )
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "資料情報を取得できませんでした。"
+        );
+    }
+
+
+    const material =
+        result.materials.find(
+            (item) =>
+                String(
+                    item.id || ""
+                ) ===
+                editingMaterialId
+        );
+
+
+    if (!material) {
+
+        throw new Error(
+            "編集対象の資料が見つかりません。"
+        );
+    }
+
+
+    /*
+     * Form
+     */
+
+    if (titleElement) {
+
+        titleElement.value =
+            material.title || "";
+    }
+
+
+    if (categoryElement) {
+
+        categoryElement.value =
+            material.category || "";
+    }
+
+
+    if (summaryElement) {
+
+        summaryElement.value =
+            material.summary || "";
+    }
+
+
+    if (descriptionElement) {
+
+        descriptionElement.value =
+            material.description || "";
+    }
+
+
+    /*
+     * Status
+     */
+
+    const status =
+        material.status === "published"
+            ? "published"
+            : "draft";
+
+
+    const statusElement =
+        document.querySelector(
+            `input[name="status"][value="${status}"]`
+        );
+
+
+    if (statusElement) {
+
+        statusElement.checked =
+            true;
+    }
+
+
+    /*
+     * Counters
+     */
+
+    updateSummaryCounter();
+
+    updateDescriptionCounter();
 }
 
 
@@ -915,8 +1085,46 @@ if (form) {
    Initialization
 ========================================= */
 
-updateSummaryCounter();
+async function initializeEditPage() {
 
-updateDescriptionCounter();
+    updateSummaryCounter();
 
-clearErrors();
+    updateDescriptionCounter();
+
+    clearErrors();
+
+
+    if (!isEditMode) {
+        return;
+    }
+
+
+    try {
+
+        await loadMaterialForEdit();
+
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load material for edit:",
+            error
+        );
+
+
+        if (formErrorElement) {
+
+            formErrorElement.textContent =
+                error.message ||
+                "資料情報を取得できませんでした。";
+        }
+
+
+        showElement(
+            formErrorElement
+        );
+    }
+}
+
+
+initializeEditPage();
