@@ -8,6 +8,9 @@
 const MATERIALS_API_URL =
     "/api/materials";
 
+const MATERIAL_THUMBNAIL_API_URL =
+    "/api/material-thumbnail";
+
 
 /* =========================================
    DOM Elements
@@ -81,9 +84,11 @@ function showLoading() {
         materialsLoading
     );
 
+
     hideElement(
         materialsError
     );
+
 
     hideElement(
         materialsEmpty
@@ -110,9 +115,11 @@ function showError() {
 
     hideLoading();
 
+
     hideElement(
         materialsEmpty
     );
+
 
     showElement(
         materialsError
@@ -131,9 +138,11 @@ function showEmpty() {
 
     hideLoading();
 
+
     hideElement(
         materialsError
     );
+
 
     showElement(
         materialsEmpty
@@ -281,9 +290,8 @@ function getLocalizedMaterialValue(
     /*
      * Migration fallback
      *
-     * 現在は英語未登録資料も
-     * 空カードにしないため、
-     * 既存フィールドを利用します。
+     * English未登録資料では
+     * 現在の既存フィールドを使用します。
      */
 
     return String(
@@ -517,6 +525,50 @@ function createMaterialCard(material) {
         "material-card-visual";
 
 
+    /*
+     * Thumbnail
+     */
+
+    const thumbnail =
+        document.createElement(
+            "img"
+        );
+
+
+    thumbnail.className =
+        "material-card-thumbnail";
+
+
+    thumbnail.src =
+        MATERIAL_THUMBNAIL_API_URL +
+        "?id=" +
+        encodeURIComponent(
+            material.id
+        );
+
+
+    /*
+     * 画像自体は装飾扱い。
+     * カードリンクにタイトルがあるため
+     * altは空とします。
+     */
+
+    thumbnail.alt =
+        "";
+
+
+    thumbnail.loading =
+        "lazy";
+
+
+    thumbnail.decoding =
+        "async";
+
+
+    /*
+     * PDF fallback
+     */
+
     const fileType =
         document.createElement(
             "span"
@@ -534,6 +586,36 @@ function createMaterialCard(material) {
     fileType.setAttribute(
         "aria-hidden",
         "true"
+    );
+
+
+    /*
+     * 最初はfallbackを非表示。
+     *
+     * Thumbnail取得失敗時だけ
+     * PDF表示へ切り替えます。
+     */
+
+    fileType.hidden =
+        true;
+
+
+    thumbnail.addEventListener(
+        "error",
+        () => {
+
+            thumbnail.hidden =
+                true;
+
+
+            fileType.hidden =
+                false;
+        }
+    );
+
+
+    visual.appendChild(
+        thumbnail
     );
 
 
@@ -742,6 +824,7 @@ function renderMaterials() {
             "materials-grid was not found."
         );
 
+
         return;
     }
 
@@ -848,6 +931,7 @@ function handleCategoryClick(event) {
 
 
     updateCategoryButtons();
+
 
     renderMaterials();
 }
@@ -1014,15 +1098,16 @@ window.addEventListener(
 
         /*
          * 表示言語に合わせて
-         * 並び順を再計算します。
+         * 並び順を再計算。
          */
 
         sortMaterials();
 
 
         /*
-         * カードを現在言語で
-         * 再描画します。
+         * カード全体を再描画。
+         *
+         * サムネイルも再取得されます。
          */
 
         renderMaterials();
