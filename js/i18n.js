@@ -71,6 +71,11 @@ const translations = {
         "materials.categoryElectronics":
             "Information & Electronics",
 
+        /*
+         * 現在HTMLでは非表示ですが、
+         * 将来再利用できるよう翻訳値は残します。
+         */
+
         "materials.categoryChemicals":
             "Chemicals",
 
@@ -85,6 +90,9 @@ const translations = {
 
         "materials.detail":
             "View Details",
+
+        "materials.backTop":
+            "Back to TOP",
 
         "materials.loading":
             "Loading materials...",
@@ -102,10 +110,6 @@ const translations = {
 
         "material.download":
             "Download Material",
-
-        /*
-         * 矢印はHTML側に置く前提。
-         */
 
         "material.back":
             "Back to Materials",
@@ -168,11 +172,6 @@ const translations = {
 
         "download.apiError":
             "Unable to start the download.",
-
-        /*
-         * 矢印はHTML側に置く場合、
-         * この値には矢印を含めない。
-         */
 
         "download.back":
             "Back to Material Details",
@@ -281,6 +280,11 @@ const translations = {
         "materials.categoryElectronics":
             "情報電子",
 
+        /*
+         * 現在HTMLでは非表示ですが、
+         * 将来再利用できるよう翻訳値は残します。
+         */
+
         "materials.categoryChemicals":
             "化学品",
 
@@ -295,6 +299,9 @@ const translations = {
 
         "materials.detail":
             "詳細を見る",
+
+        "materials.backTop":
+            "TOPページへ戻る",
 
         "materials.loading":
             "資料を読み込んでいます...",
@@ -437,7 +444,7 @@ const translations = {
 
 
 /* =========================================
-   Current Language
+   Storage
 ========================================= */
 
 function getStoredLanguage() {
@@ -475,26 +482,6 @@ function getStoredLanguage() {
 }
 
 
-function getCurrentLanguage() {
-
-    const storedLanguage =
-        getStoredLanguage();
-
-
-    if (storedLanguage) {
-
-        return storedLanguage;
-    }
-
-
-    return DEFAULT_LANGUAGE;
-}
-
-
-/* =========================================
-   Store Language
-========================================= */
-
 function storeLanguage(
     language
 ) {
@@ -518,18 +505,36 @@ function storeLanguage(
 
 
 /* =========================================
+   Current Language
+========================================= */
+
+function getCurrentLanguage() {
+
+    const storedLanguage =
+        getStoredLanguage();
+
+
+    if (storedLanguage) {
+
+        return storedLanguage;
+    }
+
+
+    return DEFAULT_LANGUAGE;
+}
+
+
+/* =========================================
    Translate
 ========================================= */
 
-function translate(
-    key
-) {
+function translate(key) {
 
     const language =
         getCurrentLanguage();
 
 
-    const selectedValue =
+    const localizedValue =
         translations?.[
             language
         ]?.[
@@ -538,16 +543,15 @@ function translate(
 
 
     if (
-        selectedValue !== undefined
+        localizedValue !== undefined
     ) {
 
-        return selectedValue;
+        return localizedValue;
     }
 
 
     /*
-     * 指定言語にキーがない場合、
-     * Englishへフォールバック。
+     * English fallback
      */
 
     const englishValue =
@@ -565,8 +569,7 @@ function translate(
 
 
     /*
-     * 未定義キーの場合は
-     * 空文字ではなくキーを返す。
+     * 未定義キー
      */
 
     return key;
@@ -574,7 +577,75 @@ function translate(
 
 
 /* =========================================
-   Apply Text
+   Language Controls
+========================================= */
+
+function updateLanguageControls(
+    language
+) {
+
+    const controls =
+        document.querySelectorAll(
+            "[data-language]"
+        );
+
+
+    controls.forEach(
+        (control) => {
+
+            const controlLanguage =
+                String(
+                    control.dataset
+                        .language ||
+                    ""
+                ).trim();
+
+
+            const active =
+                controlLanguage ===
+                language;
+
+
+            control.classList.toggle(
+                "is-active",
+                active
+            );
+
+
+            control.setAttribute(
+                "aria-pressed",
+                String(
+                    active
+                )
+            );
+
+
+            /*
+             * 現在言語を視覚的・意味的に
+             * 判別できるようにする。
+             */
+
+            if (active) {
+
+                control.setAttribute(
+                    "aria-current",
+                    "true"
+                );
+
+
+            } else {
+
+                control.removeAttribute(
+                    "aria-current"
+                );
+            }
+        }
+    );
+}
+
+
+/* =========================================
+   Apply Translations
 ========================================= */
 
 function applyTranslations() {
@@ -584,7 +655,7 @@ function applyTranslations() {
 
 
     /*
-     * HTML language
+     * HTML lang
      */
 
     document.documentElement.lang =
@@ -592,7 +663,7 @@ function applyTranslations() {
 
 
     /*
-     * data-i18n
+     * Text
      */
 
     const elements =
@@ -616,20 +687,16 @@ function applyTranslations() {
             }
 
 
-            const value =
+            element.textContent =
                 translate(
                     key
                 );
-
-
-            element.textContent =
-                value;
         }
     );
 
 
     /*
-     * Optional placeholders
+     * Placeholder
      */
 
     const placeholderElements =
@@ -665,7 +732,7 @@ function applyTranslations() {
 
 
     /*
-     * Optional aria-labels
+     * aria-label
      */
 
     const ariaElements =
@@ -700,10 +767,6 @@ function applyTranslations() {
     );
 
 
-    /*
-     * Language buttons
-     */
-
     updateLanguageControls(
         language
     );
@@ -711,48 +774,67 @@ function applyTranslations() {
 
 
 /* =========================================
-   Language Controls
+   Static Page Title
 ========================================= */
 
-function updateLanguageControls(
-    language
-) {
+function updateStaticPageTitle() {
 
-    const controls =
-        document.querySelectorAll(
-            "[data-language]"
-        );
+    const language =
+        getCurrentLanguage();
 
 
-    controls.forEach(
-        (control) => {
-
-            const controlLanguage =
-                String(
-                    control.dataset.language ||
-                    ""
-                ).trim();
+    const pathname =
+        window.location.pathname
+            .toLowerCase();
 
 
-            const active =
-                controlLanguage ===
-                language;
+    /*
+     * TOP
+     */
+
+    if (
+        pathname === "/" ||
+        pathname.endsWith("/") ||
+        pathname.endsWith(
+            "/index.html"
+        )
+    ) {
+
+        document.title =
+            language === "ja"
+                ? "展示会資料｜INABATA"
+                : "Exhibition Materials | INABATA";
 
 
-            control.classList.toggle(
-                "is-active",
-                active
-            );
+        return;
+    }
 
 
-            control.setAttribute(
-                "aria-pressed",
-                String(
-                    active
-                )
-            );
-        }
-    );
+    /*
+     * Materials
+     */
+
+    if (
+        pathname.endsWith(
+            "/materials.html"
+        )
+    ) {
+
+        document.title =
+            language === "ja"
+                ? "資料一覧｜INABATA"
+                : "Materials | INABATA";
+
+
+        return;
+    }
+
+
+    /*
+     * material.html と download.html は
+     * material.js / download.js が
+     * 資料名を含むタイトルを設定します。
+     */
 }
 
 
@@ -786,7 +868,7 @@ function setLanguage(
     }
 
 
-    const previousLanguage =
+    const oldLanguage =
         getCurrentLanguage();
 
 
@@ -798,13 +880,17 @@ function setLanguage(
     applyTranslations();
 
 
+    updateStaticPageTitle();
+
+
     /*
-     * app.js / material.js / download.jsへ
-     * 言語変更を通知。
+     * 動的コンテンツを持つ
+     * app.js / material.js / download.js
+     * へ通知。
      */
 
     if (
-        previousLanguage !==
+        oldLanguage !==
         normalizedLanguage
     ) {
 
@@ -813,6 +899,7 @@ function setLanguage(
                 "inabata-language-change",
                 {
                     detail: {
+
                         language:
                             normalizedLanguage
                     }
@@ -824,7 +911,7 @@ function setLanguage(
 
 
 /* =========================================
-   Initialize Controls
+   Initialize Language Controls
 ========================================= */
 
 function initializeLanguageControls() {
@@ -861,70 +948,14 @@ function initializeLanguageControls() {
 
 
 /* =========================================
-   Page Title
-========================================= */
-
-function updateStaticPageTitle() {
-
-    const language =
-        getCurrentLanguage();
-
-
-    const pathname =
-        window.location.pathname
-            .toLowerCase();
-
-
-    /*
-     * material.html / download.html の
-     * document.titleは各JSで
-     * 資料名込みに更新するため、
-     * ここでは設定しません。
-     */
-
-    if (
-        pathname.endsWith(
-            "/index.html"
-        ) ||
-        pathname === "/" ||
-        pathname.endsWith("/")
-    ) {
-
-        document.title =
-            language === "ja"
-                ? "展示会資料｜INABATA"
-                : "Exhibition Materials | INABATA";
-
-
-        return;
-    }
-
-
-    if (
-        pathname.endsWith(
-            "/materials.html"
-        )
-    ) {
-
-        document.title =
-            language === "ja"
-                ? "資料一覧｜INABATA"
-                : "Materials | INABATA";
-    }
-}
-
-
-/* =========================================
    Initialize
 ========================================= */
 
 function initializeI18n() {
 
     /*
-     * 初回はEnglish。
-     *
-     * 過去に言語を選択済みの場合は
-     * localStorageの値を優先。
+     * 保存済み言語がない場合は
+     * Englishを使用。
      */
 
     applyTranslations();
@@ -938,30 +969,20 @@ function initializeI18n() {
 
 
 /* =========================================
-   Language Change - Static Title
-========================================= */
-
-window.addEventListener(
-    "inabata-language-change",
-    () => {
-
-        updateStaticPageTitle();
-    }
-);
-
-
-/* =========================================
    Public API
 ========================================= */
 
 window.getCurrentLanguage =
     getCurrentLanguage;
 
+
 window.translate =
     translate;
 
+
 window.setLanguage =
     setLanguage;
+
 
 window.applyTranslations =
     applyTranslations;
