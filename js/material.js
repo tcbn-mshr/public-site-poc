@@ -21,45 +21,54 @@ const loadingElement =
         "material-loading"
     );
 
+
 const errorElement =
     document.getElementById(
         "material-error"
     );
+
 
 const contentElement =
     document.getElementById(
         "material-content"
     );
 
+
 const categoryTopElement =
     document.getElementById(
         "material-category-top"
     );
+
 
 const titleTopElement =
     document.getElementById(
         "material-title-top"
     );
 
+
 const titleElement =
     document.getElementById(
         "material-title"
     );
+
 
 const descriptionElement =
     document.getElementById(
         "material-description"
     );
 
+
 const downloadLinkElement =
     document.getElementById(
         "material-download-link"
     );
 
+
 const thumbnailElement =
     document.getElementById(
         "material-detail-thumbnail"
     );
+
 
 const pdfFallbackElement =
     document.getElementById(
@@ -76,26 +85,40 @@ let currentMaterial =
 
 
 /* =========================================
-   URL Parameter
+   Utility
 ========================================= */
 
-function getMaterialId() {
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
+function normalizeText(value) {
 
     return String(
-        params.get("id") || ""
+        value ?? ""
     ).trim();
 }
 
 
-/* =========================================
-   UI State
-========================================= */
+function firstText(
+    ...values
+) {
+
+    for (
+        const value of values
+    ) {
+
+        const text =
+            normalizeText(
+                value
+            );
+
+
+        if (text) {
+            return text;
+        }
+    }
+
+
+    return "";
+}
+
 
 function hideElement(element) {
 
@@ -112,6 +135,28 @@ function showElement(element) {
     }
 }
 
+
+/* =========================================
+   URL Parameter
+========================================= */
+
+function getMaterialId() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    return normalizeText(
+        params.get("id")
+    );
+}
+
+
+/* =========================================
+   UI State
+========================================= */
 
 function showLoading() {
 
@@ -181,6 +226,7 @@ async function fetchMaterials() {
                     "GET",
 
                 headers: {
+
                     "Accept":
                         "application/json"
                 },
@@ -200,8 +246,21 @@ async function fetchMaterials() {
     }
 
 
-    const result =
-        await response.json();
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+
+    } catch {
+
+        throw new Error(
+            "Invalid materials API response."
+        );
+    }
 
 
     if (
@@ -232,7 +291,7 @@ async function fetchMaterials() {
 
 
 /* =========================================
-   Normalize
+   Normalize Material
 ========================================= */
 
 function normalizeMaterial(
@@ -242,129 +301,261 @@ function normalizeMaterial(
     return {
 
         id:
-            String(
-                material?.id ?? ""
-            ).trim(),
+            normalizeText(
+                material?.id
+            ),
+
+
+        /* =================================
+           Category
+        ================================= */
 
         category:
-            String(
-                material?.category ??
-                "other"
-            ).trim() || "other",
+            normalizeText(
+                material?.category
+            ) || "other",
 
         categoryName:
-            String(
-                material?.categoryName ??
-                "その他"
-            ).trim() || "その他",
+            normalizeText(
+                material?.categoryName
+            ) || "その他",
 
 
-        /* Legacy */
+        /* =================================
+           Legacy
+        ================================= */
 
         title:
-            String(
-                material?.title ?? ""
-            ).trim(),
+            normalizeText(
+                material?.title
+            ),
 
         summary:
-            String(
-                material?.summary ?? ""
-            ).trim(),
+            normalizeText(
+                material?.summary
+            ),
 
         description:
-            String(
-                material?.description ?? ""
-            ).trim(),
+            normalizeText(
+                material?.description
+            ),
 
 
-        /* Japanese */
-
-        titleJa:
-            String(
-                material?.titleJa ??
-                material?.title ??
-                ""
-            ).trim(),
-
-        summaryJa:
-            String(
-                material?.summaryJa ??
-                material?.summary ??
-                ""
-            ).trim(),
-
-        descriptionJa:
-            String(
-                material?.descriptionJa ??
-                material?.description ??
-                ""
-            ).trim(),
-
-
-        /* English */
+        /* =================================
+           English
+        ================================= */
 
         titleEn:
-            String(
-                material?.titleEn ?? ""
-            ).trim(),
+            normalizeText(
+                material?.titleEn
+            ),
 
         summaryEn:
-            String(
-                material?.summaryEn ?? ""
-            ).trim(),
+            normalizeText(
+                material?.summaryEn
+            ),
 
         descriptionEn:
-            String(
-                material?.descriptionEn ?? ""
-            ).trim()
+            normalizeText(
+                material?.descriptionEn
+            ),
+
+
+        /* =================================
+           Japanese
+        ================================= */
+
+        titleJa:
+            normalizeText(
+                material?.titleJa
+            ),
+
+        summaryJa:
+            normalizeText(
+                material?.summaryJa
+            ),
+
+        descriptionJa:
+            normalizeText(
+                material?.descriptionJa
+            )
     };
 }
 
 
 /* =========================================
-   Localization
+   Current Language
 ========================================= */
 
-function getLocalizedMaterialValue(
-    material,
-    field
+function getLanguage() {
+
+    return (
+        typeof getCurrentLanguage ===
+            "function"
+    )
+        ? getCurrentLanguage()
+        : "en";
+}
+
+
+/* =========================================
+   Localized Title
+========================================= */
+
+function getLocalizedTitle(
+    material
 ) {
 
     const language =
-        typeof getCurrentLanguage ===
-        "function"
-            ? getCurrentLanguage()
-            : "en";
+        getLanguage();
 
 
-    const localizedField =
-        language === "ja"
-            ? `${field}Ja`
-            : `${field}En`;
+    /*
+     * English
+     *
+     * titleEn
+     * ↓
+     * legacy title
+     */
 
+    if (
+        language ===
+        "en"
+    ) {
 
-    const localizedValue =
-        String(
-            material?.[
-                localizedField
-            ] ?? ""
-        ).trim();
-
-
-    if (localizedValue) {
-
-        return localizedValue;
+        return firstText(
+            material.titleEn,
+            material.title
+        );
     }
 
 
     /*
-     * English未登録資料では
-     * 既存フィールドへフォールバック。
+     * Japanese
+     *
+     * titleJa
+     * ↓
+     * titleEn
+     * ↓
+     * legacy title
      */
 
-    return String(
-        material?.[field] ?? ""
-    ).trim();
+    return firstText(
+        material.titleJa,
+        material.titleEn,
+        material.title
+    );
+}
+
+
+/* =========================================
+   Localized Summary
+========================================= */
+
+function getLocalizedSummary(
+    material
+) {
+
+    const language =
+        getLanguage();
+
+
+    /*
+     * English
+     */
+
+    if (
+        language ===
+        "en"
+    ) {
+
+        return firstText(
+            material.summaryEn,
+            material.summary
+        );
+    }
+
+
+    /*
+     * Japanese
+     */
+
+    return firstText(
+        material.summaryJa,
+        material.summaryEn,
+        material.summary
+    );
+}
+
+
+/* =========================================
+   Localized Description
+========================================= */
+
+function getLocalizedDescription(
+    material
+) {
+
+    const language =
+        getLanguage();
+
+
+    /*
+     * =====================================
+     * English
+     *
+     * 1. descriptionEn
+     * 2. summaryEn
+     * 3. legacy description
+     * 4. legacy summary
+     * =====================================
+     */
+
+    if (
+        language ===
+        "en"
+    ) {
+
+        return firstText(
+
+            material.descriptionEn,
+
+            material.summaryEn,
+
+            material.description,
+
+            material.summary
+        );
+    }
+
+
+    /*
+     * =====================================
+     * Japanese
+     *
+     * 1. descriptionJa
+     * 2. summaryJa
+     * 3. descriptionEn
+     * 4. summaryEn
+     * 5. legacy description
+     * 6. legacy summary
+     * =====================================
+     */
+
+    return firstText(
+
+        material.descriptionJa,
+
+        material.summaryJa,
+
+        material.descriptionEn,
+
+        material.summaryEn,
+
+        material.description,
+
+        material.summary
+    );
 }
 
 
@@ -377,21 +568,19 @@ function getLocalizedCategoryName(
 ) {
 
     const language =
-        typeof getCurrentLanguage ===
-        "function"
-            ? getCurrentLanguage()
-            : "en";
+        getLanguage();
 
 
     const category =
-        String(
-            material?.category || ""
-        ).trim();
+        normalizeText(
+            material?.category
+        );
 
 
     const categoryNames = {
 
         electronics: {
+
             en:
                 "Information & Electronics",
 
@@ -399,7 +588,9 @@ function getLocalizedCategoryName(
                 "情報電子"
         },
 
+
         chemicals: {
+
             en:
                 "Chemicals",
 
@@ -407,7 +598,9 @@ function getLocalizedCategoryName(
                 "化学品"
         },
 
+
         life: {
+
             en:
                 "Life Industry",
 
@@ -415,7 +608,9 @@ function getLocalizedCategoryName(
                 "生活産業"
         },
 
+
         plastics: {
+
             en:
                 "Plastics",
 
@@ -423,7 +618,9 @@ function getLocalizedCategoryName(
                 "合成樹脂"
         },
 
+
         other: {
+
             en:
                 "Other",
 
@@ -433,9 +630,16 @@ function getLocalizedCategoryName(
     };
 
 
-    return (
-        categoryNames?.[category]?.[language] ||
-        material.categoryName ||
+    return firstText(
+
+        categoryNames?.[
+            category
+        ]?.[
+            language
+        ],
+
+        material.categoryName,
+
         category
     );
 }
@@ -484,7 +688,7 @@ function renderThumbnail(
 
 
     /*
-     * 初期状態はPDF表示。
+     * 初期状態はPDFフォールバック。
      */
 
     thumbnailElement.hidden =
@@ -496,7 +700,7 @@ function renderThumbnail(
 
 
     /*
-     * 前回のイベントとURLをクリア。
+     * 前回のイベント・URLをクリア。
      */
 
     thumbnailElement.onload =
@@ -529,8 +733,8 @@ function renderThumbnail(
 
 
     /*
-     * Thumbnail未登録、
-     * 404または読込エラー。
+     * Thumbnail未登録 / 404 /
+     * その他読み込み失敗。
      */
 
     thumbnailElement.onerror =
@@ -546,7 +750,7 @@ function renderThumbnail(
 
 
     /*
-     * Thumbnail API
+     * Public Thumbnail API
      */
 
     thumbnailElement.src =
@@ -585,16 +789,14 @@ function renderMaterial(
      */
 
     const localizedTitle =
-        getLocalizedMaterialValue(
-            material,
-            "title"
+        getLocalizedTitle(
+            material
         );
 
 
     const localizedDescription =
-        getLocalizedMaterialValue(
-            material,
-            "description"
+        getLocalizedDescription(
+            material
         );
 
 
@@ -605,15 +807,12 @@ function renderMaterial(
 
 
     const language =
-        typeof getCurrentLanguage ===
-        "function"
-            ? getCurrentLanguage()
-            : "en";
+        getLanguage();
 
 
-    /*
-     * Hero category
-     */
+    /* =====================================
+       Hero Category
+    ===================================== */
 
     if (categoryTopElement) {
 
@@ -622,9 +821,9 @@ function renderMaterial(
     }
 
 
-    /*
-     * Hero title
-     */
+    /* =====================================
+       Hero Title
+    ===================================== */
 
     if (titleTopElement) {
 
@@ -633,9 +832,9 @@ function renderMaterial(
     }
 
 
-    /*
-     * Document title
-     */
+    /* =====================================
+       Document Title
+    ===================================== */
 
     if (titleElement) {
 
@@ -644,35 +843,41 @@ function renderMaterial(
     }
 
 
-    /*
-     * Description
-     */
+    /* =====================================
+       Description
+    ===================================== */
 
     if (descriptionElement) {
 
-        if (localizedDescription) {
+        /*
+         * 通常はgetLocalizedDescription()で
+         * summaryまでフォールバックするため、
+         * ここが空になるのは資料データ自体に
+         * 説明系情報が存在しない場合のみ。
+         */
 
-            descriptionElement.textContent =
-                localizedDescription;
-
-
-        } else {
-
-            descriptionElement.textContent =
+        descriptionElement.textContent =
+            localizedDescription ||
+            (
                 language === "ja"
                     ? "資料の詳細をご確認のうえ、ダウンロードページへお進みください。"
-                    : "Please review the material details and proceed to the download page.";
-        }
+                    : "Please review the material details and proceed to the download page."
+            );
     }
 
 
-    /*
-     * Download page
-     *
-     * URLへはmaterialIdのみ渡します。
-     */
+    /* =====================================
+       Download Page
+    ===================================== */
 
     if (downloadLinkElement) {
+
+        /*
+         * URLにはmaterialIdだけ渡します。
+         *
+         * title等は次ページでも
+         * Materials APIから取得します。
+         */
 
         downloadLinkElement.href =
             "./download.html?id=" +
@@ -682,9 +887,9 @@ function renderMaterial(
     }
 
 
-    /*
-     * Browser title
-     */
+    /* =====================================
+       Browser Title
+    ===================================== */
 
     document.title =
         language === "ja"
@@ -717,6 +922,7 @@ async function initializeMaterialPage() {
 
         showError();
 
+
         return;
     }
 
@@ -738,6 +944,7 @@ async function initializeMaterialPage() {
 
 
             showError();
+
 
             return;
         }
@@ -786,10 +993,10 @@ window.addEventListener(
 
 
         /*
-         * API再取得は不要。
+         * APIの再取得は不要。
          *
-         * 保持済みMaterialを
-         * 現在の言語で再描画。
+         * 取得済みの日英6フィールドを
+         * 現在言語で再評価します。
          */
 
         renderMaterial(
