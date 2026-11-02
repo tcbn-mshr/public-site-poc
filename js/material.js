@@ -88,7 +88,9 @@ let currentMaterial =
    Utility
 ========================================= */
 
-function normalizeText(value) {
+function normalizeText(
+    value
+) {
 
     return String(
         value ?? ""
@@ -111,6 +113,7 @@ function firstText(
 
 
         if (text) {
+
             return text;
         }
     }
@@ -120,18 +123,26 @@ function firstText(
 }
 
 
-function hideElement(element) {
+function hideElement(
+    element
+) {
 
     if (element) {
-        element.hidden = true;
+
+        element.hidden =
+            true;
     }
 }
 
 
-function showElement(element) {
+function showElement(
+    element
+) {
 
     if (element) {
-        element.hidden = false;
+
+        element.hidden =
+            false;
     }
 }
 
@@ -389,12 +400,26 @@ function normalizeMaterial(
 
 function getLanguage() {
 
-    return (
+    if (
         typeof getCurrentLanguage ===
-            "function"
-    )
-        ? getCurrentLanguage()
-        : "en";
+        "function"
+    ) {
+
+        const language =
+            getCurrentLanguage();
+
+
+        if (
+            language === "ja" ||
+            language === "en"
+        ) {
+
+            return language;
+        }
+    }
+
+
+    return "en";
 }
 
 
@@ -413,18 +438,18 @@ function getLocalizedTitle(
     /*
      * English
      *
-     * titleEn
-     * ↓
-     * legacy title
+     * 1. titleEn
+     * 2. legacy title
      */
 
     if (
-        language ===
-        "en"
+        language === "en"
     ) {
 
         return firstText(
+
             material.titleEn,
+
             material.title
         );
     }
@@ -433,16 +458,17 @@ function getLocalizedTitle(
     /*
      * Japanese
      *
-     * titleJa
-     * ↓
-     * titleEn
-     * ↓
-     * legacy title
+     * 1. titleJa
+     * 2. titleEn
+     * 3. legacy title
      */
 
     return firstText(
+
         material.titleJa,
+
         material.titleEn,
+
         material.title
     );
 }
@@ -462,15 +488,19 @@ function getLocalizedSummary(
 
     /*
      * English
+     *
+     * 1. summaryEn
+     * 2. legacy summary
      */
 
     if (
-        language ===
-        "en"
+        language === "en"
     ) {
 
         return firstText(
+
             material.summaryEn,
+
             material.summary
         );
     }
@@ -478,11 +508,18 @@ function getLocalizedSummary(
 
     /*
      * Japanese
+     *
+     * 1. summaryJa
+     * 2. summaryEn
+     * 3. legacy summary
      */
 
     return firstText(
+
         material.summaryJa,
+
         material.summaryEn,
+
         material.summary
     );
 }
@@ -504,16 +541,18 @@ function getLocalizedDescription(
      * =====================================
      * English
      *
-     * 1. descriptionEn
-     * 2. summaryEn
-     * 3. legacy description
-     * 4. legacy summary
+     * 1. English detail description
+     * 2. English list summary
+     * 3. Legacy detail description
+     * 4. Legacy list summary
+     *
+     * 詳細説明（英語）が空欄の場合、
+     * 一覧用説明（英語）を表示します。
      * =====================================
      */
 
     if (
-        language ===
-        "en"
+        language === "en"
     ) {
 
         return firstText(
@@ -533,12 +572,18 @@ function getLocalizedDescription(
      * =====================================
      * Japanese
      *
-     * 1. descriptionJa
-     * 2. summaryJa
-     * 3. descriptionEn
-     * 4. summaryEn
-     * 5. legacy description
-     * 6. legacy summary
+     * 1. Japanese detail description
+     * 2. Japanese list summary
+     * 3. English detail description
+     * 4. English list summary
+     * 5. Legacy detail description
+     * 6. Legacy list summary
+     *
+     * 日本語詳細説明が空欄の場合は
+     * 日本語一覧用説明。
+     *
+     * 日本語情報自体が無い場合は
+     * Englishへフォールバックします。
      * =====================================
      */
 
@@ -683,12 +728,16 @@ function renderThumbnail(
         !thumbnailElement ||
         !pdfFallbackElement
     ) {
+
         return;
     }
 
 
     /*
-     * 初期状態はPDFフォールバック。
+     * 初期状態
+     *
+     * 先にPDFフォールバックを表示。
+     * サムネイル取得成功時のみ画像へ切替。
      */
 
     thumbnailElement.hidden =
@@ -700,7 +749,7 @@ function renderThumbnail(
 
 
     /*
-     * 前回のイベント・URLをクリア。
+     * 前回のイベント・URLをリセット。
      */
 
     thumbnailElement.onload =
@@ -717,7 +766,7 @@ function renderThumbnail(
 
 
     /*
-     * Thumbnail取得成功。
+     * Thumbnail取得成功
      */
 
     thumbnailElement.onload =
@@ -733,8 +782,8 @@ function renderThumbnail(
 
 
     /*
-     * Thumbnail未登録 / 404 /
-     * その他読み込み失敗。
+     * Thumbnail未登録
+     * または404 / 読込エラー
      */
 
     thumbnailElement.onerror =
@@ -771,25 +820,38 @@ function renderMaterial(
 ) {
 
     if (!material) {
+
         return;
     }
 
 
-    /*
-     * Thumbnail
-     */
+    /* =====================================
+       Thumbnail
+    ===================================== */
 
     renderThumbnail(
         material
     );
 
 
-    /*
-     * Localized values
-     */
+    /* =====================================
+       Localized Values
+    ===================================== */
 
     const localizedTitle =
         getLocalizedTitle(
+            material
+        );
+
+
+    /*
+     * Summaryは詳細説明の
+     * フォールバック計算にも使用するため、
+     * 関数自体を保持しています。
+     */
+
+    const localizedSummary =
+        getLocalizedSummary(
             material
         );
 
@@ -850,14 +912,18 @@ function renderMaterial(
     if (descriptionElement) {
 
         /*
-         * 通常はgetLocalizedDescription()で
-         * summaryまでフォールバックするため、
-         * ここが空になるのは資料データ自体に
-         * 説明系情報が存在しない場合のみ。
+         * 優先順位：
+         *
+         * 詳細説明
+         * ↓
+         * 一覧用説明
+         * ↓
+         * 最終固定文言
          */
 
         descriptionElement.textContent =
             localizedDescription ||
+            localizedSummary ||
             (
                 language === "ja"
                     ? "資料の詳細をご確認のうえ、ダウンロードページへお進みください。"
@@ -867,15 +933,16 @@ function renderMaterial(
 
 
     /* =====================================
-       Download Page
+       Download Page Link
     ===================================== */
 
     if (downloadLinkElement) {
 
         /*
-         * URLにはmaterialIdだけ渡します。
+         * URLにはmaterialIdのみ渡します。
          *
-         * title等は次ページでも
+         * 資料名・説明等は
+         * download.html側でも
          * Materials APIから取得します。
          */
 
@@ -891,12 +958,23 @@ function renderMaterial(
        Browser Title
     ===================================== */
 
-    document.title =
-        language === "ja"
-            ? localizedTitle +
-                "｜展示会資料｜INABATA"
-            : localizedTitle +
-                " | Exhibition Materials | INABATA";
+    if (localizedTitle) {
+
+        document.title =
+            language === "ja"
+                ? localizedTitle +
+                    "｜展示会資料｜INABATA"
+                : localizedTitle +
+                    " | Exhibition Materials | INABATA";
+
+
+    } else {
+
+        document.title =
+            language === "ja"
+                ? "展示会資料｜INABATA"
+                : "Exhibition Materials | INABATA";
+    }
 }
 
 
@@ -951,7 +1029,8 @@ async function initializeMaterialPage() {
 
 
         /*
-         * 言語切替時に再利用。
+         * 言語切替時にAPIを再取得せず
+         * 再描画するため保持。
          */
 
         currentMaterial =
@@ -988,15 +1067,16 @@ window.addEventListener(
     () => {
 
         if (!currentMaterial) {
+
             return;
         }
 
 
         /*
-         * APIの再取得は不要。
+         * API再取得は不要。
          *
          * 取得済みの日英6フィールドを
-         * 現在言語で再評価します。
+         * 新しい表示言語で再評価。
          */
 
         renderMaterial(
