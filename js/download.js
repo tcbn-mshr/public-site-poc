@@ -136,7 +136,8 @@ const consentErrorElement =
    State
 ========================================= */
 
-let currentMaterial = null;
+let currentMaterial =
+    null;
 
 
 /* =========================================
@@ -166,11 +167,16 @@ function getMaterialId() {
             window.location.search
         );
 
+
     return String(
         params.get("id") || ""
     ).trim();
 }
 
+
+/* =========================================
+   Normalize Material
+========================================= */
 
 function normalizeMaterial(material) {
 
@@ -179,11 +185,6 @@ function normalizeMaterial(material) {
         id:
             String(
                 material?.id ?? ""
-            ).trim(),
-
-        title:
-            String(
-                material?.title ?? ""
             ).trim(),
 
         category:
@@ -196,13 +197,210 @@ function normalizeMaterial(material) {
                 material?.categoryName ?? "その他"
             ).trim() || "その他",
 
+
+        /* =================================
+           Legacy
+        ================================= */
+
+        title:
+            String(
+                material?.title ?? ""
+            ).trim(),
+
+        summary:
+            String(
+                material?.summary ?? ""
+            ).trim(),
+
         description:
             String(
                 material?.description ?? ""
+            ).trim(),
+
+
+        /* =================================
+           Japanese
+        ================================= */
+
+        titleJa:
+            String(
+                material?.titleJa ??
+                material?.title ??
+                ""
+            ).trim(),
+
+        summaryJa:
+            String(
+                material?.summaryJa ??
+                material?.summary ??
+                ""
+            ).trim(),
+
+        descriptionJa:
+            String(
+                material?.descriptionJa ??
+                material?.description ??
+                ""
+            ).trim(),
+
+
+        /* =================================
+           English
+        ================================= */
+
+        titleEn:
+            String(
+                material?.titleEn ?? ""
+            ).trim(),
+
+        summaryEn:
+            String(
+                material?.summaryEn ?? ""
+            ).trim(),
+
+        descriptionEn:
+            String(
+                material?.descriptionEn ?? ""
             ).trim()
     };
 }
 
+
+/* =========================================
+   Localization
+========================================= */
+
+function getLocalizedMaterialValue(
+    material,
+    field
+) {
+
+    const language =
+        typeof getCurrentLanguage ===
+        "function"
+            ? getCurrentLanguage()
+            : "en";
+
+
+    const localizedField =
+        language === "ja"
+            ? `${field}Ja`
+            : `${field}En`;
+
+
+    const localizedValue =
+        String(
+            material?.[localizedField] ??
+            ""
+        ).trim();
+
+
+    if (localizedValue) {
+
+        return localizedValue;
+    }
+
+
+    /*
+     * 移行期間中のフォールバック。
+     *
+     * 英語フィールド未登録資料を
+     * 空表示にしないため、
+     * 旧フィールドを使用します。
+     */
+
+    return String(
+        material?.[field] ??
+        ""
+    ).trim();
+}
+
+
+/* =========================================
+   Localized Category
+========================================= */
+
+function getLocalizedCategoryName(
+    material
+) {
+
+    const language =
+        typeof getCurrentLanguage ===
+        "function"
+            ? getCurrentLanguage()
+            : "en";
+
+
+    const category =
+        String(
+            material?.category || ""
+        ).trim();
+
+
+    const categoryNames = {
+
+        electronics: {
+
+            en:
+                "Information & Electronics",
+
+            ja:
+                "情報電子"
+        },
+
+
+        chemicals: {
+
+            en:
+                "Chemicals",
+
+            ja:
+                "化学品"
+        },
+
+
+        life: {
+
+            en:
+                "Life Industry",
+
+            ja:
+                "生活産業"
+        },
+
+
+        plastics: {
+
+            en:
+                "Plastics",
+
+            ja:
+                "合成樹脂"
+        },
+
+
+        other: {
+
+            en:
+                "Other",
+
+            ja:
+                "その他"
+        }
+    };
+
+
+    return (
+        categoryNames?.[category]?.[language] ||
+        material.categoryName ||
+        category
+    );
+}
+
+
+/* =========================================
+   Email Validation
+========================================= */
 
 function isValidEmail(value) {
 
@@ -221,9 +419,11 @@ function showPageLoading() {
         pageLoadingElement
     );
 
+
     hideElement(
         pageErrorElement
     );
+
 
     hideElement(
         contentElement
@@ -237,9 +437,11 @@ function showPageError() {
         pageLoadingElement
     );
 
+
     hideElement(
         contentElement
     );
+
 
     showElement(
         pageErrorElement
@@ -253,9 +455,11 @@ function showPageContent() {
         pageLoadingElement
     );
 
+
     hideElement(
         pageErrorElement
     );
+
 
     showElement(
         contentElement
@@ -267,13 +471,24 @@ function showPageContent() {
    Processing State
 ========================================= */
 
-function setProcessing(isProcessing) {
+function setProcessing(
+    isProcessing
+) {
 
     const formControls = [
+
         companyElement,
+
+        departmentElement,
+
         customerNameElement,
+
         emailElement,
+
+        phoneNumberElement,
+
         consentElement,
+
         submitButton
     ];
 
@@ -282,6 +497,7 @@ function setProcessing(isProcessing) {
         (control) => {
 
             if (control) {
+
                 control.disabled =
                     isProcessing;
             }
@@ -289,20 +505,47 @@ function setProcessing(isProcessing) {
     );
 
 
+    /*
+     * Submit button text
+     */
+
     if (submitLabelElement) {
 
-        submitLabelElement.textContent =
-            isProcessing
-                ? "準備しています"
-                : "同意してダウンロード";
+        if (
+            typeof translate ===
+            "function"
+        ) {
+
+            submitLabelElement.textContent =
+                isProcessing
+                    ? translate(
+                        "download.processing"
+                    )
+                    : translate(
+                        "download.submit"
+                    );
+
+
+        } else {
+
+            submitLabelElement.textContent =
+                isProcessing
+                    ? "Preparing..."
+                    : "Agree and Download";
+        }
     }
 
+
+    /*
+     * Processing message
+     */
 
     if (isProcessing) {
 
         showElement(
             processingElement
         );
+
 
     } else {
 
@@ -323,21 +566,26 @@ function clearMessages() {
         companyErrorElement
     );
 
+
     hideElement(
         customerNameErrorElement
     );
+
 
     hideElement(
         emailErrorElement
     );
 
+
     hideElement(
         consentErrorElement
     );
 
+
     hideElement(
         apiErrorElement
     );
+
 
     hideElement(
         successElement
@@ -354,9 +602,18 @@ function showApiError(message) {
 
     apiErrorElement.textContent =
         message ||
-        "ダウンロードを開始できませんでした。";
+        (
+            typeof translate ===
+            "function"
+                ? translate(
+                    "download.apiError"
+                )
+                : "Unable to start the download."
+        );
 
-    apiErrorElement.hidden = false;
+
+    apiErrorElement.hidden =
+        false;
 }
 
 
@@ -371,18 +628,24 @@ function validateForm() {
 
     const company =
         String(
-            companyElement?.value || ""
+            companyElement?.value ||
+            ""
         ).trim();
+
 
     const customerName =
         String(
-            customerNameElement?.value || ""
+            customerNameElement?.value ||
+            ""
         ).trim();
+
 
     const email =
         String(
-            emailElement?.value || ""
+            emailElement?.value ||
+            ""
         ).trim();
+
 
     const consent =
         Boolean(
@@ -390,8 +653,13 @@ function validateForm() {
         );
 
 
-    let firstInvalidElement = null;
+    let firstInvalidElement =
+        null;
 
+
+    /*
+     * Company
+     */
 
     if (!company) {
 
@@ -399,11 +667,16 @@ function validateForm() {
             companyErrorElement
         );
 
+
         firstInvalidElement =
             firstInvalidElement ||
             companyElement;
     }
 
+
+    /*
+     * Name
+     */
 
     if (!customerName) {
 
@@ -411,20 +684,28 @@ function validateForm() {
             customerNameErrorElement
         );
 
+
         firstInvalidElement =
             firstInvalidElement ||
             customerNameElement;
     }
 
 
+    /*
+     * Email
+     */
+
     if (
         !email ||
-        !isValidEmail(email)
+        !isValidEmail(
+            email
+        )
     ) {
 
         showElement(
             emailErrorElement
         );
+
 
         firstInvalidElement =
             firstInvalidElement ||
@@ -432,11 +713,16 @@ function validateForm() {
     }
 
 
+    /*
+     * Consent
+     */
+
     if (!consent) {
 
         showElement(
             consentErrorElement
         );
+
 
         firstInvalidElement =
             firstInvalidElement ||
@@ -466,9 +752,11 @@ async function fetchMaterials() {
         await fetch(
             MATERIALS_API_URL,
             {
-                method: "GET",
+                method:
+                    "GET",
 
                 headers: {
+
                     "Accept":
                         "application/json"
                 },
@@ -510,7 +798,9 @@ async function fetchMaterials() {
 }
 
 
-async function getMaterial(materialId) {
+async function getMaterial(
+    materialId
+) {
 
     const materials =
         await fetchMaterials();
@@ -534,27 +824,83 @@ async function getMaterial(materialId) {
 
 function renderMaterial(material) {
 
+    if (!material) {
+        return;
+    }
+
+
+    const language =
+        typeof getCurrentLanguage ===
+        "function"
+            ? getCurrentLanguage()
+            : "en";
+
+
+    /*
+     * Localized values
+     */
+
+    const localizedTitle =
+        getLocalizedMaterialValue(
+            material,
+            "title"
+        );
+
+
+    const localizedSummary =
+        getLocalizedMaterialValue(
+            material,
+            "summary"
+        );
+
+
+    const localizedCategoryName =
+        getLocalizedCategoryName(
+            material
+        );
+
+
+    /*
+     * Hero category
+     */
+
     if (categoryTopElement) {
 
         categoryTopElement.textContent =
-            material.categoryName;
+            localizedCategoryName;
     }
 
+
+    /*
+     * Selected document title
+     */
 
     if (documentTitleElement) {
 
         documentTitleElement.textContent =
-            material.title;
+            localizedTitle;
     }
 
+
+    /*
+     * Selected document summary
+     */
 
     if (documentDescriptionElement) {
 
         documentDescriptionElement.textContent =
-            material.summary ||
-            "選択した資料をダウンロードします。";
+            localizedSummary ||
+            (
+                language === "ja"
+                    ? "選択した資料をダウンロードします。"
+                    : "Download the selected material."
+            );
     }
 
+
+    /*
+     * Back to detail
+     */
 
     if (backLinkElement) {
 
@@ -566,9 +912,16 @@ function renderMaterial(material) {
     }
 
 
+    /*
+     * Browser title
+     */
+
     document.title =
-        material.title +
-        "｜資料ダウンロード｜INABATA";
+        language === "ja"
+            ? localizedTitle +
+                "｜資料ダウンロード｜INABATA"
+            : localizedTitle +
+                " | Download Material | INABATA";
 }
 
 
@@ -580,47 +933,66 @@ async function requestDownload() {
 
     if (!currentMaterial) {
 
+        const language =
+            typeof getCurrentLanguage ===
+            "function"
+                ? getCurrentLanguage()
+                : "en";
+
+
         throw new Error(
-            "資料情報を確認できませんでした。"
+            language === "ja"
+                ? "資料情報を確認できませんでした。"
+                : "Unable to verify the material information."
         );
     }
 
 
-const payload = {
+    /*
+     * Department and phone number are
+     * optional.
+     */
 
-    materialId:
-        currentMaterial.id,
+    const payload = {
 
-    company:
-        String(
-            companyElement.value
-        ).trim(),
+        materialId:
+            currentMaterial.id,
 
-    department:
-        String(
-            departmentElement?.value || ""
-        ).trim(),
+        company:
+            String(
+                companyElement?.value ||
+                ""
+            ).trim(),
 
-    customerName:
-        String(
-            customerNameElement.value
-        ).trim(),
+        department:
+            String(
+                departmentElement?.value ||
+                ""
+            ).trim(),
 
-    email:
-        String(
-            emailElement.value
-        ).trim(),
+        customerName:
+            String(
+                customerNameElement?.value ||
+                ""
+            ).trim(),
 
-    phoneNumber:
-        String(
-            phoneNumberElement?.value || ""
-        ).trim(),
+        email:
+            String(
+                emailElement?.value ||
+                ""
+            ).trim(),
 
-    consent:
-        Boolean(
-            consentElement.checked
-        )
-};
+        phoneNumber:
+            String(
+                phoneNumberElement?.value ||
+                ""
+            ).trim(),
+
+        consent:
+            Boolean(
+                consentElement?.checked
+            )
+    };
 
 
     const response =
@@ -631,6 +1003,7 @@ const payload = {
                     "POST",
 
                 headers: {
+
                     "Content-Type":
                         "application/json",
 
@@ -646,7 +1019,8 @@ const payload = {
         );
 
 
-    let result = null;
+    let result =
+        null;
 
 
     try {
@@ -654,10 +1028,20 @@ const payload = {
         result =
             await response.json();
 
+
     } catch {
 
+        const language =
+            typeof getCurrentLanguage ===
+            "function"
+                ? getCurrentLanguage()
+                : "en";
+
+
         throw new Error(
-            "APIから有効な応答を取得できませんでした。"
+            language === "ja"
+                ? "APIから有効な応答を取得できませんでした。"
+                : "Unable to retrieve a valid response from the API."
         );
     }
 
@@ -667,41 +1051,67 @@ const payload = {
         result?.success !== true
     ) {
 
+        const language =
+            typeof getCurrentLanguage ===
+            "function"
+                ? getCurrentLanguage()
+                : "en";
+
+
         throw new Error(
             result?.message ||
-            "ダウンロードを開始できませんでした。"
+            (
+                language === "ja"
+                    ? "ダウンロードを開始できませんでした。"
+                    : "Unable to start the download."
+            )
         );
     }
 
 
     if (!result.downloadUrl) {
 
+        const language =
+            typeof getCurrentLanguage ===
+            "function"
+                ? getCurrentLanguage()
+                : "en";
+
+
         throw new Error(
-            "ダウンロードURLを取得できませんでした。"
+            language === "ja"
+                ? "ダウンロードURLを取得できませんでした。"
+                : "Unable to retrieve the download URL."
         );
     }
 
 
     /*
-     * APIが返した短時間有効なSAS URLを開きます。
-     * Content-Dispositionがattachmentなら、
-     * 元ページを維持したままダウンロードされます。
+     * APIが返した短時間有効な
+     * SAS URLを開きます。
      */
 
     const downloadLink =
-        document.createElement("a");
+        document.createElement(
+            "a"
+        );
+
 
     downloadLink.href =
         result.downloadUrl;
 
+
     downloadLink.style.display =
         "none";
+
 
     document.body.appendChild(
         downloadLink
     );
 
+
     downloadLink.click();
+
 
     downloadLink.remove();
 }
@@ -721,12 +1131,15 @@ async function handleSubmit(event) {
     }
 
 
-    setProcessing(true);
+    setProcessing(
+        true
+    );
 
 
     try {
 
         await requestDownload();
+
 
         showElement(
             successElement
@@ -740,6 +1153,7 @@ async function handleSubmit(event) {
             error
         );
 
+
         showApiError(
             error.message
         );
@@ -747,7 +1161,9 @@ async function handleSubmit(event) {
 
     } finally {
 
-        setProcessing(false);
+        setProcessing(
+            false
+        );
     }
 }
 
@@ -759,6 +1175,7 @@ async function handleSubmit(event) {
 async function initializeDownloadPage() {
 
     showPageLoading();
+
 
     clearMessages();
 
@@ -772,6 +1189,7 @@ async function initializeDownloadPage() {
         console.error(
             "Material ID was not specified."
         );
+
 
         showPageError();
 
@@ -794,6 +1212,7 @@ async function initializeDownloadPage() {
                 materialId
             );
 
+
             showPageError();
 
             return;
@@ -803,6 +1222,7 @@ async function initializeDownloadPage() {
         renderMaterial(
             currentMaterial
         );
+
 
         showPageContent();
 
@@ -823,9 +1243,55 @@ async function initializeDownloadPage() {
             error
         );
 
+
         showPageError();
     }
 }
+
+
+/* =========================================
+   Language Change
+========================================= */
+
+window.addEventListener(
+    "inabata-language-change",
+    () => {
+
+        /*
+         * Material data
+         */
+
+        if (currentMaterial) {
+
+            renderMaterial(
+                currentMaterial
+            );
+        }
+
+
+        /*
+         * Submit button
+         *
+         * i18n.js handles all elements with
+         * data-i18n, but this label is also
+         * changed dynamically while processing.
+         */
+
+        if (
+            submitButton &&
+            !submitButton.disabled &&
+            submitLabelElement &&
+            typeof translate ===
+            "function"
+        ) {
+
+            submitLabelElement.textContent =
+                translate(
+                    "download.submit"
+                );
+        }
+    }
+);
 
 
 /* =========================================
@@ -841,6 +1307,7 @@ if (
         "DOMContentLoaded",
         initializeDownloadPage
     );
+
 
 } else {
 
