@@ -49,45 +49,102 @@ const form =
         "material-edit-form"
     );
 
+
 const fileElement =
     document.getElementById(
         "material-file"
     );
 
-const titleElement =
+
+const fileRequiredElement =
     document.getElementById(
-        "material-title"
+        "material-file-required"
     );
+
 
 const categoryElement =
     document.getElementById(
         "material-category"
     );
 
-const summaryElement =
+
+/* =========================================
+   English
+========================================= */
+
+const titleEnElement =
     document.getElementById(
-        "material-summary"
+        "material-title-en"
     );
 
-const descriptionElement =
+
+const summaryEnElement =
     document.getElementById(
-        "material-description"
+        "material-summary-en"
     );
 
-const summaryCounter =
+
+const descriptionEnElement =
     document.getElementById(
-        "summary-counter"
+        "material-description-en"
     );
 
-const descriptionCounter =
+
+const summaryEnCounter =
     document.getElementById(
-        "description-counter"
+        "summary-en-counter"
     );
+
+
+const descriptionEnCounter =
+    document.getElementById(
+        "description-en-counter"
+    );
+
+
+/* =========================================
+   Japanese
+========================================= */
+
+const titleJaElement =
+    document.getElementById(
+        "material-title-ja"
+    );
+
+
+const summaryJaElement =
+    document.getElementById(
+        "material-summary-ja"
+    );
+
+
+const descriptionJaElement =
+    document.getElementById(
+        "material-description-ja"
+    );
+
+
+const summaryJaCounter =
+    document.getElementById(
+        "summary-ja-counter"
+    );
+
+
+const descriptionJaCounter =
+    document.getElementById(
+        "description-ja-counter"
+    );
+
+
+/* =========================================
+   Form
+========================================= */
 
 const formErrorElement =
     document.getElementById(
         "admin-form-error"
     );
+
 
 const saveButton =
     document.getElementById(
@@ -137,33 +194,53 @@ function getErrorElement(
    Character Counters
 ========================================= */
 
-function updateSummaryCounter() {
+function updateCounter(
+    inputElement,
+    counterElement,
+    maximumLength
+) {
 
     if (
-        !summaryElement ||
-        !summaryCounter
+        !inputElement ||
+        !counterElement
     ) {
         return;
     }
 
 
-    summaryCounter.textContent =
-        `${summaryElement.value.length} / 250`;
+    counterElement.textContent =
+        `${inputElement.value.length} / ${maximumLength}`;
 }
 
 
-function updateDescriptionCounter() {
+function updateAllCounters() {
 
-    if (
-        !descriptionElement ||
-        !descriptionCounter
-    ) {
-        return;
-    }
+    updateCounter(
+        summaryEnElement,
+        summaryEnCounter,
+        250
+    );
 
 
-    descriptionCounter.textContent =
-        `${descriptionElement.value.length} / 2000`;
+    updateCounter(
+        descriptionEnElement,
+        descriptionEnCounter,
+        2000
+    );
+
+
+    updateCounter(
+        summaryJaElement,
+        summaryJaCounter,
+        250
+    );
+
+
+    updateCounter(
+        descriptionJaElement,
+        descriptionJaCounter,
+        2000
+    );
 }
 
 
@@ -174,11 +251,13 @@ function updateDescriptionCounter() {
 function clearErrors() {
 
     const fieldNames = [
+
         "material-file",
-        "material-title",
-        "material-category",
-        "material-summary",
-        "material-description"
+
+        "material-title-en",
+        "material-summary-en",
+
+        "material-category"
     ];
 
 
@@ -302,6 +381,31 @@ function getSelectedStatus() {
 
 
 /* =========================================
+   Required Field Validation
+========================================= */
+
+function validateRequiredField(
+    element,
+    errorId
+) {
+
+    if (getText(element)) {
+        return true;
+    }
+
+
+    showElement(
+        document.getElementById(
+            errorId
+        )
+    );
+
+
+    return false;
+}
+
+
+/* =========================================
    Form Validation
 ========================================= */
 
@@ -318,33 +422,32 @@ function validateForm() {
         null;
 
 
-    /*
-     * 新規登録時のみPDF必須
-     */
+    /* =====================================
+       PDF
+    ===================================== */
 
-    if (
-        !isEditMode &&
-        !validatePdf()
-    ) {
+    if (!isEditMode) {
 
-        valid =
-            false;
+        if (!validatePdf()) {
 
-
-        firstInvalidElement =
-            firstInvalidElement ||
-            fileElement;
-    }
+            valid =
+                false;
 
 
-    /*
-     * 編集時にPDFが選択されている場合
-     */
+            firstInvalidElement =
+                firstInvalidElement ||
+                fileElement;
+        }
 
-    if (
-        isEditMode &&
+
+    } else if (
         fileElement?.files?.[0]
     ) {
+
+        /*
+         * 編集時はPDF選択時だけ
+         * PDF形式を検証。
+         */
 
         if (!validatePdf()) {
 
@@ -359,18 +462,16 @@ function validateForm() {
     }
 
 
-    /*
-     * Title
-     */
+    /* =====================================
+       English Title
+    ===================================== */
 
-    if (!getText(titleElement)) {
-
-        showElement(
-            getErrorElement(
-                "material-title"
-            )
-        );
-
+    if (
+        !validateRequiredField(
+            titleEnElement,
+            "material-title-en-error"
+        )
+    ) {
 
         valid =
             false;
@@ -378,13 +479,34 @@ function validateForm() {
 
         firstInvalidElement =
             firstInvalidElement ||
-            titleElement;
+            titleEnElement;
     }
 
 
-    /*
-     * Category
-     */
+    /* =====================================
+       English Summary
+    ===================================== */
+
+    if (
+        !validateRequiredField(
+            summaryEnElement,
+            "material-summary-en-error"
+        )
+    ) {
+
+        valid =
+            false;
+
+
+        firstInvalidElement =
+            firstInvalidElement ||
+            summaryEnElement;
+    }
+
+
+    /* =====================================
+       Category
+    ===================================== */
 
     if (!getText(categoryElement)) {
 
@@ -405,50 +527,12 @@ function validateForm() {
     }
 
 
-    /*
-     * Summary
-     */
+    /* =====================================
+       Descriptions
+       Japanese fields
 
-    if (!getText(summaryElement)) {
-
-        showElement(
-            getErrorElement(
-                "material-summary"
-            )
-        );
-
-
-        valid =
-            false;
-
-
-        firstInvalidElement =
-            firstInvalidElement ||
-            summaryElement;
-    }
-
-
-    /*
-     * Description
-     */
-
-    if (!getText(descriptionElement)) {
-
-        showElement(
-            getErrorElement(
-                "material-description"
-            )
-        );
-
-
-        valid =
-            false;
-
-
-        firstInvalidElement =
-            firstInvalidElement ||
-            descriptionElement;
-    }
+       すべて任意なので検証なし。
+    ===================================== */
 
 
     if (!valid) {
@@ -497,6 +581,108 @@ function setSaving(
         isSaving
             ? "保存しています..."
             : "保存する";
+}
+
+
+/* =========================================
+   Legacy Field Generation
+========================================= */
+
+function createLocalizedPayload() {
+
+    const titleEn =
+        getText(
+            titleEnElement
+        );
+
+
+    const summaryEn =
+        getText(
+            summaryEnElement
+        );
+
+
+    const descriptionEn =
+        getText(
+            descriptionEnElement
+        );
+
+
+    const titleJa =
+        getText(
+            titleJaElement
+        );
+
+
+    const summaryJa =
+        getText(
+            summaryJaElement
+        );
+
+
+    const descriptionJa =
+        getText(
+            descriptionJaElement
+        );
+
+
+    /*
+     * Legacy fields
+     *
+     * 日本語があれば日本語を優先。
+     * 日本語がなければ必須の英語を使用。
+     *
+     * descriptionは詳細説明がなくても
+     * 一覧用説明を使うことで、
+     * 従来フィールドとの互換性を維持。
+     */
+
+    const legacyTitle =
+        titleJa ||
+        titleEn;
+
+
+    const legacySummary =
+        summaryJa ||
+        summaryEn;
+
+
+    const legacyDescription =
+        descriptionJa ||
+        summaryJa ||
+        descriptionEn ||
+        summaryEn;
+
+
+    return {
+
+        title:
+            legacyTitle,
+
+        summary:
+            legacySummary,
+
+        description:
+            legacyDescription,
+
+        titleEn:
+            titleEn,
+
+        summaryEn:
+            summaryEn,
+
+        descriptionEn:
+            descriptionEn,
+
+        titleJa:
+            titleJa,
+
+        summaryJa:
+            summaryJa,
+
+        descriptionJa:
+            descriptionJa
+    };
 }
 
 
@@ -580,37 +766,90 @@ async function loadMaterialForEdit() {
     }
 
 
-    if (titleElement) {
+    /* =====================================
+       English
+    ===================================== */
 
-        titleElement.value =
-            material.title || "";
+    if (titleEnElement) {
+
+        titleEnElement.value =
+            material.titleEn ||
+            "";
     }
 
+
+    if (summaryEnElement) {
+
+        summaryEnElement.value =
+            material.summaryEn ||
+            "";
+    }
+
+
+    if (descriptionEnElement) {
+
+        descriptionEnElement.value =
+            material.descriptionEn ||
+            "";
+    }
+
+
+    /* =====================================
+       Japanese
+
+       既存資料にはtitleJa等が無い場合が
+       あるのでLegacy値へフォールバック。
+    ===================================== */
+
+    if (titleJaElement) {
+
+        titleJaElement.value =
+            material.titleJa ||
+            material.title ||
+            "";
+    }
+
+
+    if (summaryJaElement) {
+
+        summaryJaElement.value =
+            material.summaryJa ||
+            material.summary ||
+            "";
+    }
+
+
+    if (descriptionJaElement) {
+
+        /*
+         * ここではLegacy descriptionへ
+         * 自動コピーしません。
+         *
+         * descriptionJaが無い場合は空欄にして、
+         * 任意項目であることを維持します。
+         */
+
+        descriptionJaElement.value =
+            material.descriptionJa ||
+            "";
+    }
+
+
+    /* =====================================
+       Category
+    ===================================== */
 
     if (categoryElement) {
 
         categoryElement.value =
-            material.category || "";
+            material.category ||
+            "";
     }
 
 
-    if (summaryElement) {
-
-        summaryElement.value =
-            material.summary || "";
-    }
-
-
-    if (descriptionElement) {
-
-        descriptionElement.value =
-            material.description || "";
-    }
-
-
-    /*
-     * Status
-     */
+    /* =====================================
+       Status
+    ===================================== */
 
     const status =
         material.status ===
@@ -632,9 +871,22 @@ async function loadMaterialForEdit() {
     }
 
 
-    updateSummaryCounter();
+    /* =====================================
+       PDF required mark
+    ===================================== */
 
-    updateDescriptionCounter();
+    if (fileRequiredElement) {
+
+        /*
+         * 編集時はPDF任意。
+         */
+
+        fileRequiredElement.hidden =
+            true;
+    }
+
+
+    updateAllCounters();
 }
 
 
@@ -644,30 +896,24 @@ async function loadMaterialForEdit() {
 
 async function createMaterial() {
 
+    const localized =
+        createLocalizedPayload();
+
+
     const payload = {
 
-        title:
-            getText(
-                titleElement
-            ),
+        ...localized,
 
         category:
             getText(
                 categoryElement
             ),
 
-        summary:
-            getText(
-                summaryElement
-            ),
-
-        description:
-            getText(
-                descriptionElement
-            ),
-
         /*
-         * アップロード完了前の公開防止
+         * 新規作成直後は必ずdraft。
+         *
+         * PDF / thumbnail登録完了前に
+         * 公開されるのを防止。
          */
 
         status:
@@ -929,10 +1175,6 @@ async function createAndUploadThumbnail(
     }
 
 
-    /*
-     * PDF 1ページ目 → JPEG
-     */
-
     const thumbnailBlob =
         await window.createPdfThumbnail(
             pdfFile
@@ -951,10 +1193,6 @@ async function createAndUploadThumbnail(
     }
 
 
-    /*
-     * manage-uploadへ渡すFile
-     */
-
     const thumbnailFile =
         new File(
             [
@@ -970,10 +1208,6 @@ async function createAndUploadThumbnail(
         );
 
 
-    /*
-     * thumbnail用SAS
-     */
-
     const thumbnailUploadInfo =
         await requestUploadUrl(
             materialId,
@@ -981,10 +1215,6 @@ async function createAndUploadThumbnail(
             "thumbnail"
         );
 
-
-    /*
-     * thumbnail.jpg PUT
-     */
 
     await uploadThumbnail(
         thumbnailUploadInfo.uploadUrl,
@@ -1002,29 +1232,20 @@ async function createAndUploadThumbnail(
 
 async function updateMaterialMetadata() {
 
+    const localized =
+        createLocalizedPayload();
+
+
     const payload = {
 
         id:
             editingMaterialId,
 
-        title:
-            getText(
-                titleElement
-            ),
+        ...localized,
 
         category:
             getText(
                 categoryElement
-            ),
-
-        summary:
-            getText(
-                summaryElement
-            ),
-
-        description:
-            getText(
-                descriptionElement
             )
     };
 
@@ -1156,12 +1377,138 @@ async function updateMaterialPdf(
 
         throw new Error(
             result?.message ||
-            "PDF・サムネイル情報をMaterialsへ登録できませんでした。"
+            "PDF・サムネイル情報を登録できませんでした。"
         );
     }
 
 
     return result.material;
+}
+
+
+/* =========================================
+   Update Publication Status
+========================================= */
+
+async function updateMaterialStatus(
+    materialId,
+    status
+) {
+
+    const response =
+        await fetch(
+            MANAGE_MATERIALS_API,
+            {
+                method:
+                    "PUT",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+
+                        id:
+                            materialId,
+
+                        status:
+                            status
+                    })
+            }
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+
+    } catch {
+
+        throw new Error(
+            "公開状態更新APIから有効な応答を取得できませんでした。"
+        );
+    }
+
+
+    if (
+        !response.ok ||
+        result?.success !== true
+    ) {
+
+        throw new Error(
+            result?.message ||
+            "公開状態を更新できませんでした。"
+        );
+    }
+
+
+    return result.material;
+}
+
+
+/* =========================================
+   Upload PDF And Thumbnail
+========================================= */
+
+async function uploadMaterialFiles(
+    materialId,
+    file
+) {
+
+    /*
+     * PDF SAS
+     */
+
+    const uploadInfo =
+        await requestUploadUrl(
+            materialId,
+            file,
+            "pdf"
+        );
+
+
+    /*
+     * PDF PUT
+     */
+
+    await uploadPdf(
+        uploadInfo.uploadUrl,
+        file
+    );
+
+
+    /*
+     * Thumbnail生成 + PUT
+     */
+
+    const thumbnailUploadInfo =
+        await createAndUploadThumbnail(
+            materialId,
+            file
+        );
+
+
+    /*
+     * Blob情報保存
+     */
+
+    await updateMaterialPdf(
+        materialId,
+        uploadInfo.blobName,
+        uploadInfo.originalFileName,
+        thumbnailUploadInfo.blobName
+    );
 }
 
 
@@ -1186,6 +1533,10 @@ async function handleSubmit(
         null;
 
 
+    const selectedStatus =
+        getSelectedStatus();
+
+
     hideElement(
         formErrorElement
     );
@@ -1205,64 +1556,36 @@ async function handleSubmit(
         if (isEditMode) {
 
             /*
-             * Metadata
+             * 日英Metadata更新
              */
 
             await updateMaterialMetadata();
 
 
             /*
-             * 新PDFが選択された場合のみ
-             * PDF + thumbnailを差し替える。
+             * PDFが選択されている場合のみ
+             * PDF + Thumbnail更新。
              */
 
             if (file) {
 
-                /*
-                 * PDF SAS
-                 */
-
-                const uploadInfo =
-                    await requestUploadUrl(
-                        editingMaterialId,
-                        file,
-                        "pdf"
-                    );
-
-
-                /*
-                 * PDF PUT
-                 */
-
-                await uploadPdf(
-                    uploadInfo.uploadUrl,
+                await uploadMaterialFiles(
+                    editingMaterialId,
                     file
                 );
-
-
-                /*
-                 * Thumbnail生成 + PUT
-                 */
-
-                const thumbnailUploadInfo =
-                    await createAndUploadThumbnail(
-                        editingMaterialId,
-                        file
-                    );
-
-
-                /*
-                 * PDF / Thumbnail情報を
-                 * Materialsへ保存
-                 */
-
-                await updateMaterialPdf(
-                    editingMaterialId,
-                    uploadInfo.blobName,
-                    uploadInfo.originalFileName,
-                    thumbnailUploadInfo.blobName
-                );
             }
+
+
+            /*
+             * 公開状態
+             *
+             * metadataやPDF更新完了後に実施。
+             */
+
+            await updateMaterialStatus(
+                editingMaterialId,
+                selectedStatus
+            );
 
 
             window.alert(
@@ -1293,7 +1616,9 @@ async function handleSubmit(
 
 
         /*
-         * Materials draft作成
+         * 新規作成
+         *
+         * APIへはdraftで登録。
          */
 
         const material =
@@ -1301,54 +1626,39 @@ async function handleSubmit(
 
 
         /*
-         * PDF用SAS取得
+         * PDF + Thumbnail
          */
 
-        const uploadInfo =
-            await requestUploadUrl(
-                material.id,
-                file,
-                "pdf"
-            );
-
-
-        /*
-         * document.pdf PUT
-         */
-
-        await uploadPdf(
-            uploadInfo.uploadUrl,
+        await uploadMaterialFiles(
+            material.id,
             file
         );
 
 
         /*
-         * Thumbnail生成 + PUT
+         * ユーザーが公開を選択していれば、
+         * ファイル登録完了後にpublishedへ変更。
+         *
+         * draft選択ならdraftのまま。
          */
 
-        const thumbnailUploadInfo =
-            await createAndUploadThumbnail(
+        if (
+            selectedStatus ===
+            "published"
+        ) {
+
+            await updateMaterialStatus(
                 material.id,
-                file
+                "published"
             );
-
-
-        /*
-         * PDF / Thumbnail情報を
-         * Materialsへ保存
-         */
-
-        await updateMaterialPdf(
-            material.id,
-            uploadInfo.blobName,
-            uploadInfo.originalFileName,
-            thumbnailUploadInfo.blobName
-        );
+        }
 
 
         window.alert(
-            "資料を登録しました。\n" +
-            "PDFとサムネイルのアップロードが完了しました。"
+            selectedStatus ===
+                "published"
+                ? "資料を登録し、公開しました。"
+                : "資料を下書きとして登録しました。"
         );
 
 
@@ -1387,26 +1697,80 @@ async function handleSubmit(
 
 
 /* =========================================
-   Events
+   Events - English
 ========================================= */
 
-if (summaryElement) {
+if (summaryEnElement) {
 
-    summaryElement.addEventListener(
+    summaryEnElement.addEventListener(
         "input",
-        updateSummaryCounter
+        () => {
+
+            updateCounter(
+                summaryEnElement,
+                summaryEnCounter,
+                250
+            );
+        }
     );
 }
 
 
-if (descriptionElement) {
+if (descriptionEnElement) {
 
-    descriptionElement.addEventListener(
+    descriptionEnElement.addEventListener(
         "input",
-        updateDescriptionCounter
+        () => {
+
+            updateCounter(
+                descriptionEnElement,
+                descriptionEnCounter,
+                2000
+            );
+        }
     );
 }
 
+
+/* =========================================
+   Events - Japanese
+========================================= */
+
+if (summaryJaElement) {
+
+    summaryJaElement.addEventListener(
+        "input",
+        () => {
+
+            updateCounter(
+                summaryJaElement,
+                summaryJaCounter,
+                250
+            );
+        }
+    );
+}
+
+
+if (descriptionJaElement) {
+
+    descriptionJaElement.addEventListener(
+        "input",
+        () => {
+
+            updateCounter(
+                descriptionJaElement,
+                descriptionJaCounter,
+                2000
+            );
+        }
+    );
+}
+
+
+/* =========================================
+   Submit Event
+========================================= */
 
 if (form) {
 
@@ -1423,11 +1787,21 @@ if (form) {
 
 async function initializeEditPage() {
 
-    updateSummaryCounter();
+    updateAllCounters();
 
-    updateDescriptionCounter();
 
     clearErrors();
+
+
+    /*
+     * 新規登録ではPDF必須。
+     */
+
+    if (fileRequiredElement) {
+
+        fileRequiredElement.hidden =
+            false;
+    }
 
 
     if (!isEditMode) {
@@ -1462,5 +1836,9 @@ async function initializeEditPage() {
     }
 }
 
+
+/* =========================================
+   Start
+========================================= */
 
 initializeEditPage();
