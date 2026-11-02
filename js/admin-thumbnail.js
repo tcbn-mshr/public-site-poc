@@ -5,8 +5,218 @@ import * as pdfjsLib
     from "../assets/vendor/pdfjs/pdf.mjs";
 
 
+/* =========================================
+   PDF.js Worker
+========================================= */
+
 pdfjsLib.GlobalWorkerOptions.workerSrc =
     "../assets/vendor/pdfjs/pdf.worker.mjs";
+
+
+/* =========================================
+   Configuration
+========================================= */
+
+const THUMBNAIL_WIDTH =
+    600;
+
+const THUMBNAIL_TYPE =
+    "image/jpeg";
+
+const THUMBNAIL_QUALITY =
+    0.85;
+
+
+/* =========================================
+   Utility
+========================================= */
+
+function isPdfFile(
+    file
+) {
+
+    if (!file) {
+        return false;
+    }
+
+
+    const fileName =
+        String(
+            file.name || ""
+        ).toLowerCase();
+
+
+    return (
+        file.type ===
+            "application/pdf" ||
+        fileName.endsWith(
+            ".pdf"
+        )
+    );
+}
+
+
+/* =========================================
+   Canvas To Blob
+========================================= */
+
+function canvasToBlob(
+    canvas
+) {
+
+    return new Promise(
+        (
+            resolve,
+            reject
+        ) => {
+
+            canvas.toBlob(
+                (blob) => {
+
+                    if (!blob) {
+
+                        reject(
+                            new Error(
+                                "サムネイル画像を生成できませんでした。"
+                            )
+                        );
+
+
+                        return;
+                    }
+
+
+                    resolve(
+                        blob
+                    );
+                },
+
+                THUMBNAIL_TYPE,
+
+                THUMBNAIL_QUALITY
+            );
+        }
+    );
+}
+
+
+/* =========================================
+   Safe Cleanup
+========================================= */
+
+async function cleanupPdfResources(
+    page,
+    pdf,
+    loadingTask
+) {
+
+    /*
+     * Page cleanup
+     */
+
+    if (
+        page &&
+        typeof page.cleanup ===
+            "function"
+    ) {
+
+        try {
+
+            page.cleanup();
+
+
+        } catch (error) {
+
+            console.warn(
+                "PDF page cleanup failed:",
+                error
+            );
+        }
+    }
+
+
+    /*
+     * PDF document cleanup
+     */
+
+    if (
+        pdf &&
+        typeof pdf.cleanup ===
+            "function"
+    ) {
+
+        try {
+
+            pdf.cleanup();
+
+
+        } catch (error) {
+
+            console.warn(
+                "PDF document cleanup failed:",
+                error
+            );
+        }
+    }
+
+
+    /*
+     * PDF document destroy
+     *
+     * 使用中のPDF.js実装によって
+     * destroy()が存在しない場合があるため、
+     * 関数の存在を確認してから実行します。
+     */
+
+    if (
+        pdf &&
+        typeof pdf.destroy ===
+            "function"
+    ) {
+
+        try {
+
+            await pdf.destroy();
+
+
+        } catch (error) {
+
+            console.warn(
+                "PDF document destroy failed:",
+                error
+            );
+        }
+
+
+        return;
+    }
+
+
+    /*
+     * Document側にdestroy()が無く、
+     * loadingTask側に存在する場合はこちらを使用。
+     */
+
+    if (
+        loadingTask &&
+        typeof loadingTask.destroy ===
+            "function"
+    ) {
+
+        try {
+
+            await loadingTask.destroy();
+
+
+        } catch (error) {
+
+            console.warn(
+                "PDF loading task destroy failed:",
+                error
+            );
+        }
+    }
+}
 
 
 /* =========================================
@@ -17,6 +227,10 @@ async function createPdfThumbnail(
     file
 ) {
 
+    /* =====================================
+       Validate
+    ===================================== */
+
     if (!file) {
 
         throw new Error(
@@ -25,21 +239,11 @@ async function createPdfThumbnail(
     }
 
 
-    const fileName =
-        String(
-            file.name || ""
-        ).toLowerCase();
-
-
-    const isPdf =
-        file.type ===
-            "application/pdf" ||
-        fileName.endsWith(
-            ".pdf"
-        );
-
-
-    if (!isPdf) {
+    if (
+        !isPdfFile(
+            file
+        )
+    ) {
 
         throw new Error(
             "PDFファイルを選択してください。"
@@ -47,75 +251,114 @@ async function createPdfThumbnail(
     }
 
 
-    /*
-     * PDFをArrayBufferとして読み込み
-     */
+    /* =====================================
+       PDF Data
+    ===================================== */
 
     const arrayBuffer =
         await file.arrayBuffer();
 
 
-    /*
-     * PDF.jsでPDFを開く
-     */
+    /* =====================================
+       PDF.js Loading Task
+    ===================================== */
 
     const loadingTask =
         pdfjsLib.getDocument({
+
             data:
                 arrayBuffer
         });
 
 
-    const pdf =
-        await loadingTask.promise;
+    let pdf =
+        null;
+
+
+    let page =
+        null;
 
 
     try {
 
-        /*
-         * 1ページ目を取得
-         */
+        /* =================================
+           Open PDF
+        ================================= */
 
-        const page =
+        pdf =
+            await loadingTask.promise;
+
+
+        if (!pdf) {
+
+            throw new Error(
+                "PDFファイルを読み込めませんでした。"
+            );
+        }
+
+
+        /* =================================
+           First Page
+        ================================= */
+
+        page =
             await pdf.getPage(
                 1
             );
 
 
-        /*
-         * 元ページサイズを取得
-         */
+        if (!page) {
+
+            throw new Error(
+                "PDFの1ページ目を取得できませんでした。"
+            );
+        }
+
+
+        /* =================================
+           Original Viewport
+        ================================= */
 
         const baseViewport =
             page.getViewport({
+
                 scale:
                     1
             });
 
 
-        /*
-         * サムネイル横幅
-         */
+        if (
+            !baseViewport ||
+            !baseViewport.width ||
+            !baseViewport.height
+        ) {
 
-        const targetWidth =
-            600;
+            throw new Error(
+                "PDFページサイズを取得できませんでした。"
+            );
+        }
 
+
+        /* =================================
+           Thumbnail Scale
+        ================================= */
 
         const scale =
-            targetWidth /
+            THUMBNAIL_WIDTH /
             baseViewport.width;
 
 
         const viewport =
             page.getViewport({
+
                 scale:
                     scale
             });
 
 
-        /*
-         * Canvas作成
-         */
+        /* =================================
+           Canvas
+        ================================= */
 
         const canvas =
             document.createElement(
@@ -142,20 +385,29 @@ async function createPdfThumbnail(
 
 
         canvas.width =
-            Math.ceil(
-                viewport.width
+            Math.max(
+                1,
+                Math.ceil(
+                    viewport.width
+                )
             );
 
 
         canvas.height =
-            Math.ceil(
-                viewport.height
+            Math.max(
+                1,
+                Math.ceil(
+                    viewport.height
+                )
             );
 
 
-        /*
-         * 背景を白にする
-         */
+        /* =================================
+           White Background
+        ================================= */
+
+        context.save();
+
 
         context.fillStyle =
             "#ffffff";
@@ -169,61 +421,46 @@ async function createPdfThumbnail(
         );
 
 
-        /*
-         * PDF 1ページ目をCanvasへ描画
-         */
-
-        await page.render({
-
-            canvasContext:
-                context,
-
-            viewport:
-                viewport
-
-        }).promise;
+        context.restore();
 
 
-        /*
-         * Canvas
-         * ↓
-         * JPEG Blob
-         */
+        /* =================================
+           Render PDF
+        ================================= */
+
+        const renderTask =
+            page.render({
+
+                canvasContext:
+                    context,
+
+                viewport:
+                    viewport
+            });
+
+
+        await renderTask.promise;
+
+
+        /* =================================
+           JPEG
+        ================================= */
 
         const thumbnailBlob =
-            await new Promise(
-                (
-                    resolve,
-                    reject
-                ) => {
-
-                    canvas.toBlob(
-                        (blob) => {
-
-                            if (!blob) {
-
-                                reject(
-                                    new Error(
-                                        "サムネイル画像を生成できませんでした。"
-                                    )
-                                );
-
-
-                                return;
-                            }
-
-
-                            resolve(
-                                blob
-                            );
-                        },
-
-                        "image/jpeg",
-
-                        0.85
-                    );
-                }
+            await canvasToBlob(
+                canvas
             );
+
+
+        if (
+            !thumbnailBlob ||
+            thumbnailBlob.size <= 0
+        ) {
+
+            throw new Error(
+                "サムネイル画像を生成できませんでした。"
+            );
+        }
 
 
         return thumbnailBlob;
@@ -232,10 +469,16 @@ async function createPdfThumbnail(
     } finally {
 
         /*
-         * PDF.jsリソース解放
+         * cleanup失敗によって
+         * サムネイル生成結果そのものを
+         * 失敗扱いにしないようにします。
          */
 
-        await pdf.destroy();
+        await cleanupPdfResources(
+            page,
+            pdf,
+            loadingTask
+        );
     }
 }
 
