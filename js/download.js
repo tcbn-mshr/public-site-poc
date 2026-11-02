@@ -11,6 +11,9 @@ const MATERIALS_API_URL =
 const DOWNLOAD_API_URL =
     "/api/download";
 
+const MATERIAL_THUMBNAIL_API_URL =
+    "/api/material-thumbnail";
+
 
 /* =========================================
    DOM Elements
@@ -49,6 +52,16 @@ const documentDescriptionElement =
 const backLinkElement =
     document.getElementById(
         "back-to-material"
+    );
+
+const thumbnailElement =
+    document.getElementById(
+        "selected-document-thumbnail"
+    );
+
+const pdfFallbackElement =
+    document.getElementById(
+        "selected-document-pdf"
     );
 
 const formElement =
@@ -189,18 +202,18 @@ function normalizeMaterial(material) {
 
         category:
             String(
-                material?.category ?? "other"
+                material?.category ??
+                "other"
             ).trim() || "other",
 
         categoryName:
             String(
-                material?.categoryName ?? "その他"
+                material?.categoryName ??
+                "その他"
             ).trim() || "その他",
 
 
-        /* =================================
-           Legacy
-        ================================= */
+        /* Legacy */
 
         title:
             String(
@@ -218,9 +231,7 @@ function normalizeMaterial(material) {
             ).trim(),
 
 
-        /* =================================
-           Japanese
-        ================================= */
+        /* Japanese */
 
         titleJa:
             String(
@@ -244,9 +255,7 @@ function normalizeMaterial(material) {
             ).trim(),
 
 
-        /* =================================
-           English
-        ================================= */
+        /* English */
 
         titleEn:
             String(
@@ -302,11 +311,8 @@ function getLocalizedMaterialValue(
 
 
     /*
-     * 移行期間中のフォールバック。
-     *
-     * 英語フィールド未登録資料を
-     * 空表示にしないため、
-     * 旧フィールドを使用します。
+     * 移行期間中は旧フィールドへ
+     * フォールバックします。
      */
 
     return String(
@@ -340,7 +346,6 @@ function getLocalizedCategoryName(
     const categoryNames = {
 
         electronics: {
-
             en:
                 "Information & Electronics",
 
@@ -348,9 +353,7 @@ function getLocalizedCategoryName(
                 "情報電子"
         },
 
-
         chemicals: {
-
             en:
                 "Chemicals",
 
@@ -358,9 +361,7 @@ function getLocalizedCategoryName(
                 "化学品"
         },
 
-
         life: {
-
             en:
                 "Life Industry",
 
@@ -368,9 +369,7 @@ function getLocalizedCategoryName(
                 "生活産業"
         },
 
-
         plastics: {
-
             en:
                 "Plastics",
 
@@ -378,9 +377,7 @@ function getLocalizedCategoryName(
                 "合成樹脂"
         },
 
-
         other: {
-
             en:
                 "Other",
 
@@ -476,19 +473,12 @@ function setProcessing(
 ) {
 
     const formControls = [
-
         companyElement,
-
         departmentElement,
-
         customerNameElement,
-
         emailElement,
-
         phoneNumberElement,
-
         consentElement,
-
         submitButton
     ];
 
@@ -504,10 +494,6 @@ function setProcessing(
         }
     );
 
-
-    /*
-     * Submit button text
-     */
 
     if (submitLabelElement) {
 
@@ -535,10 +521,6 @@ function setProcessing(
         }
     }
 
-
-    /*
-     * Processing message
-     */
 
     if (isProcessing) {
 
@@ -756,7 +738,6 @@ async function fetchMaterials() {
                     "GET",
 
                 headers: {
-
                     "Accept":
                         "application/json"
                 },
@@ -819,6 +800,97 @@ async function getMaterial(
 
 
 /* =========================================
+   Render Thumbnail
+========================================= */
+
+function renderThumbnail(
+    material
+) {
+
+    if (
+        !thumbnailElement ||
+        !pdfFallbackElement
+    ) {
+        return;
+    }
+
+
+    /*
+     * 初期状態はPDFフォールバック。
+     */
+
+    thumbnailElement.hidden =
+        true;
+
+
+    pdfFallbackElement.hidden =
+        false;
+
+
+    /*
+     * 以前のイベントとsrcをリセット。
+     */
+
+    thumbnailElement.onload =
+        null;
+
+
+    thumbnailElement.onerror =
+        null;
+
+
+    thumbnailElement.removeAttribute(
+        "src"
+    );
+
+
+    /*
+     * サムネイル表示成功。
+     */
+
+    thumbnailElement.onload =
+        () => {
+
+            thumbnailElement.hidden =
+                false;
+
+
+            pdfFallbackElement.hidden =
+                true;
+        };
+
+
+    /*
+     * サムネイル無し、404、
+     * その他の読込エラー。
+     */
+
+    thumbnailElement.onerror =
+        () => {
+
+            thumbnailElement.hidden =
+                true;
+
+
+            pdfFallbackElement.hidden =
+                false;
+        };
+
+
+    /*
+     * 公開Thumbnail API。
+     */
+
+    thumbnailElement.src =
+        MATERIAL_THUMBNAIL_API_URL +
+        "?id=" +
+        encodeURIComponent(
+            material.id
+        );
+}
+
+
+/* =========================================
    Render Material
 ========================================= */
 
@@ -827,6 +899,15 @@ function renderMaterial(material) {
     if (!material) {
         return;
     }
+
+
+    /*
+     * Thumbnail
+     */
+
+    renderThumbnail(
+        material
+    );
 
 
     const language =
@@ -949,8 +1030,7 @@ async function requestDownload() {
 
 
     /*
-     * Department and phone number are
-     * optional.
+     * Department と Phone Number は任意。
      */
 
     const payload = {
@@ -1088,7 +1168,7 @@ async function requestDownload() {
 
     /*
      * APIが返した短時間有効な
-     * SAS URLを開きます。
+     * SAS URLを使用してPDFを取得。
      */
 
     const downloadLink =
@@ -1258,7 +1338,11 @@ window.addEventListener(
     () => {
 
         /*
-         * Material data
+         * 資料情報を現在言語で再描画。
+         *
+         * サムネイル自体は言語共通ですが、
+         * renderMaterial() 内で再描画しても
+         * 問題ありません。
          */
 
         if (currentMaterial) {
@@ -1271,10 +1355,6 @@ window.addEventListener(
 
         /*
          * Submit button
-         *
-         * i18n.js handles all elements with
-         * data-i18n, but this label is also
-         * changed dynamically while processing.
          */
 
         if (
