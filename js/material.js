@@ -53,6 +53,16 @@ const downloadLinkElement =
         "material-download-link"
     );
 
+const thumbnailElement =
+    document.getElementById(
+        "material-detail-thumbnail"
+    );
+
+const pdfFallbackElement =
+    document.getElementById(
+        "material-detail-pdf"
+    );
+
 
 /* =========================================
    State
@@ -477,6 +487,84 @@ async function getMaterial(
 
 
 /* =========================================
+   Render Thumbnail
+========================================= */
+
+function renderThumbnail(
+    material
+) {
+
+    if (
+        !thumbnailElement ||
+        !pdfFallbackElement
+    ) {
+        return;
+    }
+
+
+    /*
+     * 初期状態
+     */
+
+    thumbnailElement.hidden =
+ *      true;
+
+    pdfFallbackElement.hidden =
+        false;
+
+
+    /*
+     * 前回の画像URLをクリア
+     */
+
+    thumbnailElement.removeAttribute(
+        "src"
+    );
+
+
+    /*
+     * Thumbnail読込成功
+     */
+
+    thumbnailElement.onload =
+        () => {
+
+            thumbnailElement.hidden =
+                false;
+
+            pdfFallbackElement.hidden =
+                true;
+        };
+
+
+    /*
+     * Thumbnailなし / 404
+     */
+
+    thumbnailElement.onerror =
+        () => {
+
+            thumbnailElement.hidden =
+                true;
+
+            pdfFallbackElement.hidden =
+                false;
+        };
+
+
+    /*
+     * API
+     */
+
+    thumbnailElement.src =
+        "/api/material-thumbnail?id=" +
+        encodeURIComponent(
+            material.id
+        );
+}
+
+
+/* =========================================
    Render Material
 ========================================= */
 
@@ -488,7 +576,12 @@ function renderMaterial(
         return;
     }
 
+   
+   renderThumbnail(
+       material
+   );
 
+   
     /*
      * Localized values
      */
