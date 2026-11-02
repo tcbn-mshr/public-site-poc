@@ -8,6 +8,9 @@
 const MATERIALS_API_URL =
     "/api/materials";
 
+const MATERIAL_THUMBNAIL_API_URL =
+    "/api/material-thumbnail";
+
 
 /* =========================================
    DOM Elements
@@ -256,9 +259,7 @@ function normalizeMaterial(
             ).trim() || "その他",
 
 
-        /* =================================
-           Legacy
-        ================================= */
+        /* Legacy */
 
         title:
             String(
@@ -276,9 +277,7 @@ function normalizeMaterial(
             ).trim(),
 
 
-        /* =================================
-           Japanese
-        ================================= */
+        /* Japanese */
 
         titleJa:
             String(
@@ -302,9 +301,7 @@ function normalizeMaterial(
             ).trim(),
 
 
-        /* =================================
-           English
-        ================================= */
+        /* English */
 
         titleEn:
             String(
@@ -361,11 +358,8 @@ function getLocalizedMaterialValue(
 
 
     /*
-     * Migration fallback
-     *
-     * 英語フィールド未登録の資料では、
-     * 現段階では既存フィールドへ
-     * フォールバックします。
+     * English未登録資料では
+     * 既存フィールドへフォールバック。
      */
 
     return String(
@@ -398,7 +392,6 @@ function getLocalizedCategoryName(
     const categoryNames = {
 
         electronics: {
-
             en:
                 "Information & Electronics",
 
@@ -406,9 +399,7 @@ function getLocalizedCategoryName(
                 "情報電子"
         },
 
-
         chemicals: {
-
             en:
                 "Chemicals",
 
@@ -416,9 +407,7 @@ function getLocalizedCategoryName(
                 "化学品"
         },
 
-
         life: {
-
             en:
                 "Life Industry",
 
@@ -426,9 +415,7 @@ function getLocalizedCategoryName(
                 "生活産業"
         },
 
-
         plastics: {
-
             en:
                 "Plastics",
 
@@ -436,9 +423,7 @@ function getLocalizedCategoryName(
                 "合成樹脂"
         },
 
-
         other: {
-
             en:
                 "Other",
 
@@ -449,11 +434,7 @@ function getLocalizedCategoryName(
 
 
     return (
-        categoryNames?.[
-            category
-        ]?.[
-            language
-        ] ||
+        categoryNames?.[category]?.[language] ||
         material.categoryName ||
         category
     );
@@ -503,19 +484,28 @@ function renderThumbnail(
 
 
     /*
-     * 初期状態
+     * 初期状態はPDF表示。
      */
 
     thumbnailElement.hidden =
- *      true;
+        true;
+
 
     pdfFallbackElement.hidden =
         false;
 
 
     /*
-     * 前回の画像URLをクリア
+     * 前回のイベントとURLをクリア。
      */
+
+    thumbnailElement.onload =
+        null;
+
+
+    thumbnailElement.onerror =
+        null;
+
 
     thumbnailElement.removeAttribute(
         "src"
@@ -523,7 +513,7 @@ function renderThumbnail(
 
 
     /*
-     * Thumbnail読込成功
+     * Thumbnail取得成功。
      */
 
     thumbnailElement.onload =
@@ -532,13 +522,15 @@ function renderThumbnail(
             thumbnailElement.hidden =
                 false;
 
+
             pdfFallbackElement.hidden =
                 true;
         };
 
 
     /*
-     * Thumbnailなし / 404
+     * Thumbnail未登録、
+     * 404または読込エラー。
      */
 
     thumbnailElement.onerror =
@@ -547,17 +539,19 @@ function renderThumbnail(
             thumbnailElement.hidden =
                 true;
 
+
             pdfFallbackElement.hidden =
                 false;
         };
 
 
     /*
-     * API
+     * Thumbnail API
      */
 
     thumbnailElement.src =
-        "/api/material-thumbnail?id=" +
+        MATERIAL_THUMBNAIL_API_URL +
+        "?id=" +
         encodeURIComponent(
             material.id
         );
@@ -576,12 +570,16 @@ function renderMaterial(
         return;
     }
 
-   
-   renderThumbnail(
-       material
-   );
 
-   
+    /*
+     * Thumbnail
+     */
+
+    renderThumbnail(
+        material
+    );
+
+
     /*
      * Localized values
      */
@@ -652,9 +650,7 @@ function renderMaterial(
 
     if (descriptionElement) {
 
-        if (
-            localizedDescription
-        ) {
+        if (localizedDescription) {
 
             descriptionElement.textContent =
                 localizedDescription;
@@ -673,12 +669,7 @@ function renderMaterial(
     /*
      * Download page
      *
-     * title / category / file は
-     * URLへ渡しません。
-     *
-     * materialIdだけを渡し、
-     * 次ページでもMaterials APIから
-     * 最新情報を取得します。
+     * URLへはmaterialIdのみ渡します。
      */
 
     if (downloadLinkElement) {
@@ -753,8 +744,7 @@ async function initializeMaterialPage() {
 
 
         /*
-         * 言語切替時に再利用するため
-         * 現在のMaterialを保持します。
+         * 言語切替時に再利用。
          */
 
         currentMaterial =
@@ -796,12 +786,10 @@ window.addEventListener(
 
 
         /*
-         * API再取得は不要です。
+         * API再取得は不要。
          *
-         * 既に取得済みの
-         * titleJa / titleEn /
-         * descriptionJa / descriptionEn
-         * を使って再描画します。
+         * 保持済みMaterialを
+         * 現在の言語で再描画。
          */
 
         renderMaterial(
