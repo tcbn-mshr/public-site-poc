@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -9,23 +11,23 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta
-        name="description"
-        content="Download exhibition materials from INABATA."
-    >
-
-    <title>Download Material | INABATA</title>
+    <title>
+        Download Material | INABATA
+    </title>
 
     <link
         rel="stylesheet"
         href="./css/style.css"
     >
+
 </head>
 
 
 <body>
 
-    <!-- Header -->
+    <!-- =====================================
+         Header
+    ====================================== -->
 
     <header class="site-header">
 
@@ -34,57 +36,16 @@
             <a
                 href="./index.html"
                 class="site-logo"
+                aria-label="INABATA"
             >
+
                 <img
-                    src="./assets/images/Iktagline_jp_01_RGB.png"
+                    src="./assets/inabata-logo.png"
                     alt="INABATA"
                     class="site-logo-image"
                 >
+
             </a>
-
-
-            <nav
-                class="header-nav"
-                aria-label="Main navigation"
-            >
-                <a
-                    href="./materials.html"
-                    data-i18n="nav.materials"
-                >
-                    Materials
-                </a>
-            </nav>
-
-
-            <div
-                class="language-switcher"
-                aria-label="Language"
-            >
-                <button
-                    type="button"
-                    class="language-switcher-button"
-                    data-language="ja"
-                    aria-pressed="false"
-                >
-                    日本語
-                </button>
-
-                <span
-                    class="language-switcher-separator"
-                    aria-hidden="true"
-                >
-                    |
-                </span>
-
-                <button
-                    type="button"
-                    class="language-switcher-button is-active"
-                    data-language="en"
-                    aria-pressed="true"
-                >
-                    English
-                </button>
-            </div>
 
         </div>
 
@@ -93,52 +54,13 @@
 
     <main>
 
-        <!-- Hero -->
-
-        <section class="download-hero">
-
-            <div class="download-hero-inner">
-
-                <p
-                    class="section-label"
-                    data-i18n="download.label"
-                >
-                    DOWNLOAD
-                </p>
-
-                <p
-                    id="download-category-top"
-                    class="download-hero-category"
-                ></p>
-
-                <h1
-                    class="download-page-title"
-                    data-i18n="download.title"
-                >
-                    Download Material
-                </h1>
-
-                <p
-                    class="download-page-description"
-                    data-i18n="download.description"
-                >
-                    Please enter the required information below to download the material.
-                </p>
-
-            </div>
-
-        </section>
-
-
         <!-- Loading -->
 
         <div
             id="download-page-loading"
-            class="material-state-message"
-            role="status"
-            data-i18n="detail.loading"
+            class="download-page-state"
         >
-            Loading material information...
+            資料情報を読み込んでいます...
         </div>
 
 
@@ -146,346 +68,170 @@
 
         <div
             id="download-page-error"
-            class="material-state-message"
-            role="alert"
+            class="download-page-state download-page-state-error"
             hidden
         >
-
-            <h2 data-i18n="detail.error">
-                Unable to load the material information.
-            </h2>
-
-            <p>
-                <a
-                    href="./materials.html"
-                    data-i18n="detail.back"
-                >
-                    Back to Materials
-                </a>
-            </p>
-
+            資料情報を取得できませんでした。
         </div>
 
 
-        <!-- Content -->
+        <!-- =================================
+             Content
+        ================================== -->
 
-        <section
+        <div
             id="download-content"
-            class="download-section"
             hidden
         >
 
-            <div class="download-inner">
+            <!-- Hero -->
 
-                <!-- Selected document -->
+            <section class="download-hero">
 
-                <aside
-                    class="selected-document"
-                    aria-labelledby="selected-document-title"
-                >
+                <div class="download-hero-inner">
 
-                    <div
-                        id="selected-document-visual"
-                        class="selected-document-visual"
+                    <p class="section-label">
+                        DOWNLOAD
+                    </p>
+
+
+                    <p
+                        id="download-category-top"
+                        class="download-hero-category"
+                    ></p>
+
+
+                    <h1
+                        class="download-page-title"
+                        data-i18n="download.title"
                     >
+                        資料ダウンロード
+                    </h1>
 
-                    <img
-                        id="selected-document-thumbnail"
-                        class="selected-document-thumbnail"
-                        alt=""
-                        hidden
-                    >
 
-                    <div
-                        id="selected-document-pdf"
-                        class="selected-document-pdf"
-                        aria-hidden="true"
+                    <p
+                        class="download-page-description"
+                        data-i18n="download.description"
                     >
-                        PDF
-                    </div>
+                        必要事項をご入力のうえ、資料をダウンロードしてください。
+                    </p>
 
                 </div>
 
+            </section>
 
-                    <div class="selected-document-body">
 
-                        <p
-                            class="section-label"
-                            data-i18n="download.selected"
+            <!-- Main -->
+
+            <section class="download-section">
+
+                <div class="download-inner">
+
+                    <!-- Selected Document -->
+
+                    <article class="selected-document">
+
+                        <div
+                            id="selected-document-visual"
+                            class="selected-document-visual"
                         >
-                            SELECTED DOCUMENT
-                        </p>
+
+                            <img
+                                id="selected-document-thumbnail"
+                                class="selected-document-thumbnail"
+                                alt=""
+                                hidden
+                            >
+
+
+                            <div
+                                id="selected-document-pdf"
+                                class="selected-document-pdf"
+                                aria-hidden="true"
+                            >
+                                PDF
+                            </div>
+
+                        </div>
+
+
+                        <div class="selected-document-body">
+
+                            <p class="section-label">
+                                SELECTED DOCUMENT
+                            </p>
+
+
+                            <h2
+                                id="selected-document-title"
+                                class="selected-document-title"
+                            ></h2>
+
+
+                            <p
+                                id="selected-document-description"
+                                class="selected-document-description"
+                            ></p>
+
+
+                            <a
+                                id="back-to-material"
+                                class="selected-document-back"
+                                href="./material.html"
+                                data-i18n="download.back"
+                            >
+                                ← 資料詳細へ戻る
+                            </a>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- Form -->
+
+                    <div class="download-form-area">
 
                         <h2
-                            id="selected-document-title"
-                            class="selected-document-title"
-                        ></h2>
-
-                        <p
-                            id="selected-document-description"
-                            class="selected-document-description"
-                        ></p>
-
-                        <a
-                            id="back-to-material"
-                            href="./materials.html"
-                            class="selected-document-back"
-                            data-i18n="download.back"
+                            class="download-form-title"
+                            data-i18n="download.formTitle"
                         >
-                            Back to Material Details
-                        </a>
-
-                    </div>
-
-                </aside>
+                            お客様情報
+                        </h2>
 
 
-                <!-- Form -->
-
-                <div class="download-form-area">
-
-                    <p
-                        class="section-label"
-                        data-i18n="download.yourInformation"
-                    >
-                        YOUR INFORMATION
-                    </p>
-
-                    <h2
-                        class="download-form-title"
-                        data-i18n="download.customerInformation"
-                    >
-                        Your Information
-                    </h2>
-
-                    <p
-                        class="download-required-note"
-                        data-i18n="download.requiredNote"
-                    >
-                        * Required fields
-                    </p>
-
-
-                    <form
-                        id="download-form"
-                        novalidate
-                    >
-
-                        <!-- Company -->
-
-                        <div class="form-field">
-
-                            <label for="company">
-
-                                <span data-i18n="download.company">
-                                    Company
-                                </span>
-
-                                <span
-                                    class="required-mark"
-                                    aria-hidden="true"
-                                >
-                                    *
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="text"
-                                id="company"
-                                name="company"
-                                maxlength="200"
-                                autocomplete="organization"
-                                required
+                        <p class="required-note">
+                            <span
+                                class="required-mark"
+                                aria-hidden="true"
                             >
+                                *
+                            </span>
 
-                            <p
-                                id="company-error"
-                                class="form-error"
-                                role="alert"
-                                data-i18n="download.companyError"
-                                hidden
+                            <span
+                                data-i18n="download.required"
                             >
-                                Please enter your company name.
-                            </p>
-
-                        </div>
-
-
-                        <!-- Department -->
-
-                        <div class="form-field">
-
-                            <label for="department">
-
-                                <span data-i18n="download.department">
-                                    Department
-                                </span>
-
-                                <span
-                                    class="optional-mark"
-                                    data-i18n="download.optional"
-                                >
-                                    Optional
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="text"
-                                id="department"
-                                name="department"
-                                maxlength="200"
-                            >
-
-                        </div>
+                                必須項目
+                            </span>
+                        </p>
 
 
-                        <!-- Name -->
+                        <form
+                            id="download-form"
+                            novalidate
+                        >
 
-                        <div class="form-field">
+                            <!-- Company -->
 
-                            <label for="customer-name">
+                            <div class="form-field">
 
-                                <span data-i18n="download.name">
-                                    Name
-                                </span>
-
-                                <span
-                                    class="required-mark"
-                                    aria-hidden="true"
-                                >
-                                    *
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="text"
-                                id="customer-name"
-                                name="customerName"
-                                maxlength="100"
-                                autocomplete="name"
-                                required
-                            >
-
-                            <p
-                                id="customer-name-error"
-                                class="form-error"
-                                role="alert"
-                                data-i18n="download.nameError"
-                                hidden
-                            >
-                                Please enter your name.
-                            </p>
-
-                        </div>
-
-
-                        <!-- Email -->
-
-                        <div class="form-field">
-
-                            <label for="email">
-
-                                <span data-i18n="download.email">
-                                    Email Address
-                                </span>
-
-                                <span
-                                    class="required-mark"
-                                    aria-hidden="true"
-                                >
-                                    *
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                maxlength="254"
-                                autocomplete="email"
-                                inputmode="email"
-                                required
-                            >
-
-                            <p
-                                id="email-error"
-                                class="form-error"
-                                role="alert"
-                                data-i18n="download.emailError"
-                                hidden
-                            >
-                                Please enter a valid email address.
-                            </p>
-
-                        </div>
-
-
-                        <!-- Phone -->
-
-                        <div class="form-field">
-
-                            <label for="phone-number">
-
-                                <span data-i18n="download.phone">
-                                    Phone Number
-                                </span>
-
-                                <span
-                                    class="optional-mark"
-                                    data-i18n="download.optional"
-                                >
-                                    Optional
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="tel"
-                                id="phone-number"
-                                name="phoneNumber"
-                                maxlength="50"
-                                autocomplete="tel"
-                                inputmode="tel"
-                            >
-
-                        </div>
-
-
-                        <!-- Consent -->
-
-                        <div class="form-field form-field-consent">
-
-                            <label class="consent-label">
-
-                                <input
-                                    type="checkbox"
-                                    id="privacy-consent"
-                                    name="consent"
-                                    required
-                                >
-
-                                <span>
+                                <label for="company">
 
                                     <span
-                                        data-i18n="download.consentPrefix"
+                                        data-i18n="download.company"
                                     >
-                                        I have read and agree to the
+                                        会社名
                                     </span>
-
-                                    <a
-                                        href="https://www.inabata.co.jp/privacy/handling.html"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        data-i18n="download.handling"
-                                    >
-                                        Handling of Personal Information
-                                    </a><span
-                                        data-i18n="download.consentSuffix"
-                                    >.</span>
 
                                     <span
                                         class="required-mark"
@@ -494,87 +240,282 @@
                                         *
                                     </span>
 
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    id="company"
+                                    name="company"
+                                    autocomplete="organization"
+                                >
+
+
+                                <p
+                                    id="company-error"
+                                    class="field-error"
+                                    hidden
+                                >
+                                    会社名を入力してください。
+                                </p>
+
+                            </div>
+
+
+                            <!-- Department -->
+
+                            <div class="form-field">
+
+                                <label for="department">
+
+                                    <span
+                                        data-i18n="download.department"
+                                    >
+                                        部署名
+                                    </span>
+
+                                    <span
+                                        class="optional-mark"
+                                        data-i18n="download.optional"
+                                    >
+                                        任意
+                                    </span>
+
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    id="department"
+                                    name="department"
+                                    autocomplete="organization-title"
+                                >
+
+                            </div>
+
+
+                            <!-- Name -->
+
+                            <div class="form-field">
+
+                                <label for="customer-name">
+
+                                    <span
+                                        data-i18n="download.name"
+                                    >
+                                        氏名
+                                    </span>
+
+                                    <span
+                                        class="required-mark"
+                                        aria-hidden="true"
+                                    >
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    id="customer-name"
+                                    name="customerName"
+                                    autocomplete="name"
+                                >
+
+
+                                <p
+                                    id="customer-name-error"
+                                    class="field-error"
+                                    hidden
+                                >
+                                    氏名を入力してください。
+                                </p>
+
+                            </div>
+
+
+                            <!-- Email -->
+
+                            <div class="form-field">
+
+                                <label for="email">
+
+                                    <span
+                                        data-i18n="download.email"
+                                    >
+                                        メールアドレス
+                                    </span>
+
+                                    <span
+                                        class="required-mark"
+                                        aria-hidden="true"
+                                    >
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    autocomplete="email"
+                                >
+
+
+                                <p
+                                    id="email-error"
+                                    class="field-error"
+                                    hidden
+                                >
+                                    有効なメールアドレスを入力してください。
+                                </p>
+
+                            </div>
+
+
+                            <!-- Phone -->
+
+                            <div class="form-field">
+
+                                <label for="phone-number">
+
+                                    <span
+                                        data-i18n="download.phone"
+                                    >
+                                        電話番号
+                                    </span>
+
+                                    <span
+                                        class="optional-mark"
+                                        data-i18n="download.optional"
+                                    >
+                                        任意
+                                    </span>
+
+                                </label>
+
+
+                                <input
+                                    type="text"
+                                    id="phone-number"
+                                    name="phoneNumber"
+                                    autocomplete="tel"
+                                >
+
+                            </div>
+
+
+                            <!-- Consent -->
+
+                            <div class="form-field-consent">
+
+                                <label
+                                    for="privacy-consent"
+                                    class="consent-label"
+                                >
+
+                                    <input
+                                        type="checkbox"
+                                        id="privacy-consent"
+                                        name="privacyConsent"
+                                    >
+
+
+                                    <span>
+                                        <span
+                                            data-i18n="download.consent"
+                                        >
+                                            個人情報の取扱いに同意します。
+                                        </span>
+                                    </span>
+
+                                </label>
+
+
+                                <p
+                                    id="consent-error"
+                                    class="field-error"
+                                    hidden
+                                >
+                                    個人情報の取扱いへの同意が必要です。
+                                </p>
+
+                            </div>
+
+
+                            <!-- Submit -->
+
+                            <button
+                                type="submit"
+                                id="download-submit"
+                            >
+
+                                <span
+                                    id="download-submit-label"
+                                    data-i18n="download.submit"
+                                >
+                                    同意してダウンロード
                                 </span>
 
-                            </label>
+
+                                <span
+                                    aria-hidden="true"
+                                >
+                                    →
+                                </span>
+
+                            </button>
+
+
+                            <!-- Processing -->
 
                             <p
-                                id="consent-error"
-                                class="form-error"
-                                role="alert"
-                                data-i18n="download.consentError"
+                                id="download-processing"
+                                class="download-status"
                                 hidden
                             >
-                                You must agree to the Handling of Personal Information.
+                                ダウンロードを準備しています...
                             </p>
 
-                        </div>
 
+                            <!-- Success -->
 
-                        <!-- Submit -->
-
-                        <button
-                            type="submit"
-                            id="download-submit"
-                            class="button button-primary"
-                        >
-                            <span
-                                id="download-submit-label"
-                                data-i18n="download.submit"
+                            <p
+                                id="download-success"
+                                class="download-status download-success"
+                                hidden
                             >
-                                Agree and Download
-                            </span>
-
-                            <span aria-hidden="true">
-                                →
-                            </span>
-                        </button>
+                                ダウンロードを開始しました。
+                            </p>
 
 
-                        <p
-                            id="download-processing"
-                            class="download-status"
-                            role="status"
-                            data-i18n="download.processing"
-                            hidden
-                        >
-                            Preparing your download...
-                        </p>
+                            <!-- API Error -->
 
+                            <p
+                                id="download-error"
+                                class="download-api-error"
+                                hidden
+                            ></p>
 
-                        <p
-                            id="download-success"
-                            class="download-status download-success"
-                            role="status"
-                            data-i18n="download.success"
-                            hidden
-                        >
-                            Your download has started.
-                        </p>
+                        </form>
 
-
-                        <div
-                            id="download-error"
-                            class="download-api-error"
-                            role="alert"
-                            data-i18n="download.apiError"
-                            hidden
-                        >
-                            Unable to start the download. Please review your information and try again.
-                        </div>
-
-                    </form>
+                    </div>
 
                 </div>
 
-            </div>
+            </section>
 
-        </section>
+        </div>
 
     </main>
 
 
-    <!-- Footer -->
+    <!-- =====================================
+         Footer
+    ====================================== -->
 
     <footer class="site-footer">
 
@@ -582,49 +523,30 @@
 
             <nav
                 class="footer-links"
-                aria-label="Footer navigation"
+                aria-label="Footer"
             >
 
-                <a
-                    href="https://www.inabata.co.jp/privacy/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-i18n="footer.privacy"
-                >
-                    Privacy Policy
+                <a href="#">
+                    個人情報保護方針
                 </a>
 
-                <a
-                    href="https://www.inabata.co.jp/privacy/handling.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-i18n="footer.handling"
-                >
-                    Handling of Personal Information
+                <a href="#">
+                    個人情報の取扱いについて
                 </a>
 
-                <a
-                    href="https://www.inabata.co.jp/cookiepolicy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-i18n="footer.cookie"
-                >
-                    Cookie Policy
+                <a href="#">
+                    Cookieポリシー
                 </a>
 
-                <a
-                    href="https://www.inabata.co.jp/sitepolicy/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-i18n="footer.site"
-                >
-                    Site Policy
+                <a href="#">
+                    サイトポリシー
                 </a>
 
             </nav>
 
+
             <p class="copyright">
-                &copy; INABATA &amp; CO., LTD.
+                © INABATA &amp; CO., LTD.
             </p>
 
         </div>
@@ -633,7 +555,9 @@
 
 
     <script src="./js/i18n.js"></script>
+
     <script src="./js/download.js"></script>
+
     <script src="./js/consent.js"></script>
 
 </body>
