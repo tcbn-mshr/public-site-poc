@@ -123,7 +123,9 @@ function showElement(element) {
 }
 
 
-function getErrorElement(fieldName) {
+function getErrorElement(
+    fieldName
+) {
 
     return document.getElementById(
         `${fieldName}-error`
@@ -317,10 +319,7 @@ function validateForm() {
 
 
     /*
-     * 新規登録時のみPDF必須。
-     *
-     * 編集時はPDF未選択なら
-     * 現在のPDFを維持します。
+     * 新規登録時のみPDF必須
      */
 
     if (
@@ -339,8 +338,7 @@ function validateForm() {
 
 
     /*
-     * 編集時にPDFが選ばれている場合は
-     * PDF形式を確認します。
+     * 編集時にPDFが選択されている場合
      */
 
     if (
@@ -482,7 +480,9 @@ function validateForm() {
    Saving State
 ========================================= */
 
-function setSaving(isSaving) {
+function setSaving(
+    isSaving
+) {
 
     if (!saveButton) {
         return;
@@ -519,6 +519,7 @@ async function loadMaterialForEdit() {
                     "GET",
 
                 headers: {
+
                     "Accept":
                         "application/json"
                 },
@@ -579,10 +580,6 @@ async function loadMaterialForEdit() {
     }
 
 
-    /*
-     * Form
-     */
-
     if (titleElement) {
 
         titleElement.value =
@@ -635,10 +632,6 @@ async function loadMaterialForEdit() {
     }
 
 
-    /*
-     * Counters
-     */
-
     updateSummaryCounter();
 
     updateDescriptionCounter();
@@ -674,8 +667,7 @@ async function createMaterial() {
             ),
 
         /*
-         * PDF upload前の公開を防ぐため
-         * 新規資料は必ずdraft。
+         * アップロード完了前の公開防止
          */
 
         status:
@@ -926,10 +918,6 @@ async function createAndUploadThumbnail(
     pdfFile
 ) {
 
-    /*
-     * admin-thumbnail.jsの読込確認
-     */
-
     if (
         typeof window.createPdfThumbnail !==
         "function"
@@ -942,7 +930,7 @@ async function createAndUploadThumbnail(
 
 
     /*
-     * PDF 1ページ目をJPEG Blobへ変換
+     * PDF 1ページ目 → JPEG
      */
 
     const thumbnailBlob =
@@ -964,8 +952,7 @@ async function createAndUploadThumbnail(
 
 
     /*
-     * manage-uploadへ渡すため
-     * Fileオブジェクト化
+     * manage-uploadへ渡すFile
      */
 
     const thumbnailFile =
@@ -984,7 +971,7 @@ async function createAndUploadThumbnail(
 
 
     /*
-     * thumbnail用SAS取得
+     * thumbnail用SAS
      */
 
     const thumbnailUploadInfo =
@@ -1004,11 +991,6 @@ async function createAndUploadThumbnail(
         thumbnailBlob
     );
 
-
-    /*
-     * 次STEPでthumbnailBlobNameを
-     * Materialsへ保存するときに使用。
-     */
 
     return thumbnailUploadInfo;
 }
@@ -1105,13 +1087,14 @@ async function updateMaterialMetadata() {
 
 
 /* =========================================
-   Update Material PDF Information
+   Update Material PDF / Thumbnail
 ========================================= */
 
 async function updateMaterialPdf(
     materialId,
     blobName,
-    originalFileName
+    originalFileName,
+    thumbnailBlobName
 ) {
 
     const response =
@@ -1140,7 +1123,10 @@ async function updateMaterialPdf(
                             blobName,
 
                         originalFileName:
-                            originalFileName
+                            originalFileName,
+
+                        thumbnailBlobName:
+                            thumbnailBlobName
                     })
             }
         );
@@ -1158,7 +1144,7 @@ async function updateMaterialPdf(
     } catch {
 
         throw new Error(
-            "PDF情報更新APIから有効な応答を取得できませんでした。"
+            "PDF・サムネイル情報更新APIから有効な応答を取得できませんでした。"
         );
     }
 
@@ -1170,7 +1156,7 @@ async function updateMaterialPdf(
 
         throw new Error(
             result?.message ||
-            "PDF情報をMaterialsへ登録できませんでした。"
+            "PDF・サムネイル情報をMaterialsへ登録できませんでした。"
         );
     }
 
@@ -1219,21 +1205,21 @@ async function handleSubmit(
         if (isEditMode) {
 
             /*
-             * Metadata update
+             * Metadata
              */
 
             await updateMaterialMetadata();
 
 
             /*
-             * PDFが選択された場合のみ
-             * PDF + thumbnail を差し替え。
+             * 新PDFが選択された場合のみ
+             * PDF + thumbnailを差し替える。
              */
 
             if (file) {
 
                 /*
-                 * PDF用SAS
+                 * PDF SAS
                  */
 
                 const uploadInfo =
@@ -1258,23 +1244,23 @@ async function handleSubmit(
                  * Thumbnail生成 + PUT
                  */
 
-                await createAndUploadThumbnail(
-                    editingMaterialId,
-                    file
-                );
+                const thumbnailUploadInfo =
+                    await createAndUploadThumbnail(
+                        editingMaterialId,
+                        file
+                    );
 
 
                 /*
-                 * PDF情報をMaterialsへ反映。
-                 *
-                 * thumbnailBlobNameは
-                 * 次STEPで追加。
+                 * PDF / Thumbnail情報を
+                 * Materialsへ保存
                  */
 
                 await updateMaterialPdf(
                     editingMaterialId,
                     uploadInfo.blobName,
-                    uploadInfo.originalFileName
+                    uploadInfo.originalFileName,
+                    thumbnailUploadInfo.blobName
                 );
             }
 
@@ -1307,7 +1293,7 @@ async function handleSubmit(
 
 
         /*
-         * Materialsへdraft登録
+         * Materials draft作成
          */
 
         const material =
@@ -1315,7 +1301,7 @@ async function handleSubmit(
 
 
         /*
-         * PDF用SAS
+         * PDF用SAS取得
          */
 
         const uploadInfo =
@@ -1337,30 +1323,26 @@ async function handleSubmit(
 
 
         /*
-         * PDF 1ページ目
-         * ↓
-         * thumbnail.jpg
-         * ↓
-         * Blob PUT
+         * Thumbnail生成 + PUT
          */
 
-        await createAndUploadThumbnail(
-            material.id,
-            file
-        );
+        const thumbnailUploadInfo =
+            await createAndUploadThumbnail(
+                material.id,
+                file
+            );
 
 
         /*
-         * PDF情報をMaterialsへ反映。
-         *
-         * thumbnailBlobNameは
-         * 次STEPで追加。
+         * PDF / Thumbnail情報を
+         * Materialsへ保存
          */
 
         await updateMaterialPdf(
             material.id,
             uploadInfo.blobName,
-            uploadInfo.originalFileName
+            uploadInfo.originalFileName,
+            thumbnailUploadInfo.blobName
         );
 
 
