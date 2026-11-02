@@ -252,6 +252,185 @@ async function deleteBlobIfExists(
 
 
 /* =========================================
+   Convert Entity To Material
+========================================= */
+
+function entityToMaterial(entity) {
+
+    /*
+     * Legacy資料では titleJa 等が無いので、
+     * 管理画面で編集できるよう旧フィールドを
+     * Japaneseへフォールバックします。
+     */
+
+    const title =
+        normalizeText(
+            entity.title,
+            150
+        );
+
+
+    const summary =
+        normalizeText(
+            entity.summary,
+            250
+        );
+
+
+    const description =
+        normalizeText(
+            entity.description,
+            2000
+        );
+
+
+    return {
+
+        id:
+            normalizeText(
+                entity.rowKey,
+                128
+            ),
+
+        category:
+            normalizeText(
+                entity.category,
+                50
+            ),
+
+        categoryName:
+            normalizeText(
+                entity.categoryName,
+                100
+            ),
+
+
+        /* =================================
+           Legacy
+        ================================= */
+
+        title:
+            title,
+
+        summary:
+            summary,
+
+        description:
+            description,
+
+
+        /* =================================
+           English
+        ================================= */
+
+        titleEn:
+            normalizeText(
+                entity.titleEn,
+                150
+            ),
+
+        summaryEn:
+            normalizeText(
+                entity.summaryEn,
+                250
+            ),
+
+        descriptionEn:
+            normalizeText(
+                entity.descriptionEn,
+                2000
+            ),
+
+
+        /* =================================
+           Japanese
+        ================================= */
+
+        titleJa:
+            normalizeText(
+                entity.titleJa,
+                150
+            ) ||
+            title,
+
+        summaryJa:
+            normalizeText(
+                entity.summaryJa,
+                250
+            ) ||
+            summary,
+
+        descriptionJa:
+            normalizeText(
+                entity.descriptionJa,
+                2000
+            ),
+
+
+        /* =================================
+           File
+        ================================= */
+
+        originalFileName:
+            normalizeText(
+                entity.originalFileName,
+                255
+            ),
+
+        blobName:
+            normalizeText(
+                entity.blobName,
+                500
+            ),
+
+        thumbnailBlobName:
+            normalizeText(
+                entity.thumbnailBlobName,
+                500
+            ),
+
+
+        /* =================================
+           Status
+        ================================= */
+
+        status:
+            normalizeText(
+                entity.status,
+                20
+            ) || "draft",
+
+
+        /* =================================
+           Audit
+        ================================= */
+
+        createdAtUtc:
+            getDateText(
+                entity.createdAtUtc
+            ),
+
+        createdBy:
+            normalizeText(
+                entity.createdBy,
+                200
+            ),
+
+        updatedAtUtc:
+            getDateText(
+                entity.updatedAtUtc
+            ),
+
+        updatedBy:
+            normalizeText(
+                entity.updatedBy,
+                200
+            )
+    };
+}
+
+
+/* =========================================
    GET
 ========================================= */
 
@@ -277,99 +456,34 @@ async function getMaterials(
         const entity of entities
     ) {
 
-        materials.push({
-
-            id:
-                normalizeText(
-                    entity.rowKey,
-                    128
-                ),
-
-            title:
-                normalizeText(
-                    entity.title,
-                    150
-                ),
-
-            category:
-                normalizeText(
-                    entity.category,
-                    50
-                ),
-
-            categoryName:
-                normalizeText(
-                    entity.categoryName,
-                    100
-                ),
-
-            summary:
-                normalizeText(
-                    entity.summary,
-                    250
-                ),
-
-            description:
-                normalizeText(
-                    entity.description,
-                    2000
-                ),
-
-            originalFileName:
-                normalizeText(
-                    entity.originalFileName,
-                    255
-                ),
-
-            blobName:
-                normalizeText(
-                    entity.blobName,
-                    500
-                ),
-
-            thumbnailBlobName:
-                normalizeText(
-                    entity.thumbnailBlobName,
-                    500
-                ),
-
-            status:
-                normalizeText(
-                    entity.status,
-                    20
-                ) || "draft",
-
-            createdAtUtc:
-                getDateText(
-                    entity.createdAtUtc
-                ),
-
-            createdBy:
-                normalizeText(
-                    entity.createdBy,
-                    200
-                ),
-
-            updatedAtUtc:
-                getDateText(
-                    entity.updatedAtUtc
-                ),
-
-            updatedBy:
-                normalizeText(
-                    entity.updatedBy,
-                    200
-                )
-        });
+        materials.push(
+            entityToMaterial(
+                entity
+            )
+        );
     }
 
 
     materials.sort(
-        (a, b) =>
-            a.title.localeCompare(
-                b.title,
-                "ja"
-            )
+        (a, b) => {
+
+            const titleA =
+                a.titleEn ||
+                a.titleJa ||
+                a.title;
+
+
+            const titleB =
+                b.titleEn ||
+                b.titleJa ||
+                b.title;
+
+
+            return titleA.localeCompare(
+                titleB,
+                "en"
+            );
+        }
     );
 
 
@@ -392,31 +506,64 @@ async function getMaterials(
 
 function validateCreateBody(body) {
 
-    const title =
+    /* =====================================
+       English
+    ===================================== */
+
+    const titleEn =
         normalizeText(
-            body?.title,
+            body?.titleEn,
             150
         );
 
+
+    const summaryEn =
+        normalizeText(
+            body?.summaryEn,
+            250
+        );
+
+
+    const descriptionEn =
+        normalizeText(
+            body?.descriptionEn,
+            2000
+        );
+
+
+    /* =====================================
+       Japanese
+    ===================================== */
+
+    const titleJa =
+        normalizeText(
+            body?.titleJa,
+            150
+        );
+
+
+    const summaryJa =
+        normalizeText(
+            body?.summaryJa,
+            250
+        );
+
+
+    const descriptionJa =
+        normalizeText(
+            body?.descriptionJa,
+            2000
+        );
+
+
+    /* =====================================
+       Common
+    ===================================== */
 
     const category =
         normalizeText(
             body?.category,
             50
-        );
-
-
-    const summary =
-        normalizeText(
-            body?.summary,
-            250
-        );
-
-
-    const description =
-        normalizeText(
-            body?.description,
-            2000
         );
 
 
@@ -427,17 +574,39 @@ function validateCreateBody(body) {
         ) || "draft";
 
 
-    if (!title) {
+    /* =====================================
+       English Required
+    ===================================== */
+
+    if (!titleEn) {
 
         return {
+
             valid:
                 false,
 
             message:
-                "資料名を入力してください。"
+                "資料名（英語）を入力してください。"
         };
     }
 
+
+    if (!summaryEn) {
+
+        return {
+
+            valid:
+                false,
+
+            message:
+                "一覧用説明（英語）を入力してください。"
+        };
+    }
+
+
+    /* =====================================
+       Category Required
+    ===================================== */
 
     if (
         !Object.prototype
@@ -448,6 +617,7 @@ function validateCreateBody(body) {
     ) {
 
         return {
+
             valid:
                 false,
 
@@ -457,29 +627,9 @@ function validateCreateBody(body) {
     }
 
 
-    if (!summary) {
-
-        return {
-            valid:
-                false,
-
-            message:
-                "一覧用説明を入力してください。"
-        };
-    }
-
-
-    if (!description) {
-
-        return {
-            valid:
-                false,
-
-            message:
-                "詳細説明を入力してください。"
-        };
-    }
-
+    /* =====================================
+       Status
+    ===================================== */
 
     if (
         !VALID_STATUS.has(
@@ -488,6 +638,7 @@ function validateCreateBody(body) {
     ) {
 
         return {
+
             valid:
                 false,
 
@@ -497,6 +648,39 @@ function validateCreateBody(body) {
     }
 
 
+    /* =====================================
+       Legacy Fields
+    ===================================== */
+
+    const legacyTitle =
+        normalizeText(
+            body?.title,
+            150
+        ) ||
+        titleJa ||
+        titleEn;
+
+
+    const legacySummary =
+        normalizeText(
+            body?.summary,
+            250
+        ) ||
+        summaryJa ||
+        summaryEn;
+
+
+    const legacyDescription =
+        normalizeText(
+            body?.description,
+            2000
+        ) ||
+        descriptionJa ||
+        summaryJa ||
+        descriptionEn ||
+        summaryEn;
+
+
     return {
 
         valid:
@@ -504,8 +688,43 @@ function validateCreateBody(body) {
 
         value: {
 
+            /* Legacy */
+
             title:
-                title,
+                legacyTitle,
+
+            summary:
+                legacySummary,
+
+            description:
+                legacyDescription,
+
+
+            /* English */
+
+            titleEn:
+                titleEn,
+
+            summaryEn:
+                summaryEn,
+
+            descriptionEn:
+                descriptionEn,
+
+
+            /* Japanese */
+
+            titleJa:
+                titleJa,
+
+            summaryJa:
+                summaryJa,
+
+            descriptionJa:
+                descriptionJa,
+
+
+            /* Common */
 
             category:
                 category,
@@ -514,12 +733,6 @@ function validateCreateBody(body) {
                 CATEGORY_MAP[
                     category
                 ],
-
-            summary:
-                summary,
-
-            description:
-                description,
 
             status:
                 status
@@ -599,14 +812,13 @@ async function createMaterial(
         rowKey:
             materialId,
 
+
+        /* =================================
+           Legacy
+        ================================= */
+
         title:
             validation.value.title,
-
-        category:
-            validation.value.category,
-
-        categoryName:
-            validation.value.categoryName,
 
         summary:
             validation.value.summary,
@@ -614,13 +826,57 @@ async function createMaterial(
         description:
             validation.value.description,
 
+
+        /* =================================
+           English
+        ================================= */
+
+        titleEn:
+            validation.value.titleEn,
+
+        summaryEn:
+            validation.value.summaryEn,
+
+        descriptionEn:
+            validation.value.descriptionEn,
+
+
+        /* =================================
+           Japanese
+        ================================= */
+
+        titleJa:
+            validation.value.titleJa,
+
+        summaryJa:
+            validation.value.summaryJa,
+
+        descriptionJa:
+            validation.value.descriptionJa,
+
+
+        /* =================================
+           Category
+        ================================= */
+
+        category:
+            validation.value.category,
+
+        categoryName:
+            validation.value.categoryName,
+
+
+        /* =================================
+           Status
+        ================================= */
+
         status:
             validation.value.status,
 
-        /*
-         * PDF / thumbnailは
-         * アップロード完了後にPUTで設定。
-         */
+
+        /* =================================
+           File
+        ================================= */
 
         blobName:
             "",
@@ -630,6 +886,11 @@ async function createMaterial(
 
         originalFileName:
             "",
+
+
+        /* =================================
+           Audit
+        ================================= */
 
         createdAtUtc:
             now,
@@ -656,42 +917,17 @@ async function createMaterial(
             success:
                 true,
 
-            material: {
-
-                id:
-                    materialId,
-
-                title:
-                    entity.title,
-
-                category:
-                    entity.category,
-
-                categoryName:
-                    entity.categoryName,
-
-                summary:
-                    entity.summary,
-
-                description:
-                    entity.description,
-
-                status:
-                    entity.status,
-
-                createdAtUtc:
-                    entity.createdAtUtc,
-
-                updatedAtUtc:
-                    entity.updatedAtUtc
-            }
+            material:
+                entityToMaterial(
+                    entity
+                )
         }
     );
 }
 
 
 /* =========================================
-   PUT - Update Material
+   PUT
 ========================================= */
 
 async function updateMaterial(
@@ -803,7 +1039,145 @@ async function updateMaterial(
 
 
     /* =====================================
-       Title
+       English Title
+    ===================================== */
+
+    if (
+        body?.titleEn !== undefined
+    ) {
+
+        const titleEn =
+            normalizeText(
+                body.titleEn,
+                150
+            );
+
+
+        if (!titleEn) {
+
+            return jsonResponse(
+                400,
+                {
+                    success:
+                        false,
+
+                    message:
+                        "資料名（英語）を入力してください。"
+                }
+            );
+        }
+
+
+        updateEntity.titleEn =
+            titleEn;
+    }
+
+
+    /* =====================================
+       English Summary
+    ===================================== */
+
+    if (
+        body?.summaryEn !== undefined
+    ) {
+
+        const summaryEn =
+            normalizeText(
+                body.summaryEn,
+                250
+            );
+
+
+        if (!summaryEn) {
+
+            return jsonResponse(
+                400,
+                {
+                    success:
+                        false,
+
+                    message:
+                        "一覧用説明（英語）を入力してください。"
+                }
+            );
+        }
+
+
+        updateEntity.summaryEn =
+            summaryEn;
+    }
+
+
+    /* =====================================
+       English Description
+       Optional
+    ===================================== */
+
+    if (
+        body?.descriptionEn !== undefined
+    ) {
+
+        updateEntity.descriptionEn =
+            normalizeText(
+                body.descriptionEn,
+                2000
+            );
+    }
+
+
+    /* =====================================
+       Japanese Title
+       Optional
+    ===================================== */
+
+    if (
+        body?.titleJa !== undefined
+    ) {
+
+        updateEntity.titleJa =
+            normalizeText(
+                body.titleJa,
+                150
+            );
+    }
+
+
+    /* =====================================
+       Japanese Summary
+       Optional
+    ===================================== */
+
+    if (
+        body?.summaryJa !== undefined
+    ) {
+
+        updateEntity.summaryJa =
+            normalizeText(
+                body.summaryJa,
+                250
+            );
+    }
+
+
+    /* =====================================
+       Japanese Description
+       Optional
+    ===================================== */
+
+    if (
+        body?.descriptionJa !== undefined
+    ) {
+
+        updateEntity.descriptionJa =
+            normalizeText(
+                body.descriptionJa,
+                2000
+            );
+    }
+
+
+    /* =====================================
+       Legacy Title
     ===================================== */
 
     if (
@@ -826,7 +1200,7 @@ async function updateMaterial(
                         false,
 
                     message:
-                        "資料名を入力してください。"
+                        "資料名が正しくありません。"
                 }
             );
         }
@@ -834,6 +1208,76 @@ async function updateMaterial(
 
         updateEntity.title =
             title;
+    }
+
+
+    /* =====================================
+       Legacy Summary
+    ===================================== */
+
+    if (
+        body?.summary !== undefined
+    ) {
+
+        const summary =
+            normalizeText(
+                body.summary,
+                250
+            );
+
+
+        if (!summary) {
+
+            return jsonResponse(
+                400,
+                {
+                    success:
+                        false,
+
+                    message:
+                        "一覧用説明が正しくありません。"
+                }
+            );
+        }
+
+
+        updateEntity.summary =
+            summary;
+    }
+
+
+    /* =====================================
+       Legacy Description
+    ===================================== */
+
+    if (
+        body?.description !== undefined
+    ) {
+
+        const description =
+            normalizeText(
+                body.description,
+                2000
+            );
+
+
+        if (!description) {
+
+            return jsonResponse(
+                400,
+                {
+                    success:
+                        false,
+
+                    message:
+                        "詳細説明が正しくありません。"
+                }
+            );
+        }
+
+
+        updateEntity.description =
+            description;
     }
 
 
@@ -885,77 +1329,7 @@ async function updateMaterial(
 
 
     /* =====================================
-       Summary
-    ===================================== */
-
-    if (
-        body?.summary !== undefined
-    ) {
-
-        const summary =
-            normalizeText(
-                body.summary,
-                250
-            );
-
-
-        if (!summary) {
-
-            return jsonResponse(
-                400,
-                {
-                    success:
-                        false,
-
-                    message:
-                        "一覧用説明を入力してください。"
-                }
-            );
-        }
-
-
-        updateEntity.summary =
-            summary;
-    }
-
-
-    /* =====================================
-       Description
-    ===================================== */
-
-    if (
-        body?.description !== undefined
-    ) {
-
-        const description =
-            normalizeText(
-                body.description,
-                2000
-            );
-
-
-        if (!description) {
-
-            return jsonResponse(
-                400,
-                {
-                    success:
-                        false,
-
-                    message:
-                        "詳細説明を入力してください。"
-                }
-            );
-        }
-
-
-        updateEntity.description =
-            description;
-    }
-
-
-    /* =====================================
-       PDF / Thumbnail Information
+       PDF / Thumbnail
     ===================================== */
 
     if (
@@ -985,9 +1359,9 @@ async function updateMaterial(
             );
 
 
-        /*
-         * PDF information
-         */
+        /* =================================
+           PDF
+        ================================= */
 
         if (
             body?.blobName !== undefined ||
@@ -1064,9 +1438,9 @@ async function updateMaterial(
         }
 
 
-        /*
-         * Thumbnail information
-         */
+        /* =================================
+           Thumbnail
+        ================================= */
 
         if (
             body?.thumbnailBlobName !==
@@ -1150,20 +1524,14 @@ async function updateMaterial(
         }
 
 
-        /*
-         * 公開する場合は
-         * PDFの登録・実在を確認。
-         */
+        /* =================================
+           Published Validation
+        ================================= */
 
         if (
             requestedStatus ===
             "published"
         ) {
-
-            /*
-             * 同じPUTでblobName更新と
-             * status更新が来る場合にも対応。
-             */
 
             const effectiveBlobName =
                 normalizeText(
@@ -1230,48 +1598,34 @@ async function updateMaterial(
     );
 
 
+    /* =====================================
+       Read Updated Entity
+    ===================================== */
+
+    const updatedEntity =
+        await tableClient.getEntity(
+            "materials",
+            materialId
+        );
+
+
     return jsonResponse(
         200,
         {
             success:
                 true,
 
-            material: {
-
-                id:
-                    materialId,
-
-                blobName:
-                    normalizeText(
-                        updateEntity.blobName ||
-                        currentEntity.blobName,
-                        500
-                    ),
-
-                thumbnailBlobName:
-                    normalizeText(
-                        updateEntity.thumbnailBlobName ||
-                        currentEntity.thumbnailBlobName,
-                        500
-                    ),
-
-                originalFileName:
-                    normalizeText(
-                        updateEntity.originalFileName ||
-                        currentEntity.originalFileName,
-                        255
-                    ),
-
-                updatedAtUtc:
-                    updateEntity.updatedAtUtc
-            }
+            material:
+                entityToMaterial(
+                    updatedEntity
+                )
         }
     );
 }
 
 
 /* =========================================
-   DELETE - Material
+   DELETE
 ========================================= */
 
 async function deleteMaterial(
@@ -1325,10 +1679,6 @@ async function deleteMaterial(
         );
     }
 
-
-    /* =====================================
-       Get Material
-    ===================================== */
 
     let entity;
 
@@ -1400,7 +1750,7 @@ async function deleteMaterial(
 
 
     /* =====================================
-       Delete Materials Entity
+       Delete Entity
     ===================================== */
 
     await tableClient.deleteEntity(
@@ -1423,6 +1773,18 @@ async function deleteMaterial(
                 title:
                     normalizeText(
                         entity.title,
+                        150
+                    ),
+
+                titleEn:
+                    normalizeText(
+                        entity.titleEn,
+                        150
+                    ),
+
+                titleJa:
+                    normalizeText(
+                        entity.titleJa,
                         150
                     ),
 
