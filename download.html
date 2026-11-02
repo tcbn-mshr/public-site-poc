@@ -33,18 +33,29 @@
 
         <div class="header-inner">
 
+            <!-- Logo -->
+
             <a
                 href="./index.html"
                 class="site-logo"
                 aria-label="INABATA"
             >
+
+                <!--
+                    src は現在正常表示できている
+                    ロゴファイルのパスを使用してください。
+                -->
+
                 <img
-                    src="./assets/images/Iktagline_jp_01_RGB.png"
+                    src="./assets/inabata-logo.png"
                     alt="INABATA"
                     class="site-logo-image"
                 >
+
             </a>
 
+
+            <!-- Language Switcher -->
 
             <div
                 class="language-switcher"
@@ -59,12 +70,14 @@
                     日本語
                 </button>
 
+
                 <span
                     class="language-separator"
                     aria-hidden="true"
                 >
                     |
                 </span>
+
 
                 <button
                     type="button"
@@ -81,28 +94,46 @@
     </header>
 
 
+    <!-- =====================================
+         Main
+    ====================================== -->
+
     <main>
 
-        <!-- Loading -->
+        <!-- =================================
+             Loading
+        ================================== -->
 
         <div
             id="download-page-loading"
             class="download-page-state"
         >
-            <span data-i18n="download.loading">
+
+            <span
+                data-i18n="download.loading"
+            >
                 資料情報を読み込んでいます...
             </span>
+
         </div>
 
 
-        <!-- Error -->
+        <!-- =================================
+             Page Error
+        ================================== -->
 
         <div
             id="download-page-error"
             class="download-page-state download-page-state-error"
             hidden
         >
-            資料情報を取得できませんでした。
+
+            <span
+                data-i18n="download.pageError"
+            >
+                資料情報を取得できませんでした。
+            </span>
+
         </div>
 
 
@@ -115,7 +146,9 @@
             hidden
         >
 
-            <!-- Hero -->
+            <!-- =============================
+                 Hero
+            ============================== -->
 
             <section class="download-hero">
 
@@ -152,15 +185,21 @@
             </section>
 
 
-            <!-- Main -->
+            <!-- =============================
+                 Download Section
+            ============================== -->
 
             <section class="download-section">
 
                 <div class="download-inner">
 
-                    <!-- Selected Document -->
+                    <!-- =====================
+                         Selected Document
+                    ====================== -->
 
                     <article class="selected-document">
+
+                        <!-- Thumbnail -->
 
                         <div
                             id="selected-document-visual"
@@ -175,6 +214,8 @@
                             >
 
 
+                            <!-- PDF Fallback -->
+
                             <div
                                 id="selected-document-pdf"
                                 class="selected-document-pdf"
@@ -185,6 +226,8 @@
 
                         </div>
 
+
+                        <!-- Document Information -->
 
                         <div class="selected-document-body">
 
@@ -209,9 +252,20 @@
                                 id="back-to-material"
                                 class="selected-document-back"
                                 href="./material.html"
-                                data-i18n="download.back"
                             >
-                                ← 資料詳細へ戻る
+
+                                <span
+                                    aria-hidden="true"
+                                >
+                                    ←
+                                </span>
+
+                                <span
+                                    data-i18n="download.back"
+                                >
+                                    資料詳細へ戻る
+                                </span>
+
                             </a>
 
                         </div>
@@ -219,7 +273,9 @@
                     </article>
 
 
-                    <!-- Form -->
+                    <!-- =====================
+                         Form
+                    ====================== -->
 
                     <div class="download-form-area">
 
@@ -231,7 +287,10 @@
                         </h2>
 
 
+                        <!-- Required Note -->
+
                         <p class="required-note">
+
                             <span
                                 class="required-mark"
                                 aria-hidden="true"
@@ -244,6 +303,7 @@
                             >
                                 必須項目
                             </span>
+
                         </p>
 
 
@@ -252,7 +312,9 @@
                             novalidate
                         >
 
-                            <!-- Company -->
+                            <!-- =================
+                                 Company
+                            ================== -->
 
                             <div class="form-field">
 
@@ -279,12 +341,15 @@
                                     id="company"
                                     name="company"
                                     autocomplete="organization"
+                                    aria-describedby="company-error"
                                 >
 
 
                                 <p
                                     id="company-error"
                                     class="field-error"
+                                    data-i18n="download.companyError"
+                                    role="alert"
                                     hidden
                                 >
                                     会社名を入力してください。
@@ -293,7 +358,9 @@
                             </div>
 
 
-                            <!-- Department -->
+                            <!-- =================
+                                 Department
+                            ================== -->
 
                             <div class="form-field">
 
@@ -304,6 +371,7 @@
                                     >
                                         部署名
                                     </span>
+
 
                                     <span
                                         class="optional-mark"
@@ -325,7 +393,9 @@
                             </div>
 
 
-                            <!-- Name -->
+                            <!-- =================
+                                 Name
+                            ================== -->
 
                             <div class="form-field">
 
@@ -352,12 +422,15 @@
                                     id="customer-name"
                                     name="customerName"
                                     autocomplete="name"
+                                    aria-describedby="customer-name-error"
                                 >
 
 
                                 <p
                                     id="customer-name-error"
                                     class="field-error"
+                                    data-i18n="download.nameError"
+                                    role="alert"
                                     hidden
                                 >
                                     氏名を入力してください。
@@ -366,7 +439,9 @@
                             </div>
 
 
-                            <!-- Email -->
+                            <!-- =================
+                                 Email
+                            ================== -->
 
                             <div class="form-field">
 
@@ -393,12 +468,16 @@
                                     id="email"
                                     name="email"
                                     autocomplete="email"
+                                    inputmode="email"
+                                    aria-describedby="email-error"
                                 >
 
 
                                 <p
                                     id="email-error"
                                     class="field-error"
+                                    data-i18n="download.emailError"
+                                    role="alert"
                                     hidden
                                 >
                                     有効なメールアドレスを入力してください。
@@ -407,7 +486,9 @@
                             </div>
 
 
-                            <!-- Phone -->
+                            <!-- =================
+                                 Phone Number
+                            ================== -->
 
                             <div class="form-field">
 
@@ -418,6 +499,7 @@
                                     >
                                         電話番号
                                     </span>
+
 
                                     <span
                                         class="optional-mark"
@@ -434,12 +516,15 @@
                                     id="phone-number"
                                     name="phoneNumber"
                                     autocomplete="tel"
+                                    inputmode="tel"
                                 >
 
                             </div>
 
 
-                            <!-- Consent -->
+                            <!-- =================
+                                 Privacy Consent
+                            ================== -->
 
                             <div class="form-field-consent">
 
@@ -452,15 +537,14 @@
                                         type="checkbox"
                                         id="privacy-consent"
                                         name="privacyConsent"
+                                        aria-describedby="consent-error"
                                     >
 
 
-                                    <span>
-                                        <span
-                                            data-i18n="download.consent"
-                                        >
-                                            個人情報の取扱いに同意します。
-                                        </span>
+                                    <span
+                                        data-i18n="download.consent"
+                                    >
+                                        個人情報の取扱いに同意します。
                                     </span>
 
                                 </label>
@@ -469,6 +553,8 @@
                                 <p
                                     id="consent-error"
                                     class="field-error"
+                                    data-i18n="download.consentError"
+                                    role="alert"
                                     hidden
                                 >
                                     個人情報の取扱いへの同意が必要です。
@@ -477,7 +563,9 @@
                             </div>
 
 
-                            <!-- Submit -->
+                            <!-- =================
+                                 Submit
+                            ================== -->
 
                             <button
                                 type="submit"
@@ -501,33 +589,45 @@
                             </button>
 
 
-                            <!-- Processing -->
+                            <!-- =================
+                                 Processing
+                            ================== -->
 
                             <p
                                 id="download-processing"
                                 class="download-status"
+                                data-i18n="download.processing"
+                                aria-live="polite"
                                 hidden
                             >
                                 ダウンロードを準備しています...
                             </p>
 
 
-                            <!-- Success -->
+                            <!-- =================
+                                 Success
+                            ================== -->
 
                             <p
                                 id="download-success"
                                 class="download-status download-success"
+                                data-i18n="download.success"
+                                aria-live="polite"
                                 hidden
                             >
                                 ダウンロードを開始しました。
                             </p>
 
 
-                            <!-- API Error -->
+                            <!-- =================
+                                 API Error
+                            ================== -->
 
                             <p
                                 id="download-error"
                                 class="download-api-error"
+                                role="alert"
+                                aria-live="assertive"
                                 hidden
                             ></p>
 
@@ -557,19 +657,39 @@
                 aria-label="Footer"
             >
 
-                <a href="#">
+                <!--
+                    hrefは現在運用している
+                    正式URLを維持してください。
+                -->
+
+                <a
+                    href="#"
+                    data-i18n="footer.privacy"
+                >
                     個人情報保護方針
                 </a>
 
-                <a href="#">
+
+                <a
+                    href="#"
+                    data-i18n="footer.personalInformation"
+                >
                     個人情報の取扱いについて
                 </a>
 
-                <a href="#">
+
+                <a
+                    href="#"
+                    data-i18n="footer.cookie"
+                >
                     Cookieポリシー
                 </a>
 
-                <a href="#">
+
+                <a
+                    href="#"
+                    data-i18n="footer.sitePolicy"
+                >
                     サイトポリシー
                 </a>
 
@@ -585,9 +705,25 @@
     </footer>
 
 
+    <!-- =====================================
+         Scripts
+    ====================================== -->
+
+    <!--
+        i18n.jsを先に読み込みます。
+        download.jsからtranslate()と
+        getCurrentLanguage()を利用します。
+    -->
+
     <script src="./js/i18n.js"></script>
 
+
+    <!-- Download -->
+
     <script src="./js/download.js"></script>
+
+
+    <!-- Cookie Consent -->
 
     <script src="./js/consent.js"></script>
 
