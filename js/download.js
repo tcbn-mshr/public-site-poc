@@ -24,120 +24,144 @@ const pageLoadingElement =
         "download-page-loading"
     );
 
+
 const pageErrorElement =
     document.getElementById(
         "download-page-error"
     );
+
 
 const contentElement =
     document.getElementById(
         "download-content"
     );
 
+
 const categoryTopElement =
     document.getElementById(
         "download-category-top"
     );
+
 
 const documentTitleElement =
     document.getElementById(
         "selected-document-title"
     );
 
+
 const documentDescriptionElement =
     document.getElementById(
         "selected-document-description"
     );
+
 
 const backLinkElement =
     document.getElementById(
         "back-to-material"
     );
 
+
 const thumbnailElement =
     document.getElementById(
         "selected-document-thumbnail"
     );
+
 
 const pdfFallbackElement =
     document.getElementById(
         "selected-document-pdf"
     );
 
+
 const formElement =
     document.getElementById(
         "download-form"
     );
+
 
 const companyElement =
     document.getElementById(
         "company"
     );
 
+
 const departmentElement =
     document.getElementById(
         "department"
     );
+
 
 const customerNameElement =
     document.getElementById(
         "customer-name"
     );
 
+
 const emailElement =
     document.getElementById(
         "email"
     );
+
 
 const phoneNumberElement =
     document.getElementById(
         "phone-number"
     );
 
+
 const consentElement =
     document.getElementById(
         "privacy-consent"
     );
+
 
 const submitButton =
     document.getElementById(
         "download-submit"
     );
 
+
 const submitLabelElement =
     document.getElementById(
         "download-submit-label"
     );
+
 
 const processingElement =
     document.getElementById(
         "download-processing"
     );
 
+
 const successElement =
     document.getElementById(
         "download-success"
     );
+
 
 const apiErrorElement =
     document.getElementById(
         "download-error"
     );
 
+
 const companyErrorElement =
     document.getElementById(
         "company-error"
     );
+
 
 const customerNameErrorElement =
     document.getElementById(
         "customer-name-error"
     );
 
+
 const emailErrorElement =
     document.getElementById(
         "email-error"
     );
+
 
 const consentErrorElement =
     document.getElementById(
@@ -157,21 +181,97 @@ let currentMaterial =
    Utility
 ========================================= */
 
-function hideElement(element) {
+function normalizeText(
+    value
+) {
+
+    return String(
+        value ?? ""
+    ).trim();
+}
+
+
+function firstText(
+    ...values
+) {
+
+    for (
+        const value of values
+    ) {
+
+        const text =
+            normalizeText(
+                value
+            );
+
+
+        if (text) {
+
+            return text;
+        }
+    }
+
+
+    return "";
+}
+
+
+function hideElement(
+    element
+) {
 
     if (element) {
-        element.hidden = true;
+
+        element.hidden =
+            true;
     }
 }
 
 
-function showElement(element) {
+function showElement(
+    element
+) {
 
     if (element) {
-        element.hidden = false;
+
+        element.hidden =
+            false;
     }
 }
 
+
+/* =========================================
+   Current Language
+========================================= */
+
+function getLanguage() {
+
+    if (
+        typeof getCurrentLanguage ===
+        "function"
+    ) {
+
+        const language =
+            getCurrentLanguage();
+
+
+        if (
+            language === "ja" ||
+            language === "en"
+        ) {
+
+            return language;
+        }
+    }
+
+
+    return "en";
+}
+
+
+/* =========================================
+   URL Parameter
+========================================= */
 
 function getMaterialId() {
 
@@ -181,9 +281,9 @@ function getMaterialId() {
         );
 
 
-    return String(
-        params.get("id") || ""
-    ).trim();
+    return normalizeText(
+        params.get("id")
+    );
 }
 
 
@@ -191,134 +291,194 @@ function getMaterialId() {
    Normalize Material
 ========================================= */
 
-function normalizeMaterial(material) {
+function normalizeMaterial(
+    material
+) {
 
     return {
 
         id:
-            String(
-                material?.id ?? ""
-            ).trim(),
+            normalizeText(
+                material?.id
+            ),
+
+
+        /* =================================
+           Category
+        ================================= */
 
         category:
-            String(
-                material?.category ??
-                "other"
-            ).trim() || "other",
+            normalizeText(
+                material?.category
+            ) || "other",
 
         categoryName:
-            String(
-                material?.categoryName ??
-                "その他"
-            ).trim() || "その他",
+            normalizeText(
+                material?.categoryName
+            ) || "その他",
 
 
-        /* Legacy */
+        /* =================================
+           Legacy
+        ================================= */
 
         title:
-            String(
-                material?.title ?? ""
-            ).trim(),
+            normalizeText(
+                material?.title
+            ),
 
         summary:
-            String(
-                material?.summary ?? ""
-            ).trim(),
+            normalizeText(
+                material?.summary
+            ),
 
         description:
-            String(
-                material?.description ?? ""
-            ).trim(),
+            normalizeText(
+                material?.description
+            ),
 
 
-        /* Japanese */
-
-        titleJa:
-            String(
-                material?.titleJa ??
-                material?.title ??
-                ""
-            ).trim(),
-
-        summaryJa:
-            String(
-                material?.summaryJa ??
-                material?.summary ??
-                ""
-            ).trim(),
-
-        descriptionJa:
-            String(
-                material?.descriptionJa ??
-                material?.description ??
-                ""
-            ).trim(),
-
-
-        /* English */
+        /* =================================
+           English
+        ================================= */
 
         titleEn:
-            String(
-                material?.titleEn ?? ""
-            ).trim(),
+            normalizeText(
+                material?.titleEn
+            ),
 
         summaryEn:
-            String(
-                material?.summaryEn ?? ""
-            ).trim(),
+            normalizeText(
+                material?.summaryEn
+            ),
 
         descriptionEn:
-            String(
-                material?.descriptionEn ?? ""
-            ).trim()
+            normalizeText(
+                material?.descriptionEn
+            ),
+
+
+        /* =================================
+           Japanese
+        ================================= */
+
+        titleJa:
+            normalizeText(
+                material?.titleJa
+            ),
+
+        summaryJa:
+            normalizeText(
+                material?.summaryJa
+            ),
+
+        descriptionJa:
+            normalizeText(
+                material?.descriptionJa
+            )
     };
 }
 
 
 /* =========================================
-   Localization
+   Localized Title
 ========================================= */
 
-function getLocalizedMaterialValue(
-    material,
-    field
+function getLocalizedTitle(
+    material
 ) {
 
     const language =
-        typeof getCurrentLanguage ===
-        "function"
-            ? getCurrentLanguage()
-            : "en";
+        getLanguage();
 
 
-    const localizedField =
-        language === "ja"
-            ? `${field}Ja`
-            : `${field}En`;
+    /*
+     * English
+     *
+     * 1. titleEn
+     * 2. Legacy title
+     */
 
+    if (
+        language === "en"
+    ) {
 
-    const localizedValue =
-        String(
-            material?.[localizedField] ??
-            ""
-        ).trim();
+        return firstText(
 
+            material.titleEn,
 
-    if (localizedValue) {
-
-        return localizedValue;
+            material.title
+        );
     }
 
 
     /*
-     * 移行期間中は旧フィールドへ
-     * フォールバックします。
+     * Japanese
+     *
+     * 1. titleJa
+     * 2. titleEn
+     * 3. Legacy title
      */
 
-    return String(
-        material?.[field] ??
-        ""
-    ).trim();
+    return firstText(
+
+        material.titleJa,
+
+        material.titleEn,
+
+        material.title
+    );
+}
+
+
+/* =========================================
+   Localized Summary
+========================================= */
+
+function getLocalizedSummary(
+    material
+) {
+
+    const language =
+        getLanguage();
+
+
+    /*
+     * English
+     *
+     * 1. summaryEn
+     * 2. Legacy summary
+     */
+
+    if (
+        language === "en"
+    ) {
+
+        return firstText(
+
+            material.summaryEn,
+
+            material.summary
+        );
+    }
+
+
+    /*
+     * Japanese
+     *
+     * 1. summaryJa
+     * 2. summaryEn
+     * 3. Legacy summary
+     */
+
+    return firstText(
+
+        material.summaryJa,
+
+        material.summaryEn,
+
+        material.summary
+    );
 }
 
 
@@ -331,21 +491,19 @@ function getLocalizedCategoryName(
 ) {
 
     const language =
-        typeof getCurrentLanguage ===
-        "function"
-            ? getCurrentLanguage()
-            : "en";
+        getLanguage();
 
 
     const category =
-        String(
-            material?.category || ""
-        ).trim();
+        normalizeText(
+            material?.category
+        );
 
 
     const categoryNames = {
 
         electronics: {
+
             en:
                 "Information & Electronics",
 
@@ -353,7 +511,9 @@ function getLocalizedCategoryName(
                 "情報電子"
         },
 
+
         chemicals: {
+
             en:
                 "Chemicals",
 
@@ -361,7 +521,9 @@ function getLocalizedCategoryName(
                 "化学品"
         },
 
+
         life: {
+
             en:
                 "Life Industry",
 
@@ -369,7 +531,9 @@ function getLocalizedCategoryName(
                 "生活産業"
         },
 
+
         plastics: {
+
             en:
                 "Plastics",
 
@@ -377,7 +541,9 @@ function getLocalizedCategoryName(
                 "合成樹脂"
         },
 
+
         other: {
+
             en:
                 "Other",
 
@@ -387,9 +553,16 @@ function getLocalizedCategoryName(
     };
 
 
-    return (
-        categoryNames?.[category]?.[language] ||
-        material.categoryName ||
+    return firstText(
+
+        categoryNames?.[
+            category
+        ]?.[
+            language
+        ],
+
+        material.categoryName,
+
         category
     );
 }
@@ -399,10 +572,14 @@ function getLocalizedCategoryName(
    Email Validation
 ========================================= */
 
-function isValidEmail(value) {
+function isValidEmail(
+    value
+) {
 
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(value);
+        .test(
+            value
+        );
 }
 
 
@@ -473,6 +650,7 @@ function setProcessing(
 ) {
 
     const formControls = [
+
         companyElement,
         departmentElement,
         customerNameElement,
@@ -575,9 +753,12 @@ function clearMessages() {
 }
 
 
-function showApiError(message) {
+function showApiError(
+    message
+) {
 
     if (!apiErrorElement) {
+
         return;
     }
 
@@ -594,8 +775,9 @@ function showApiError(message) {
         );
 
 
-    apiErrorElement.hidden =
-        false;
+    showElement(
+        apiErrorElement
+    );
 }
 
 
@@ -609,24 +791,21 @@ function validateForm() {
 
 
     const company =
-        String(
-            companyElement?.value ||
-            ""
-        ).trim();
+        normalizeText(
+            companyElement?.value
+        );
 
 
     const customerName =
-        String(
-            customerNameElement?.value ||
-            ""
-        ).trim();
+        normalizeText(
+            customerNameElement?.value
+        );
 
 
     const email =
-        String(
-            emailElement?.value ||
-            ""
-        ).trim();
+        normalizeText(
+            emailElement?.value
+        );
 
 
     const consent =
@@ -639,9 +818,9 @@ function validateForm() {
         null;
 
 
-    /*
-     * Company
-     */
+    /* =====================================
+       Company
+    ===================================== */
 
     if (!company) {
 
@@ -656,9 +835,9 @@ function validateForm() {
     }
 
 
-    /*
-     * Name
-     */
+    /* =====================================
+       Name
+    ===================================== */
 
     if (!customerName) {
 
@@ -673,9 +852,9 @@ function validateForm() {
     }
 
 
-    /*
-     * Email
-     */
+    /* =====================================
+       Email
+    ===================================== */
 
     if (
         !email ||
@@ -695,9 +874,9 @@ function validateForm() {
     }
 
 
-    /*
-     * Consent
-     */
+    /* =====================================
+       Consent
+    ===================================== */
 
     if (!consent) {
 
@@ -715,6 +894,7 @@ function validateForm() {
     if (firstInvalidElement) {
 
         firstInvalidElement.focus();
+
 
         return false;
     }
@@ -738,6 +918,7 @@ async function fetchMaterials() {
                     "GET",
 
                 headers: {
+
                     "Accept":
                         "application/json"
                 },
@@ -757,8 +938,21 @@ async function fetchMaterials() {
     }
 
 
-    const result =
-        await response.json();
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+
+    } catch {
+
+        throw new Error(
+            "Invalid materials API response."
+        );
+    }
 
 
     if (
@@ -778,6 +972,10 @@ async function fetchMaterials() {
     return result.materials;
 }
 
+
+/* =========================================
+   Find Material
+========================================= */
 
 async function getMaterial(
     materialId
@@ -811,12 +1009,16 @@ function renderThumbnail(
         !thumbnailElement ||
         !pdfFallbackElement
     ) {
+
         return;
     }
 
 
     /*
-     * 初期状態はPDFフォールバック。
+     * 初期状態
+     *
+     * 最初はPDFフォールバックを表示。
+     * Thumbnail成功時のみ画像へ変更。
      */
 
     thumbnailElement.hidden =
@@ -828,7 +1030,7 @@ function renderThumbnail(
 
 
     /*
-     * 以前のイベントとsrcをリセット。
+     * 前回のイベントとsrcをリセット。
      */
 
     thumbnailElement.onload =
@@ -845,7 +1047,7 @@ function renderThumbnail(
 
 
     /*
-     * サムネイル表示成功。
+     * Thumbnail読込成功
      */
 
     thumbnailElement.onload =
@@ -861,8 +1063,8 @@ function renderThumbnail(
 
 
     /*
-     * サムネイル無し、404、
-     * その他の読込エラー。
+     * Thumbnail無し / 404 /
+     * その他の読込エラー
      */
 
     thumbnailElement.onerror =
@@ -878,7 +1080,7 @@ function renderThumbnail(
 
 
     /*
-     * 公開Thumbnail API。
+     * Public Thumbnail API
      */
 
     thumbnailElement.src =
@@ -894,16 +1096,19 @@ function renderThumbnail(
    Render Material
 ========================================= */
 
-function renderMaterial(material) {
+function renderMaterial(
+    material
+) {
 
     if (!material) {
+
         return;
     }
 
 
-    /*
-     * Thumbnail
-     */
+    /* =====================================
+       Thumbnail
+    ===================================== */
 
     renderThumbnail(
         material
@@ -911,27 +1116,22 @@ function renderMaterial(material) {
 
 
     const language =
-        typeof getCurrentLanguage ===
-        "function"
-            ? getCurrentLanguage()
-            : "en";
+        getLanguage();
 
 
-    /*
-     * Localized values
-     */
+    /* =====================================
+       Localized Values
+    ===================================== */
 
     const localizedTitle =
-        getLocalizedMaterialValue(
-            material,
-            "title"
+        getLocalizedTitle(
+            material
         );
 
 
     const localizedSummary =
-        getLocalizedMaterialValue(
-            material,
-            "summary"
+        getLocalizedSummary(
+            material
         );
 
 
@@ -941,9 +1141,9 @@ function renderMaterial(material) {
         );
 
 
-    /*
-     * Hero category
-     */
+    /* =====================================
+       Hero Category
+    ===================================== */
 
     if (categoryTopElement) {
 
@@ -952,9 +1152,9 @@ function renderMaterial(material) {
     }
 
 
-    /*
-     * Selected document title
-     */
+    /* =====================================
+       Selected Document Title
+    ===================================== */
 
     if (documentTitleElement) {
 
@@ -963,9 +1163,9 @@ function renderMaterial(material) {
     }
 
 
-    /*
-     * Selected document summary
-     */
+    /* =====================================
+       Selected Document Summary
+    ===================================== */
 
     if (documentDescriptionElement) {
 
@@ -979,9 +1179,9 @@ function renderMaterial(material) {
     }
 
 
-    /*
-     * Back to detail
-     */
+    /* =====================================
+       Back To Detail
+    ===================================== */
 
     if (backLinkElement) {
 
@@ -993,16 +1193,27 @@ function renderMaterial(material) {
     }
 
 
-    /*
-     * Browser title
-     */
+    /* =====================================
+       Browser Title
+    ===================================== */
 
-    document.title =
-        language === "ja"
-            ? localizedTitle +
-                "｜資料ダウンロード｜INABATA"
-            : localizedTitle +
-                " | Download Material | INABATA";
+    if (localizedTitle) {
+
+        document.title =
+            language === "ja"
+                ? localizedTitle +
+                    "｜資料ダウンロード｜INABATA"
+                : localizedTitle +
+                    " | Download Material | INABATA";
+
+
+    } else {
+
+        document.title =
+            language === "ja"
+                ? "資料ダウンロード｜INABATA"
+                : "Download Material | INABATA";
+    }
 }
 
 
@@ -1015,10 +1226,7 @@ async function requestDownload() {
     if (!currentMaterial) {
 
         const language =
-            typeof getCurrentLanguage ===
-            "function"
-                ? getCurrentLanguage()
-                : "en";
+            getLanguage();
 
 
         throw new Error(
@@ -1039,34 +1247,29 @@ async function requestDownload() {
             currentMaterial.id,
 
         company:
-            String(
-                companyElement?.value ||
-                ""
-            ).trim(),
+            normalizeText(
+                companyElement?.value
+            ),
 
         department:
-            String(
-                departmentElement?.value ||
-                ""
-            ).trim(),
+            normalizeText(
+                departmentElement?.value
+            ),
 
         customerName:
-            String(
-                customerNameElement?.value ||
-                ""
-            ).trim(),
+            normalizeText(
+                customerNameElement?.value
+            ),
 
         email:
-            String(
-                emailElement?.value ||
-                ""
-            ).trim(),
+            normalizeText(
+                emailElement?.value
+            ),
 
         phoneNumber:
-            String(
-                phoneNumberElement?.value ||
-                ""
-            ).trim(),
+            normalizeText(
+                phoneNumberElement?.value
+            ),
 
         consent:
             Boolean(
@@ -1112,10 +1315,7 @@ async function requestDownload() {
     } catch {
 
         const language =
-            typeof getCurrentLanguage ===
-            "function"
-                ? getCurrentLanguage()
-                : "en";
+            getLanguage();
 
 
         throw new Error(
@@ -1132,10 +1332,7 @@ async function requestDownload() {
     ) {
 
         const language =
-            typeof getCurrentLanguage ===
-            "function"
-                ? getCurrentLanguage()
-                : "en";
+            getLanguage();
 
 
         throw new Error(
@@ -1152,10 +1349,7 @@ async function requestDownload() {
     if (!result.downloadUrl) {
 
         const language =
-            typeof getCurrentLanguage ===
-            "function"
-                ? getCurrentLanguage()
-                : "en";
+            getLanguage();
 
 
         throw new Error(
@@ -1167,7 +1361,7 @@ async function requestDownload() {
 
 
     /*
-     * APIが返した短時間有効な
+     * APIから返された短時間有効な
      * SAS URLを使用してPDFを取得。
      */
 
@@ -1201,12 +1395,15 @@ async function requestDownload() {
    Submit
 ========================================= */
 
-async function handleSubmit(event) {
+async function handleSubmit(
+    event
+) {
 
     event.preventDefault();
 
 
     if (!validateForm()) {
+
         return;
     }
 
@@ -1273,6 +1470,7 @@ async function initializeDownloadPage() {
 
         showPageError();
 
+
         return;
     }
 
@@ -1294,6 +1492,7 @@ async function initializeDownloadPage() {
 
 
             showPageError();
+
 
             return;
         }
@@ -1338,11 +1537,10 @@ window.addEventListener(
     () => {
 
         /*
-         * 資料情報を現在言語で再描画。
+         * API再取得は不要。
          *
-         * サムネイル自体は言語共通ですが、
-         * renderMaterial() 内で再描画しても
-         * 問題ありません。
+         * 取得済みの日英6フィールドから
+         * 現在言語で再描画。
          */
 
         if (currentMaterial) {
@@ -1354,7 +1552,9 @@ window.addEventListener(
 
 
         /*
-         * Submit button
+         * Submit Button
+         *
+         * 処理中でなければ現在言語へ更新。
          */
 
         if (
@@ -1362,7 +1562,7 @@ window.addEventListener(
             !submitButton.disabled &&
             submitLabelElement &&
             typeof translate ===
-            "function"
+                "function"
         ) {
 
             submitLabelElement.textContent =
