@@ -33,6 +33,8 @@
 
         <div class="header-inner">
 
+            <!-- Logo -->
+
             <a
                 href="./index.html"
                 class="site-logo"
@@ -47,36 +49,91 @@
 
             </a>
 
+
+            <!-- Language Switcher -->
+
+            <div
+                class="language-switcher"
+                aria-label="Language"
+            >
+
+                <button
+                    type="button"
+                    class="language-button"
+                    data-language="ja"
+                >
+                    日本語
+                </button>
+
+
+                <span
+                    class="language-separator"
+                    aria-hidden="true"
+                >
+                    |
+                </span>
+
+
+                <button
+                    type="button"
+                    class="language-button"
+                    data-language="en"
+                >
+                    English
+                </button>
+
+            </div>
+
         </div>
 
     </header>
 
 
+    <!-- =====================================
+         Main
+    ====================================== -->
+
     <main>
 
-        <!-- Loading -->
+        <!-- =================================
+             Loading
+        ================================== -->
 
         <div
             id="material-loading"
             class="material-page-state"
         >
-            資料情報を読み込んでいます...
+
+            <span
+                data-i18n="material.loading"
+            >
+                資料情報を読み込んでいます...
+            </span>
+
         </div>
 
 
-        <!-- Error -->
+        <!-- =================================
+             Error
+        ================================== -->
 
         <div
             id="material-error"
             class="material-page-state material-page-state-error"
             hidden
         >
-            資料情報を取得できませんでした。
+
+            <span
+                data-i18n="material.error"
+            >
+                資料情報を取得できませんでした。
+            </span>
+
         </div>
 
 
         <!-- =================================
-             Material
+             Content
         ================================== -->
 
         <div
@@ -84,7 +141,9 @@
             hidden
         >
 
-            <!-- Hero -->
+            <!-- =============================
+                 Hero
+            ============================== -->
 
             <section class="material-detail-hero">
 
@@ -111,13 +170,17 @@
             </section>
 
 
-            <!-- Detail -->
+            <!-- =============================
+                 Detail
+            ============================== -->
 
             <section class="material-detail-section">
 
                 <div class="material-detail-inner">
 
-                    <!-- Thumbnail -->
+                    <!-- =====================
+                         Thumbnail
+                    ====================== -->
 
                     <div
                         id="material-detail-visual"
@@ -132,6 +195,11 @@
                         >
 
 
+                        <!--
+                            Thumbnailが存在しない資料用の
+                            PDFフォールバック
+                        -->
+
                         <div
                             id="material-detail-pdf"
                             class="material-detail-pdf"
@@ -143,7 +211,9 @@
                     </div>
 
 
-                    <!-- Information -->
+                    <!-- =====================
+                         Material Information
+                    ====================== -->
 
                     <div class="material-detail-information">
 
@@ -164,6 +234,10 @@
                         ></p>
 
 
+                        <!-- =================
+                             Download
+                        ================== -->
+
                         <a
                             id="material-download-link"
                             href="./download.html"
@@ -174,6 +248,7 @@
                             >
                                 資料をダウンロード
                             </span>
+
 
                             <span
                                 aria-hidden="true"
@@ -188,7 +263,9 @@
                 </div>
 
 
-                <!-- Back to Materials -->
+                <!-- =========================
+                     Back to Materials
+                ========================== -->
 
                 <div class="material-detail-back-inner">
 
@@ -196,9 +273,20 @@
 
                         <a
                             href="./materials.html"
-                            data-i18n="material.back"
                         >
-                            ← 資料一覧へ戻る
+
+                            <span
+                                aria-hidden="true"
+                            >
+                                ←
+                            </span>
+
+                            <span
+                                data-i18n="material.back"
+                            >
+                                資料一覧へ戻る
+                            </span>
+
                         </a>
 
                     </div>
@@ -225,19 +313,39 @@
                 aria-label="Footer"
             >
 
-                <a href="#">
+                <!--
+                    href は現在使用中の
+                    正式URLをそのまま使用してください。
+                -->
+
+                <a
+                    href="#"
+                    data-i18n="footer.privacy"
+                >
                     個人情報保護方針
                 </a>
 
-                <a href="#">
+
+                <a
+                    href="#"
+                    data-i18n="footer.personalInformation"
+                >
                     個人情報の取扱いについて
                 </a>
 
-                <a href="#">
+
+                <a
+                    href="#"
+                    data-i18n="footer.cookie"
+                >
                     Cookieポリシー
                 </a>
 
-                <a href="#">
+
+                <a
+                    href="#"
+                    data-i18n="footer.sitePolicy"
+                >
                     サイトポリシー
                 </a>
 
@@ -253,9 +361,21 @@
     </footer>
 
 
+    <!-- =====================================
+         Scripts
+    ====================================== -->
+
+    <!-- i18n を先に読み込み -->
+
     <script src="./js/i18n.js"></script>
 
+
+    <!-- Material Detail -->
+
     <script src="./js/material.js"></script>
+
+
+    <!-- Cookie Consent -->
 
     <script src="./js/consent.js"></script>
 
