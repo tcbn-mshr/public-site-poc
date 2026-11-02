@@ -12,7 +12,6 @@
     box-sizing: border-box;
 }
 
-
 html {
     width: 100%;
     max-width: 100%;
@@ -20,7 +19,6 @@ html {
 
     scroll-behavior: smooth;
 }
-
 
 body {
     width: 100%;
@@ -49,15 +47,18 @@ body {
     line-height: 1.8;
 }
 
-
 main {
     flex: 1 0 auto;
 }
 
-
 a {
     color: inherit;
     text-decoration: none;
+}
+
+button,
+input {
+    font: inherit;
 }
 
 
@@ -75,7 +76,6 @@ a {
     border-bottom: 1px solid #e5e5e5;
 }
 
-
 .header-inner {
     width: 100%;
     height: 90px;
@@ -85,8 +85,14 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    gap: 24px;
 }
 
+
+/* =========================================
+   Logo
+========================================= */
 
 .site-logo {
     display: inline-flex;
@@ -95,13 +101,13 @@ a {
     flex-shrink: 0;
 }
 
-
 .site-logo-image {
     display: block;
 
     width: auto;
-    max-width: 220px;
     height: auto;
+
+    max-width: 220px;
     max-height: 60px;
 
     object-fit: contain;
@@ -109,7 +115,61 @@ a {
 
 
 /* =========================================
-   Common
+   Language Switcher
+========================================= */
+
+.language-switcher {
+    display: flex;
+    align-items: center;
+
+    flex-shrink: 0;
+
+    gap: 8px;
+}
+
+.language-button {
+    padding: 4px 0;
+
+    color: #666;
+    background: transparent;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 400;
+
+    border: 0;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.language-button:hover {
+    color: #222;
+}
+
+.language-button.is-active {
+    color: #222;
+
+    font-weight: 600;
+}
+
+.language-button:focus-visible {
+    outline: 2px solid #222;
+    outline-offset: 4px;
+}
+
+.language-separator {
+    color: #bbb;
+
+    font-size: 12px;
+}
+
+
+/* =========================================
+   Common Content
 ========================================= */
 
 .content-inner {
@@ -118,7 +178,6 @@ a {
 
     margin: 0 auto;
 }
-
 
 .section-label {
     margin: 0 0 14px;
@@ -130,7 +189,6 @@ a {
 
     letter-spacing: 0.16em;
 }
-
 
 .section-description {
     max-width: 660px;
@@ -144,23 +202,8 @@ a {
 }
 
 
-.text-link {
-    display: inline-flex;
-    align-items: center;
-
-    gap: 25px;
-
-    padding-bottom: 5px;
-
-    border-bottom: 1px solid #222;
-
-    font-size: 14px;
-    font-weight: 500;
-}
-
-
 /* =========================================
-   Home
+   Home Hero
 ========================================= */
 
 .hero {
@@ -177,15 +220,14 @@ a {
         );
 }
 
-
 .hero-inner {
     width: 100%;
     max-width: 1200px;
 
     margin: 0 auto;
+
     padding: 100px 32px;
 }
-
 
 .hero-en {
     margin: 0 0 14px;
@@ -199,7 +241,6 @@ a {
 
     text-transform: uppercase;
 }
-
 
 .hero h1 {
     margin: 0 0 28px;
@@ -216,7 +257,6 @@ a {
     letter-spacing: 0.05em;
 }
 
-
 .hero-description {
     margin: 0 0 42px;
 
@@ -224,6 +264,120 @@ a {
 
     font-size: 17px;
     line-height: 2;
+}
+
+
+/* =========================================
+   Home Materials Link
+========================================= */
+
+.home-materials-link {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 24px;
+
+    padding: 8px 0;
+
+    color: #222;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    border: 0;
+
+    text-decoration: none;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.home-materials-link:hover {
+    opacity: 0.65;
+
+    transform: translateX(2px);
+}
+
+.home-materials-link:focus-visible {
+    outline: 2px solid #222;
+    outline-offset: 5px;
+}
+
+
+/* =========================================
+   Legacy Text Link
+========================================= */
+
+.text-link {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 25px;
+
+    padding: 0;
+
+    border: 0;
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* =========================================
+   Primary Button
+========================================= */
+
+.primary-button {
+    width: 230px;
+    min-height: 58px;
+
+    padding: 0 24px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+
+    color: #fff;
+    background: #222;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.primary-button:hover {
+    background: #555;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================
+   Introduction
+========================================= */
+
+.introduction {
+    padding: 110px 32px;
+
+    background: #fff;
+}
+
+.introduction h2 {
+    margin: 0 0 30px;
+
+    font-size: clamp(
+        28px,
+        4vw,
+        42px
+    );
+
+    font-weight: 500;
+
+    letter-spacing: 0.03em;
 }
 
 
@@ -244,7 +398,6 @@ a {
     background: #202020;
 }
 
-
 .footer-inner {
     width: 100%;
 
@@ -255,14 +408,12 @@ a {
     gap: 40px;
 }
 
-
 .footer-links {
     display: flex;
     flex-wrap: wrap;
 
     gap: 14px 28px;
 }
-
 
 .footer-links a {
     color: #fff;
@@ -272,11 +423,9 @@ a {
     transition: opacity 0.2s ease;
 }
 
-
 .footer-links a:hover {
     opacity: 0.65;
 }
-
 
 .copyright {
     flex-shrink: 0;
@@ -299,14 +448,12 @@ a {
     background: #fff;
 }
 
-
 .materials-hero-inner {
     width: 100%;
     max-width: 1180px;
 
     margin: 0 auto;
 }
-
 
 .materials-page-title {
     margin: 30px 0 22px;
@@ -324,7 +471,6 @@ a {
     letter-spacing: 0.02em;
 }
 
-
 .materials-page-description {
     max-width: 720px;
 
@@ -338,13 +484,12 @@ a {
 
 
 /* =========================================
-   Materials
+   Materials Section
 ========================================= */
 
 .materials-section {
     padding: 64px 24px 96px;
 }
-
 
 .materials-section-inner {
     width: 100%;
@@ -352,7 +497,6 @@ a {
 
     margin: 0 auto;
 }
-
 
 #materials-heading {
     margin: 0;
@@ -371,7 +515,6 @@ a {
 
     margin: 28px 0 48px;
 }
-
 
 .category-filter-button {
     min-height: 42px;
@@ -394,13 +537,17 @@ a {
         border-color 0.2s ease;
 }
 
-
 .category-filter-button:hover,
 .category-filter-button.is-active {
     color: #fff;
     background: #222;
 
     border-color: #222;
+}
+
+.category-filter-button:focus-visible {
+    outline: 2px solid #222;
+    outline-offset: 3px;
 }
 
 
@@ -439,7 +586,6 @@ a {
         box-shadow 0.2s ease;
 }
 
-
 .material-card:hover {
     transform: translateY(-3px);
 
@@ -448,13 +594,20 @@ a {
         rgba(0, 0, 0, 0.07);
 }
 
-
 .material-card-link {
     height: 100%;
 
     display: block;
+
+    color: inherit;
+
+    text-decoration: none;
 }
 
+
+/* =========================================
+   Material Card Thumbnail
+========================================= */
 
 .material-card-visual {
     position: relative;
@@ -470,7 +623,6 @@ a {
     background: #f3f4f5;
 }
 
-
 .material-card-thumbnail {
     width: 100%;
     height: 100%;
@@ -478,8 +630,9 @@ a {
     display: block;
 
     object-fit: contain;
-}
 
+    background: #f3f4f5;
+}
 
 .material-card-file-type {
     width: 70px;
@@ -501,10 +654,13 @@ a {
 }
 
 
+/* =========================================
+   Material Card Content
+========================================= */
+
 .material-card-body {
     padding: 26px;
 }
-
 
 .material-card-category {
     margin: 0 0 14px;
@@ -516,16 +672,16 @@ a {
     letter-spacing: 0.08em;
 }
 
-
 .material-card-title {
     margin: 0 0 16px;
+
+    color: #222;
 
     font-size: 22px;
     font-weight: 600;
 
     line-height: 1.45;
 }
-
 
 .material-card-description {
     margin: 0 0 24px;
@@ -536,20 +692,25 @@ a {
     line-height: 1.8;
 }
 
-
 .material-card-detail {
     display: inline-flex;
     align-items: center;
 
     gap: 10px;
 
+    color: #222;
+
     font-size: 13px;
     font-weight: 500;
 }
 
+.material-card-arrow {
+    display: inline-block;
+}
+
 
 /* =========================================
-   State Messages
+   Materials State
 ========================================= */
 
 .materials-message,
@@ -564,15 +725,14 @@ a {
     text-align: center;
 
     font-size: 14px;
+    line-height: 1.8;
 }
-
 
 .materials-message-error,
 .material-page-state-error,
 .download-page-state-error {
     color: #b60018;
 }
-
 
 .materials-empty {
     grid-column: 1 / -1;
@@ -590,6 +750,41 @@ a {
 
 
 /* =========================================
+   Materials Back to TOP
+========================================= */
+
+.materials-back {
+    margin-top: 64px;
+    padding-top: 28px;
+
+    border-top: 1px solid #ddd;
+}
+
+.materials-back a {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding-bottom: 4px;
+
+    color: #222;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid #222;
+
+    text-decoration: none;
+
+    transition: opacity 0.2s ease;
+}
+
+.materials-back a:hover {
+    opacity: 0.65;
+}
+
+
+/* =========================================
    Material Detail Hero
 ========================================= */
 
@@ -599,14 +794,12 @@ a {
     background: #f3f4f5;
 }
 
-
 .material-detail-hero-inner {
     width: 100%;
     max-width: 1180px;
 
     margin: 0 auto;
 }
-
 
 .material-detail-category {
     margin: 18px 0 26px;
@@ -615,7 +808,6 @@ a {
 
     font-size: 14px;
 }
-
 
 .material-detail-title {
     margin: 0;
@@ -630,17 +822,18 @@ a {
 
     font-weight: 500;
     line-height: 1.4;
+
+    letter-spacing: 0.02em;
 }
 
 
 /* =========================================
-   Material Detail
+   Material Detail Section
 ========================================= */
 
 .material-detail-section {
     padding: 88px 24px;
 }
-
 
 .material-detail-inner {
     width: 100%;
@@ -661,6 +854,10 @@ a {
 }
 
 
+/* =========================================
+   Material Detail Thumbnail
+========================================= */
+
 .material-detail-visual {
     position: relative;
 
@@ -675,7 +872,6 @@ a {
     background: #f2f3f4;
 }
 
-
 .material-detail-thumbnail {
     width: 100%;
     height: 100%;
@@ -683,8 +879,9 @@ a {
     display: block;
 
     object-fit: contain;
-}
 
+    background: #f2f3f4;
+}
 
 .material-detail-pdf {
     width: 150px;
@@ -700,26 +897,32 @@ a {
     font-size: 18px;
     font-weight: 600;
 
+    letter-spacing: 0.08em;
+
     box-shadow:
         14px 18px 24px
         rgba(0, 0, 0, 0.12);
 }
 
 
+/* =========================================
+   Material Detail Information
+========================================= */
+
 .material-detail-information {
     min-width: 0;
 }
 
-
 .material-detail-document-title {
     margin: 22px 0;
+
+    color: #222;
 
     font-size: 30px;
     font-weight: 600;
 
     line-height: 1.4;
 }
-
 
 .material-detail-description {
     margin: 0 0 36px;
@@ -730,6 +933,10 @@ a {
     line-height: 1.9;
 }
 
+
+/* =========================================
+   Material Download Link
+========================================= */
 
 #material-download-link {
     min-width: 230px;
@@ -750,8 +957,13 @@ a {
     font-weight: 600;
 
     border: 1px solid #222;
-}
 
+    text-decoration: none;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
 
 #material-download-link:hover {
     color: #222;
@@ -760,7 +972,7 @@ a {
 
 
 /* =========================================
-   Back to Materials
+   Material Detail Back
 ========================================= */
 
 .material-detail-back-inner {
@@ -770,7 +982,6 @@ a {
     margin: 0 auto;
 }
 
-
 .material-detail-back {
     margin-top: 65px;
     padding-top: 30px;
@@ -778,15 +989,27 @@ a {
     border-top: 1px solid #ddd;
 }
 
-
 .material-detail-back a {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
 
     padding-bottom: 4px;
 
-    border-bottom: 1px solid #222;
+    color: #222;
 
     font-size: 14px;
+
+    border-bottom: 1px solid #222;
+
+    text-decoration: none;
+
+    transition: opacity 0.2s ease;
+}
+
+.material-detail-back a:hover {
+    opacity: 0.65;
 }
 
 
@@ -800,14 +1023,12 @@ a {
     background: #f3f4f5;
 }
 
-
 .download-hero-inner {
     width: 100%;
     max-width: 1180px;
 
     margin: 0 auto;
 }
-
 
 .download-hero-category {
     margin: 18px 0 26px;
@@ -817,9 +1038,10 @@ a {
     font-size: 14px;
 }
 
-
 .download-page-title {
     margin: 0;
+
+    color: #222;
 
     font-size: clamp(
         36px,
@@ -828,8 +1050,10 @@ a {
     );
 
     font-weight: 500;
-}
+    line-height: 1.35;
 
+    letter-spacing: 0.02em;
+}
 
 .download-page-description {
     margin: 36px 0 0;
@@ -848,7 +1072,6 @@ a {
 .download-section {
     padding: 88px 24px;
 }
-
 
 .download-inner {
     width: 100%;
@@ -875,11 +1098,12 @@ a {
 .selected-document {
     min-width: 0;
 
+    overflow: hidden;
+
     background: #fff;
 
     border: 1px solid #e1e1e1;
 }
-
 
 .selected-document-visual {
     position: relative;
@@ -895,14 +1119,16 @@ a {
     background: #f2f3f4;
 }
 
-
 .selected-document-thumbnail {
     width: 100%;
     height: 100%;
 
-    object-fit: contain;
-}
+    display: block;
 
+    object-fit: contain;
+
+    background: #f2f3f4;
+}
 
 .selected-document-pdf {
     width: 110px;
@@ -917,21 +1143,28 @@ a {
 
     font-size: 18px;
     font-weight: 600;
-}
 
+    letter-spacing: 0.08em;
+
+    box-shadow:
+        14px 18px 24px
+        rgba(0, 0, 0, 0.12);
+}
 
 .selected-document-body {
     padding: 30px;
 }
 
-
 .selected-document-title {
     margin: 20px 0 14px;
 
+    color: #222;
+
     font-size: 24px;
     font-weight: 600;
-}
 
+    line-height: 1.5;
+}
 
 .selected-document-description {
     margin: 0 0 24px;
@@ -942,12 +1175,21 @@ a {
     line-height: 1.8;
 }
 
-
 .selected-document-back {
+    display: inline-block;
+
+    color: #222;
+
     font-size: 13px;
 
     text-decoration: underline;
     text-underline-offset: 3px;
+
+    transition: opacity 0.2s ease;
+}
+
+.selected-document-back:hover {
+    opacity: 0.65;
 }
 
 
@@ -960,14 +1202,13 @@ a {
     max-width: 680px;
 }
 
-
-.download-form-title {
+.download-form-title,
+.download-form-area h2 {
     margin: 0 0 12px;
 
     font-size: 32px;
     font-weight: 500;
 }
-
 
 .required-note {
     margin: 0 0 35px;
@@ -977,23 +1218,22 @@ a {
     font-size: 13px;
 }
 
-
 .form-field {
     width: 100%;
 
     margin-bottom: 32px;
 }
 
-
-.form-field > label {
+.form-field > label:not(.consent-label) {
     display: block;
 
     margin-bottom: 10px;
 
+    color: #222;
+
     font-size: 14px;
     font-weight: 600;
 }
-
 
 .form-field input[type="text"],
 .form-field input[type="email"] {
@@ -1014,8 +1254,11 @@ a {
     border-radius: 0;
 
     outline: none;
-}
 
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
 
 .form-field input[type="text"]:focus,
 .form-field input[type="email"]:focus {
@@ -1025,32 +1268,59 @@ a {
         0 0 0 1px #222;
 }
 
+.form-field input:disabled {
+    color: #777;
+    background: #eee;
+}
+
+
+/* =========================================
+   Required / Optional
+========================================= */
 
 .required-mark {
     color: #b60018;
 }
 
-
 .optional-mark {
+    display: inline-block;
+
     margin-left: 8px;
     padding: 1px 6px;
-
-    display: inline-block;
 
     color: #666;
     background: #f1f1f1;
 
     font-size: 11px;
     font-weight: 400;
+    line-height: 1.5;
+
+    vertical-align: middle;
 }
 
 
+/* =========================================
+   Field Errors
+========================================= */
+
 .field-error {
+    min-height: 1.6em;
+
     margin: 7px 0 0;
 
     color: #b00020;
 
     font-size: 13px;
+    line-height: 1.6;
+}
+
+.form-error {
+    margin-top: 8px;
+
+    color: #b60018;
+
+    font-size: 13px;
+    line-height: 1.6;
 }
 
 
@@ -1059,11 +1329,14 @@ a {
 ========================================= */
 
 .form-field-consent {
+    width: 100%;
+
     margin: 8px 0 32px;
 }
 
-
 .consent-label {
+    width: 100%;
+
     display: flex;
     align-items: flex-start;
 
@@ -1072,19 +1345,45 @@ a {
     cursor: pointer;
 
     font-size: 14px;
+    font-weight: 400;
     line-height: 1.7;
 }
 
-
 .consent-label input[type="checkbox"] {
+    appearance: auto;
+    -webkit-appearance: checkbox;
+
     width: 18px !important;
     height: 18px !important;
+
+    min-width: 18px;
+    min-height: 18px;
 
     flex: 0 0 auto;
 
     margin: 3px 0 0;
+    padding: 0;
+
+    cursor: pointer;
+
+    box-shadow: none;
 
     accent-color: #222;
+}
+
+.consent-label span {
+    min-width: 0;
+}
+
+.consent-label a {
+    color: #222;
+
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.consent-label a:hover {
+    opacity: 0.65;
 }
 
 
@@ -1112,16 +1411,19 @@ a {
     font-weight: 600;
 
     border: 1px solid #222;
+    border-radius: 0;
 
     cursor: pointer;
-}
 
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
 
 #download-submit:hover {
     color: #222;
     background: #fff;
 }
-
 
 #download-submit:disabled {
     opacity: 0.55;
@@ -1130,17 +1432,22 @@ a {
 }
 
 
+/* =========================================
+   Download Status
+========================================= */
+
 .download-status {
     margin-top: 16px;
 
-    font-size: 13px;
-}
+    color: #555;
 
+    font-size: 13px;
+    line-height: 1.7;
+}
 
 .download-success {
     color: #35663d;
 }
-
 
 .download-api-error {
     margin-top: 8px;
@@ -1152,6 +1459,7 @@ a {
     border-left: 4px solid #b00020;
 
     font-size: 13px;
+    line-height: 1.6;
 }
 
 
@@ -1180,13 +1488,13 @@ a {
         rgba(0, 0, 0, 0.08);
 }
 
-
 .cookie-banner[hidden] {
     display: none;
 }
 
-
 .cookie-banner-inner {
+    width: 100%;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1194,18 +1502,40 @@ a {
     gap: 48px;
 }
 
-
 .cookie-message {
     max-width: 760px;
 }
 
+.cookie-message h2 {
+    margin: 0 0 8px;
+
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.cookie-message p {
+    margin: 0 0 8px;
+
+    color: #555;
+
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.cookie-policy-link {
+    padding-bottom: 2px;
+
+    border-bottom: 1px solid #222;
+
+    font-size: 12px;
+}
 
 .cookie-actions {
     display: flex;
+    flex-shrink: 0;
 
     gap: 10px;
 }
-
 
 .cookie-button {
     min-width: 130px;
@@ -1213,17 +1543,18 @@ a {
 
     padding: 10px 18px;
 
-    border: 1px solid #222;
-
     cursor: pointer;
-}
 
+    font-family: inherit;
+    font-size: 13px;
+
+    border: 1px solid #222;
+}
 
 .cookie-button-primary {
     color: #fff;
     background: #222;
 }
-
 
 .cookie-button-secondary {
     color: #222;
@@ -1263,6 +1594,18 @@ a {
    Tablet
 ========================================= */
 
+@media (max-width: 900px) {
+
+    .materials-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+}
+
+
 @media (max-width: 860px) {
 
     .material-detail-inner {
@@ -1271,9 +1614,12 @@ a {
         gap: 48px;
     }
 
-
     .material-detail-visual {
         height: 340px;
+    }
+
+    .material-detail-information {
+        width: 100%;
     }
 
 
@@ -1281,30 +1627,42 @@ a {
         display: flex;
         flex-direction: column;
 
+        width: 100%;
+        max-width: 100%;
+
         gap: 48px;
     }
-
 
     .selected-document {
         order: 1;
 
         width: 100%;
+        max-width: 100%;
     }
-
 
     .download-form-area {
         order: 2;
 
+        width: 100%;
         max-width: none;
+        min-width: 0;
     }
-
 
     .cookie-banner-inner {
         flex-direction: column;
-
         align-items: stretch;
 
         gap: 20px;
+    }
+
+    .cookie-actions {
+        width: 100%;
+    }
+
+    .cookie-button {
+        flex: 1;
+
+        min-width: 0;
     }
 }
 
@@ -1315,35 +1673,70 @@ a {
 
 @media (max-width: 600px) {
 
+    /* Header */
+
     .header-inner {
         min-height: 76px;
         height: auto;
 
-        padding: 14px 16px;
-    }
+        padding: 12px 16px;
 
+        gap: 12px;
+    }
 
     .site-logo-image {
-        width: 180px;
+        width: auto;
+
+        max-width: 170px;
+        max-height: 52px;
     }
 
+    .language-switcher {
+        gap: 6px;
+    }
+
+    .language-button {
+        font-size: 12px;
+    }
+
+
+    /* Home */
 
     .hero {
         min-height: auto;
     }
 
-
     .hero-inner {
-        padding: 72px 20px;
+        padding:
+            72px 20px;
     }
 
+    .hero h1 {
+        font-size: 42px;
+    }
+
+    .hero-description {
+        font-size: 15px;
+    }
+
+
+    /* Materials / Detail / Download Hero */
 
     .materials-hero,
     .material-detail-hero,
     .download-hero {
-        padding: 48px 20px;
+        padding:
+            48px 20px;
     }
 
+    .materials-page-title,
+    .material-detail-title,
+    .download-page-title {
+        font-size: 36px;
+    }
+
+
+    /* Sections */
 
     .materials-section,
     .material-detail-section,
@@ -1354,58 +1747,119 @@ a {
     }
 
 
-    .materials-page-title,
-    .material-detail-title,
-    .download-page-title {
-        font-size: 36px;
-    }
-
-
-    .materials-grid {
-        grid-template-columns: 1fr;
-    }
-
+    /* Categories */
 
     .category-filter {
         gap: 8px;
+
+        margin-bottom: 35px;
     }
 
+    .category-filter-button {
+        padding:
+            8px 12px;
+
+        font-size: 12px;
+    }
+
+
+    /* Materials */
+
+    .materials-grid {
+        grid-template-columns: 1fr;
+
+        gap: 24px;
+    }
 
     .material-card-visual {
         height: 200px;
     }
 
+    .materials-back {
+        margin-top: 48px;
+    }
+
+
+    /* Detail */
 
     .material-detail-visual {
         height: 280px;
     }
 
+    .material-detail-pdf {
+        width: 110px;
+        height: 145px;
+    }
 
     .material-detail-document-title {
         font-size: 25px;
     }
 
-
-    #material-download-link,
-    #download-submit {
+    #material-download-link {
         width: 100%;
     }
 
+    .material-detail-back {
+        margin-top: 48px;
+    }
+
+
+    /* Download */
+
+    .download-page-description {
+        margin-top: 26px;
+
+        font-size: 14px;
+    }
 
     .selected-document-visual {
         height: 240px;
     }
 
-
-    .selected-document-body {
-        padding: 24px 20px;
+    .selected-document-pdf {
+        width: 90px;
+        height: 120px;
     }
 
+    .selected-document-body {
+        padding:
+            24px 20px;
+    }
 
-    .download-form-title {
+    .selected-document-title {
+        font-size: 22px;
+    }
+
+    .download-form-title,
+    .download-form-area h2 {
         font-size: 27px;
     }
 
+    .form-field {
+        margin-bottom: 26px;
+    }
+
+    .consent-label {
+        gap: 10px;
+
+        font-size: 13px;
+    }
+
+    #download-submit {
+        width: 100%;
+        max-width: 100%;
+
+        justify-content: space-between;
+    }
+
+
+    /* Footer */
+
+    .site-footer {
+        padding:
+            36px 16px
+            28px;
+    }
 
     .footer-inner {
         flex-direction: column;
@@ -1415,10 +1869,43 @@ a {
         gap: 32px;
     }
 
-
     .footer-links {
         flex-direction: column;
 
         gap: 14px;
+    }
+}
+
+
+/* =========================================
+   Small Mobile
+========================================= */
+
+@media (max-width: 480px) {
+
+    .site-logo-image {
+        max-width: 145px;
+    }
+
+    .language-button {
+        font-size: 11px;
+    }
+
+    .language-separator {
+        font-size: 11px;
+    }
+
+    .download-hero {
+        padding:
+            42px 20px
+            48px;
+    }
+
+    .download-page-title {
+        font-size: 34px;
+    }
+
+    .selected-document-visual {
+        height: 220px;
     }
 }
