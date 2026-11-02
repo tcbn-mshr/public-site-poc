@@ -1190,4 +1190,17 @@ textarea {
     .admin-form-actions .admin-primary-button {
         margin-top: 0;
     }
+
+   
+    .admin-page-heading {
+        display: block;
+    }
+
+
+    .admin-page-heading .admin-primary-button {
+        width: 100%;
+
+        margin-top: 24px;
+    }
+
 }
