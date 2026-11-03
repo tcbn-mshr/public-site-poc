@@ -645,6 +645,34 @@ function applyTranslations() {
         language;
 
 
+   /* =====================================
+      Site Logo
+   ===================================== */
+   
+   const logoElement =
+       document.getElementById(
+           "site-logo-image"
+       );
+   
+   
+   if (logoElement) {
+   
+       const logoSource =
+           language === "ja"
+               ? logoElement.dataset.logoJa
+               : logoElement.dataset.logoEn;
+   
+   
+       if (logoSource) {
+   
+           logoElement.setAttribute(
+               "src",
+               logoSource
+           );
+       }
+   }
+   
+
     /* =====================================
        Text
     ===================================== */
