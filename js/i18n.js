@@ -30,9 +30,7 @@ const translations = {
 
     en: {
 
-        /* ---------------------------------
-           Common
-        --------------------------------- */
+        /* Common */
 
         "common.japanese":
             "日本語",
@@ -41,9 +39,7 @@ const translations = {
             "English",
 
 
-        /* ---------------------------------
-           Home
-        --------------------------------- */
+        /* Home */
 
         "home.title":
             "Exhibition Materials",
@@ -55,9 +51,7 @@ const translations = {
             "View Materials",
 
 
-        /* ---------------------------------
-           Materials
-        --------------------------------- */
+        /* Materials */
 
         "materials.title":
             "Materials",
@@ -70,11 +64,6 @@ const translations = {
 
         "materials.categoryElectronics":
             "Information & Electronics",
-
-        /*
-         * 現在HTMLでは非表示ですが、
-         * 将来再利用できるよう翻訳値は残します。
-         */
 
         "materials.categoryChemicals":
             "Chemicals",
@@ -104,9 +93,7 @@ const translations = {
             "No materials are available in this category.",
 
 
-        /* ---------------------------------
-           Material Detail
-        --------------------------------- */
+        /* Material Detail */
 
         "material.download":
             "Download Material",
@@ -124,9 +111,7 @@ const translations = {
             "Please review the material details and proceed to the download page.",
 
 
-        /* ---------------------------------
-           Download
-        --------------------------------- */
+        /* Download */
 
         "download.title":
             "Download Material",
@@ -195,41 +180,34 @@ const translations = {
             "Please agree to the handling of your personal information.",
 
 
-         /* ---------------------------------
-            Footer
-         --------------------------------- */
-         
-         "footer.privacy":
-             "Privacy Policy",
-         
-         "footer.privacyUrl":
-             "https://www.inabata.co.jp/english/privacy/",
-         
-         
-         "footer.personalInformation":
-             "Handling of Personal Information",
-         
-         "footer.personalInformationUrl":
-             "https://www.inabata.co.jp/english/privacy/handling.html",
-         
-         
-         "footer.cookie":
-             "Cookie Policy",
-         
-         "footer.cookieUrl":
-             "https://www.inabata.co.jp/english/cookiepolicy/",
-         
-         
-         "footer.sitePolicy":
-             "Terms of use",
-         
-         "footer.sitePolicyUrl":
-             "https://www.inabata.co.jp/english/sitepolicy/",
+        /* Footer */
+
+        "footer.privacy":
+            "Privacy Policy",
+
+        "footer.privacyUrl":
+            "https://www.inabata.co.jp/english/privacy/",
+
+        "footer.personalInformation":
+            "Handling of Personal Information",
+
+        "footer.personalInformationUrl":
+            "https://www.inabata.co.jp/english/privacy/handling.html",
+
+        "footer.cookie":
+            "Cookie Policy",
+
+        "footer.cookieUrl":
+            "https://www.inabata.co.jp/english/cookiepolicy/",
+
+        "footer.sitePolicy":
+            "Terms of use",
+
+        "footer.sitePolicyUrl":
+            "https://www.inabata.co.jp/english/sitepolicy/",
 
 
-        /* ---------------------------------
-           Cookie Consent
-        --------------------------------- */
+        /* Cookie */
 
         "cookie.title":
             "Cookie Notice",
@@ -254,9 +232,7 @@ const translations = {
 
     ja: {
 
-        /* ---------------------------------
-           Common
-        --------------------------------- */
+        /* Common */
 
         "common.japanese":
             "日本語",
@@ -265,9 +241,7 @@ const translations = {
             "English",
 
 
-        /* ---------------------------------
-           Home
-        --------------------------------- */
+        /* Home */
 
         "home.title":
             "展示会資料",
@@ -279,9 +253,7 @@ const translations = {
             "資料一覧を見る",
 
 
-        /* ---------------------------------
-           Materials
-        --------------------------------- */
+        /* Materials */
 
         "materials.title":
             "資料一覧",
@@ -294,11 +266,6 @@ const translations = {
 
         "materials.categoryElectronics":
             "情報電子",
-
-        /*
-         * 現在HTMLでは非表示ですが、
-         * 将来再利用できるよう翻訳値は残します。
-         */
 
         "materials.categoryChemicals":
             "化学品",
@@ -328,9 +295,7 @@ const translations = {
             "該当する資料はありません。",
 
 
-        /* ---------------------------------
-           Material Detail
-        --------------------------------- */
+        /* Material Detail */
 
         "material.download":
             "資料をダウンロード",
@@ -348,9 +313,7 @@ const translations = {
             "資料の詳細をご確認のうえ、ダウンロードページへお進みください。",
 
 
-        /* ---------------------------------
-           Download
-        --------------------------------- */
+        /* Download */
 
         "download.title":
             "資料ダウンロード",
@@ -419,40 +382,34 @@ const translations = {
             "個人情報の取扱いへの同意が必要です。",
 
 
-         /* ---------------------------------
-            Footer
-         --------------------------------- */
-         
-         "footer.privacy":
-             "個人情報保護方針*,
-         
-         "footer.privacyUrl":
-             "https*//www.inabata.co.jp/privacy/",
-         
-         
-         "*ooter.personalInformation":
-             "個*情報の取扱いについて",
-         
-         "footer.personalInfo*mationUrl":
-             "https://www.inabata.co.jp/privacy/handling.html",
-         
-         
-         *footer.cookie":
-             "Cookieポリシー",
-         *"footer.cookieUrl":
-             "https://www.inabata.co.jp/cookiepolicy",
-         
-         
-         "footer.sitePolicy":
-             "サイトポリシー",
-         
-         "footer.sitePolicyUrl":
-             "https://www.inabata.co.jp/sitepolicy/",
+        /* Footer */
+
+        "footer.privacy":
+            "個人情報保護方針",
+
+        "footer.privacyUrl":
+            "https://www.inabata.co.jp/privacy/",
+
+        "footer.personalInformation":
+            "個人情報の取扱いについて",
+
+        "footer.personalInformationUrl":
+            "https://www.inabata.co.jp/privacy/handling.html",
+
+        "footer.cookie":
+            "Cookieポリシー",
+
+        "footer.cookieUrl":
+            "https://www.inabata.co.jp/cookiepolicy",
+
+        "footer.sitePolicy":
+            "サイトポリシー",
+
+        "footer.sitePolicyUrl":
+            "https://www.inabata.co.jp/sitepolicy/",
 
 
-        /* ---------------------------------
-           Cookie Consent
-        --------------------------------- */
+        /* Cookie */
 
         "cookie.title":
             "Cookieについて",
@@ -554,10 +511,12 @@ function getCurrentLanguage() {
 
 
 /* =========================================
-   Translate
+   Translation
 ========================================= */
 
-function translate(key) {
+function translate(
+    key
+) {
 
     const language =
         getCurrentLanguage();
@@ -649,11 +608,6 @@ function updateLanguageControls(
             );
 
 
-            /*
-             * 現在言語を視覚的・意味的に
-             * 判別できるようにする。
-             */
-
             if (active) {
 
                 control.setAttribute(
@@ -683,25 +637,25 @@ function applyTranslations() {
         getCurrentLanguage();
 
 
-    /*
-     * HTML lang
-     */
+    /* =====================================
+       HTML Language
+    ===================================== */
 
     document.documentElement.lang =
         language;
 
 
-    /*
-     * Text
-     */
+    /* =====================================
+       Text
+    ===================================== */
 
-    const elements =
+    const textElements =
         document.querySelectorAll(
             "[data-i18n]"
         );
 
 
-    elements.forEach(
+    textElements.forEach(
         (element) => {
 
             const key =
@@ -724,53 +678,54 @@ function applyTranslations() {
     );
 
 
-      /*
-       * href
-       */
-      
-      const hrefElements =
-      *   document.querySelectorAll(
-          *   "[data-i18n-href]"
-          );
-      
-      
-      hre*Elements.forEach(
-          (element) =>*{
-      
-              const key =
-                 *String(
-                      element.da*aset
-                          .i18nHref*||
-                      ""
-                  *.trim();
-      
-      
-              if (!key) {
-         *        return;
-              }
-      
-      
-            * const url =
-                  translate*
-                      key
-                  )*
-      
-      
-              if (!url) {
-                 *return;
-              }
-      
-      
-              elemen*.setAttribute(
-                  "href",*            url
-              );
-          }
-      )*
-   
+    /* =====================================
+       href
+    ===================================== */
 
-    /*
-     * Placeholder
-     */
+    const hrefElements =
+        document.querySelectorAll(
+            "[data-i18n-href]"
+        );
+
+
+    hrefElements.forEach(
+        (element) => {
+
+            const key =
+                String(
+                    element.dataset
+                        .i18nHref ||
+                    ""
+                ).trim();
+
+
+            if (!key) {
+                return;
+            }
+
+
+            const url =
+                translate(
+                    key
+                );
+
+
+            if (!url) {
+                return;
+            }
+
+
+            element.setAttribute(
+                "href",
+                url
+            );
+        }
+    );
+
+
+    /* =====================================
+       Placeholder
+    ===================================== */
 
     const placeholderElements =
         document.querySelectorAll(
@@ -804,9 +759,9 @@ function applyTranslations() {
     );
 
 
-    /*
-     * aria-label
-     */
+    /* =====================================
+       aria-label
+    ===================================== */
 
     const ariaElements =
         document.querySelectorAll(
@@ -867,7 +822,6 @@ function updateStaticPageTitle() {
 
     if (
         pathname === "/" ||
-        pathname.endsWith("/") ||
         pathname.endsWith(
             "/index.html"
         )
@@ -897,22 +851,18 @@ function updateStaticPageTitle() {
             language === "ja"
                 ? "資料一覧｜INABATA"
                 : "Materials | INABATA";
-
-
-        return;
     }
 
 
     /*
-     * material.html と download.html は
-     * material.js / download.js が
-     * 資料名を含むタイトルを設定します。
+     * material.html / download.html のタイトルは
+     * material.js / download.js が資料名を含めて設定。
      */
 }
 
 
 /* =========================================
-   Change Language
+   Set Language
 ========================================= */
 
 function setLanguage(
@@ -941,7 +891,7 @@ function setLanguage(
     }
 
 
-    const oldLanguage =
+    const previousLanguage =
         getCurrentLanguage();
 
 
@@ -950,6 +900,10 @@ function setLanguage(
     );
 
 
+    /*
+     * 静的文言・Footer URLなどを更新。
+     */
+
     applyTranslations();
 
 
@@ -957,13 +911,15 @@ function setLanguage(
 
 
     /*
-     * 動的コンテンツを持つ
-     * app.js / material.js / download.js
-     * へ通知。
+     * app.js
+     * material.js
+     * download.js
+     *
+     * へ言語変更を通知。
      */
 
     if (
-        oldLanguage !==
+        previousLanguage !==
         normalizedLanguage
     ) {
 
@@ -1027,8 +983,7 @@ function initializeLanguageControls() {
 function initializeI18n() {
 
     /*
-     * 保存済み言語がない場合は
-     * Englishを使用。
+     * 保存済み言語がなければEnglish。
      */
 
     applyTranslations();
