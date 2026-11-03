@@ -95,6 +95,9 @@ const translations = {
 
         /* Material Detail */
 
+       "material.pageTitle":
+            "Material Details",
+       
         "material.download":
             "Download Material",
 
@@ -297,6 +300,9 @@ const translations = {
 
         /* Material Detail */
 
+        "material.pageTitle":
+            "資料詳細",
+       
         "material.download":
             "資料をダウンロード",
 
