@@ -40,12 +40,6 @@ const categoryTopElement =
     );
 
 
-const titleTopElement =
-    document.getElementById(
-        "material-title-top"
-    );
-
-
 const titleElement =
     document.getElementById(
         "material-title"
@@ -880,17 +874,6 @@ function renderMaterial(
 
         categoryTopElement.textContent =
             localizedCategoryName;
-    }
-
-
-    /* =====================================
-       Hero Title
-    ===================================== */
-
-    if (titleTopElement) {
-
-        titleTopElement.textContent =
-            localizedTitle;
     }
 
 
