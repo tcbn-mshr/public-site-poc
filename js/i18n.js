@@ -195,21 +195,36 @@ const translations = {
             "Please agree to the handling of your personal information.",
 
 
-        /* ---------------------------------
-           Footer
-        --------------------------------- */
-
-        "footer.privacy":
-            "Privacy Policy",
-
-        "footer.personalInformation":
-            "Handling of Personal Information",
-
-        "footer.cookie":
-            "Cookie Policy",
-
-        "footer.sitePolicy":
-            "Site Policy",
+         /* ---------------------------------
+            Footer
+         --------------------------------- */
+         
+         "footer.privacy":
+             "Privacy Policy",
+         
+         "footer.privacyUrl":
+             "https://www.inabata.co.jp/english/privacy/",
+         
+         
+         "footer.personalInformation":
+             "Handling of Personal Information",
+         
+         "footer.personalInformationUrl":
+             "https://www.inabata.co.jp/english/privacy/handling.html",
+         
+         
+         "footer.cookie":
+             "Cookie Policy",
+         
+         "footer.cookieUrl":
+             "https://www.inabata.co.jp/english/cookiepolicy/",
+         
+         
+         "footer.sitePolicy":
+             "Terms of use",
+         
+         "footer.sitePolicyUrl":
+             "https://www.inabata.co.jp/english/sitepolicy/",
 
 
         /* ---------------------------------
@@ -404,21 +419,35 @@ const translations = {
             "個人情報の取扱いへの同意が必要です。",
 
 
-        /* ---------------------------------
-           Footer
-        --------------------------------- */
-
-        "footer.privacy":
-            "個人情報保護方針",
-
-        "footer.personalInformation":
-            "個人情報の取扱いについて",
-
-        "footer.cookie":
-            "Cookieポリシー",
-
-        "footer.sitePolicy":
-            "サイトポリシー",
+         /* ---------------------------------
+            Footer
+         --------------------------------- */
+         
+         "footer.privacy":
+             "個人情報保護方針*,
+         
+         "footer.privacyUrl":
+             "https*//www.inabata.co.jp/privacy/",
+         
+         
+         "*ooter.personalInformation":
+             "個*情報の取扱いについて",
+         
+         "footer.personalInfo*mationUrl":
+             "https://www.inabata.co.jp/privacy/handling.html",
+         
+         
+         *footer.cookie":
+             "Cookieポリシー",
+         *"footer.cookieUrl":
+             "https://www.inabata.co.jp/cookiepolicy",
+         
+         
+         "footer.sitePolicy":
+             "サイトポリシー",
+         
+         "footer.sitePolicyUrl":
+             "https://www.inabata.co.jp/sitepolicy/",
 
 
         /* ---------------------------------
@@ -694,6 +723,50 @@ function applyTranslations() {
         }
     );
 
+
+      /*
+       * href
+       */
+      
+      const hrefElements =
+      *   document.querySelectorAll(
+          *   "[data-i18n-href]"
+          );
+      
+      
+      hre*Elements.forEach(
+          (element) =>*{
+      
+              const key =
+                 *String(
+                      element.da*aset
+                          .i18nHref*||
+                      ""
+                  *.trim();
+      
+      
+              if (!key) {
+         *        return;
+              }
+      
+      
+            * const url =
+                  translate*
+                      key
+                  )*
+      
+      
+              if (!url) {
+                 *return;
+              }
+      
+      
+              elemen*.setAttribute(
+                  "href",*            url
+              );
+          }
+      )*
+   
 
     /*
      * Placeholder
