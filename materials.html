@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+
+<html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -10,18 +12,19 @@
     >
 
     <meta
-        name="description"
-        content="稲畑産業の展示会資料をご覧いただけます。"
+        name="robots"
+        content="noindex, nofollow"
     >
 
     <title>
-        展示会資料｜INABATA
+        Materials | INABATA
     </title>
 
     <link
         rel="stylesheet"
         href="./css/style.css"
     >
+
 </head>
 
 
@@ -38,41 +41,59 @@
             <a
                 href="./index.html"
                 class="site-logo"
-                aria-label="トップページへ戻る"
+                aria-label="INABATA"
             >
                 <img
-                    src="./assets/images/Iktagline_jp_01_RGB.png"
-                    alt="INABATA 当たり前をつなぐ、未来を紡ぐ。"
+                    id="site-logo-image"
+                    src="./assets/images/Iktagline_en_01_RGB.png"
+                    alt="INABATA"
                     class="site-logo-image"
+                    data-logo-ja="./assets/images/Iktagline_jp_01_RGB.png"
+                    data-logo-en="./assets/images/Iktagline_en_01_RGB.png"
                 >
             </a>
 
 
-            <nav
-                class="header-nav"
-                aria-label="メインナビゲーション"
+            <div
+                class="language-switcher"
+                aria-label="Language"
             >
-                <a
-                    href="./materials.html"
-                    class="header-nav-link is-current"
-                    aria-current="page"
+
+                <button
+                    type="button"
+                    class="language-button"
+                    data-language="ja"
                 >
-                    資料一覧
-                </a>
-            </nav>
+                    日本語
+                </button>
+
+                <span
+                    class="language-separator"
+                    aria-hidden="true"
+                >
+                    |
+                </span>
+
+                <button
+                    type="button"
+                    class="language-button"
+                    data-language="en"
+                >
+                    English
+                </button>
+
+            </div>
 
         </div>
 
     </header>
 
 
-    <!-- =====================================
-         Main
-    ====================================== -->
-
     <main>
 
-        <!-- Page heading -->
+        <!-- =================================
+             Hero
+        ================================== -->
 
         <section class="materials-hero">
 
@@ -82,13 +103,20 @@
                     MATERIALS
                 </p>
 
-                <h1 class="materials-page-title">
-                    資料を探す
+
+                <h1
+                    class="materials-page-title"
+                    data-i18n="materials.title"
+                >
+                    資料一覧
                 </h1>
 
-                <p class="materials-page-description">
-                    製品・技術・サービスに関する展示会資料を、
-                    カテゴリーからお探しいただけます。
+
+                <p
+                    class="materials-page-description"
+                    data-i18n="materials.description"
+                >
+                    製品・技術・サービスに関する展示会資料をご覧いただけます。
                 </p>
 
             </div>
@@ -96,12 +124,11 @@
         </section>
 
 
-        <!-- Materials -->
+        <!-- =================================
+             Materials
+        ================================== -->
 
-        <section
-            class="materials-section"
-            aria-labelledby="materials-heading"
-        >
+        <section class="materials-section">
 
             <div class="materials-section-inner">
 
@@ -109,74 +136,37 @@
                     id="materials-heading"
                     class="visually-hidden"
                 >
-                    展示会資料一覧
+                    Materials
                 </h2>
 
 
-                <!-- Category filter -->
+                <!-- Category -->
 
                 <div
                     class="category-filter"
-                    role="group"
-                    aria-label="資料カテゴリー"
+                    aria-label="Material categories"
                 >
 
                     <button
                         type="button"
-                        class="category-filter-button is-active"
+                        class="category-filter-button"
                         data-category="all"
-                        aria-pressed="true"
+                        data-i18n="materials.categoryAll"
                     >
                         すべて
                     </button>
+
 
                     <button
                         type="button"
                         class="category-filter-button"
                         data-category="electronics"
-                        aria-pressed="false"
+                        data-i18n="materials.categoryElectronics"
                     >
                         情報電子
                     </button>
 
-                    <!--
-                    <button
-                        type="button"
-                        class="category-filter-button"
-                        data-category="chemicals"
-                        aria-pressed="false"
-                    >
-                        化学品
-                    </button>
 
-                    <button
-                        type="button"
-                        class="category-filter-button"
-                        data-category="life"
-                        aria-pressed="false"
-                    >
-                        生活産業
-                    </button>
-
-                    <button
-                        type="button"
-                        class="category-filter-button"
-                        data-category="plastics"
-                        aria-pressed="false"
-                    >
-                        合成樹脂
-                    </button>
-
-                    <button
-                        type="button"
-                        class="category-filter-button"
-                        data-category="other"
-                        aria-pressed="false"
-                    >
-                        その他
-                    </button>
-                    -->
-                    
                 </div>
 
 
@@ -185,7 +175,7 @@
                 <p
                     id="materials-loading"
                     class="materials-message"
-                    role="status"
+                    data-i18n="materials.loading"
                 >
                     資料を読み込んでいます...
                 </p>
@@ -193,53 +183,45 @@
 
                 <!-- Error -->
 
-                <div
+                <p
                     id="materials-error"
                     class="materials-message materials-message-error"
-                    role="alert"
                     hidden
                 >
-                    <p>
-                        資料一覧を取得できませんでした。
-                    </p>
-
-                    <p>
-                        しばらくしてから、
-                        もう一度ページを読み込んでください。
-                    </p>
-
-                    <button
-                        type="button"
-                        class="button button-secondary"
-                        onclick="window.location.reload();"
-                    >
-                        再読み込み
-                    </button>
-                </div>
+                    資料を読み込めませんでした。
+                </p>
 
 
                 <!-- Empty -->
 
                 <p
                     id="materials-empty"
-                    class="materials-message"
-                    role="status"
+                    class="materials-empty"
                     hidden
                 >
                     該当する資料はありません。
                 </p>
 
 
-                <!--
-                    app.jsが、この要素内へ
-                    資料カードを自動生成します。
-                -->
+                <!-- Grid -->
 
                 <div
                     id="materials-grid"
                     class="materials-grid"
                     aria-live="polite"
                 ></div>
+
+
+                <div class="materials-back">
+
+                    <a
+                        href="./index.html"
+                        data-i18n="materials.backTop"
+                    >
+                        ← TOPページへ戻る
+                    </a>
+
+                </div>
 
             </div>
 
@@ -252,128 +234,66 @@
          Footer
     ====================================== -->
 
-    <footer class="site-footer">
+<footer class="site-footer">
 
-        <div class="footer-inner">
+    <div class="footer-inner">
 
-            <nav
-                class="footer-links"
-                aria-label="フッターナビゲーション"
+        <nav
+            class="footer-links"
+            aria-label="Footer"
+        >
+
+            <a
+                href="https://www.inabata.co.jp/privacy/"
+                data-i18n="footer.privacy"
+                data-i18n-href="footer.privacyUrl"
             >
-
-                <a
-                    href="https://www.inabata.co.jp/privacy/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    個人情報保護方針
-                </a>
-
-                <a
-                    href="https://www.inabata.co.jp/privacy/handling.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    個人情報の取扱いについて
-                </a>
-
-                <a
-                    href="https://www.inabata.co.jp/cookiepolicy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Cookieポリシー
-                </a>
-
-                <a
-                    href="https://www.inabata.co.jp/sitepolicy/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    サイトポリシー
-                </a>
-
-            </nav>
+                個人情報保護方針
+            </a>
 
 
-            <p class="copyright">
-                &copy; INABATA &amp; CO., LTD.
-            </p>
-
-        </div>
-
-    </footer>
-
-
-    <!-- =====================================
-         Cookie Consent
-    ====================================== -->
-
-    <div
-        id="cookie-banner"
-        class="cookie-banner"
-        role="dialog"
-        aria-labelledby="cookie-title"
-        aria-describedby="cookie-description"
-        hidden
-    >
-
-        <div class="cookie-banner-inner">
-
-            <div class="cookie-message">
-
-                <h2 id="cookie-title">
-                    Cookieの利用について
-                </h2>
-
-                <p id="cookie-description">
-                    当サイトでは、サイトの利用状況の把握等のため
-                    Cookieを使用する場合があります。
-                    Cookieの使用について設定できます。
-                </p>
-
-                <a
-                    href="https://www.inabata.co.jp/cookiepolicy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="cookie-policy-link"
-                >
-                    Cookieポリシー
-                </a>
-
-            </div>
+            <a
+                href="https://www.inabata.co.jp/privacy/handling.html"
+                data-i18n="footer.personalInformation"
+                data-i18n-href="footer.personalInformationUrl"
+            >
+                個人情報の取扱いについて
+            </a>
 
 
-            <div class="cookie-actions">
+            <a
+                href="https://www.inabata.co.jp/cookiepolicy"
+                data-i18n="footer.cookie"
+                data-i18n-href="footer.cookieUrl"
+            >
+                Cookieポリシー
+            </a>
 
-                <button
-                    type="button"
-                    id="cookie-reject"
-                    class="cookie-button cookie-button-secondary"
-                >
-                    拒否する
-                </button>
 
-                <button
-                    type="button"
-                    id="cookie-accept"
-                    class="cookie-button cookie-button-primary"
-                >
-                    すべて許可する
-                </button>
+            <a
+                href="https://www.inabata.co.jp/sitepolicy/"
+                data-i18n="footer.sitePolicy"
+                data-i18n-href="footer.sitePolicyUrl"
+            >
+                サイトポリシー
+            </a>
 
-            </div>
+        </nav>
 
-        </div>
+
+        <p class="copyright">
+            © INABATA &amp; CO., LTD.
+        </p>
 
     </div>
 
+</footer>
 
-    <!-- =====================================
-         JavaScript
-    ====================================== -->
+
+    <script src="./js/i18n.js"></script>
 
     <script src="./js/app.js"></script>
+
     <script src="./js/consent.js"></script>
 
 </body>

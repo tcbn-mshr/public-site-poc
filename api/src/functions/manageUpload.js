@@ -85,12 +85,14 @@ function isValidMaterialId(
 ) {
 
     /*
-     * crypto.randomUUID() で生成した
-     * UUIDのみを受け付けます。
+     * 管理画面で新規登録した資料IDは
+     * crypto.randomUUID() 形式。
      */
 
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-        .test(materialId);
+        .test(
+            materialId
+        );
 }
 
 
@@ -110,6 +112,10 @@ async function manageUploadHandler(
 
     try {
 
+        /* =================================
+           Request body
+        ================================= */
+
         let body;
 
 
@@ -118,12 +124,15 @@ async function manageUploadHandler(
             body =
                 await request.json();
 
+
         } catch {
 
             return jsonResponse(
                 400,
                 {
-                    success: false,
+                    success:
+                        false,
+
                     message:
                         "リクエスト内容を確認できませんでした。"
                 }
@@ -131,19 +140,39 @@ async function manageUploadHandler(
         }
 
 
+        /* =================================
+           Input
+        ================================= */
+
         const materialId =
             String(
-                body?.materialId || ""
+                body?.materialId ||
+                ""
             ).trim();
 
 
         const originalFileName =
             String(
-                body?.originalFileName || ""
+                body?.originalFileName ||
+                ""
             )
                 .trim()
-                .slice(0, 255);
+                .slice(
+                    0,
+                    255
+                );
 
+
+        const uploadType =
+            String(
+                body?.uploadType ||
+                "pdf"
+            ).trim();
+
+
+        /* =================================
+           Material ID
+        ================================= */
 
         if (
             !isValidMaterialId(
@@ -154,7 +183,9 @@ async function manageUploadHandler(
             return jsonResponse(
                 400,
                 {
-                    success: false,
+                    success:
+                        false,
+
                     message:
                         "資料IDが正しくありません。"
                 }
@@ -162,22 +193,114 @@ async function manageUploadHandler(
         }
 
 
+        /* =================================
+           File name
+        ================================= */
+
+        if (!originalFileName) {
+
+            return jsonResponse(
+                400,
+                {
+                    success:
+                        false,
+
+                    message:
+                        "ファイル名が指定されていません。"
+                }
+            );
+        }
+
+
+        /* =================================
+           Upload type
+        ================================= */
+
         if (
-            !originalFileName
-                .toLowerCase()
-                .endsWith(".pdf")
+            uploadType !== "pdf" &&
+            uploadType !== "thumbnail"
         ) {
 
             return jsonResponse(
                 400,
                 {
-                    success: false,
+                    success:
+                        false,
+
+                    message:
+                        "アップロード種別が正しくありません。"
+                }
+            );
+        }
+
+
+        /* =================================
+           PDF validation
+        ================================= */
+
+        if (
+            uploadType === "pdf" &&
+            !originalFileName
+                .toLowerCase()
+                .endsWith(
+                    ".pdf"
+                )
+        ) {
+
+            return jsonResponse(
+                400,
+                {
+                    success:
+                        false,
+
                     message:
                         "PDFファイルを指定してください。"
                 }
             );
         }
 
+
+        /* =================================
+           Thumbnail validation
+        ================================= */
+
+        if (
+            uploadType === "thumbnail"
+        ) {
+
+            const lowerFileName =
+                originalFileName
+                    .toLowerCase();
+
+
+            const isJpeg =
+                lowerFileName.endsWith(
+                    ".jpg"
+                ) ||
+                lowerFileName.endsWith(
+                    ".jpeg"
+                );
+
+
+            if (!isJpeg) {
+
+                return jsonResponse(
+                    400,
+                    {
+                        success:
+                            false,
+
+                        message:
+                            "JPEG画像を指定してください。"
+                    }
+                );
+            }
+        }
+
+
+        /* =================================
+           Storage
+        ================================= */
 
         const connectionString =
             getConnectionString();
@@ -197,8 +320,22 @@ async function manageUploadHandler(
                 );
 
 
+        /* =================================
+           Blob name
+        ================================= */
+
         const blobName =
-            `materials/${materialId}/document.pdf`;
+            uploadType ===
+            "thumbnail"
+                ? `materials/${materialId}/thumbnail.jpg`
+                : `materials/${materialId}/document.pdf`;
+
+
+        const contentType =
+            uploadType ===
+            "thumbnail"
+                ? "image/jpeg"
+                : "application/pdf";
 
 
         const blobClient =
@@ -208,42 +345,56 @@ async function manageUploadHandler(
                 );
 
 
+        /* =================================
+           Write SAS
+        ================================= */
+
         /*
-         * 10分間だけ有効な
-         * 書込用SASを発行。
+         * PDF / thumbnail の実PUTは
+         * ブラウザーから実施します。
+         *
+         * SASは短時間だけ有効。
          */
 
         const uploadUrl =
-            await blobClient.generateSasUrl({
+            await blobClient
+                .generateSasUrl({
 
-                permissions:
-                    BlobSASPermissions.parse(
-                        "cw"
-                    ),
+                    permissions:
+                        BlobSASPermissions
+                            .parse(
+                                "cw"
+                            ),
 
-                startsOn:
-                    new Date(
-                        Date.now() -
-                        60 * 1000
-                    ),
+                    startsOn:
+                        new Date(
+                            Date.now() -
+                            60 * 1000
+                        ),
 
-                expiresOn:
-                    new Date(
-                        Date.now() +
-                        10 * 60 * 1000
-                    ),
+                    expiresOn:
+                        new Date(
+                            Date.now() +
+                            10 * 60 * 1000
+                        ),
 
-                contentType:
-                    "application/pdf"
-            });
+                    contentType:
+                        contentType
+                });
 
+
+        /* =================================
+           Response
+        ================================= */
 
         return jsonResponse(
             200,
             {
-
                 success:
                     true,
+
+                uploadType:
+                    uploadType,
 
                 blobName:
                     blobName,
@@ -252,7 +403,10 @@ async function manageUploadHandler(
                     uploadUrl,
 
                 originalFileName:
-                    originalFileName
+                    originalFileName,
+
+                contentType:
+                    contentType
             }
         );
 
@@ -268,9 +422,11 @@ async function manageUploadHandler(
         return jsonResponse(
             500,
             {
-                success: false,
+                success:
+                    false,
+
                 message:
-                    "PDFアップロード準備中にエラーが発生しました。"
+                    "ファイルアップロード準備中にエラーが発生しました。"
             }
         );
     }
@@ -284,7 +440,6 @@ async function manageUploadHandler(
 app.http(
     "manage-upload",
     {
-
         methods: [
             "POST"
         ],

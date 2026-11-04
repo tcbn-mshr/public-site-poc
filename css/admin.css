@@ -1,18 +1,28 @@
 /* =========================================
-   Admin Base
+   Exhibition Materials Admin
+   Common Styles
+========================================= */
+
+
+/* =========================================
+   Base
 ========================================= */
 
 * {
     box-sizing: border-box;
 }
 
-
 html {
+    width: 100%;
+    min-height: 100%;
+
     font-size: 16px;
 }
 
-
 body {
+    width: 100%;
+    min-height: 100vh;
+
     margin: 0;
 
     color: #222;
@@ -30,10 +40,14 @@ body {
     line-height: 1.7;
 }
 
+a {
+    color: inherit;
+}
 
 button,
 input,
-select {
+select,
+textarea {
     font: inherit;
 }
 
@@ -53,7 +67,13 @@ select {
 
     overflow: hidden !important;
 
-    clip: rect(0, 0, 0, 0) !important;
+    clip: rect(
+        0,
+        0,
+        0,
+        0
+    ) !important;
+
     white-space: nowrap !important;
 
     border: 0 !important;
@@ -65,50 +85,83 @@ select {
 ========================================= */
 
 .admin-header {
+    width: 100%;
+
     background: #fff;
 
     border-bottom: 1px solid #ddd;
 }
 
-
 .admin-header-inner {
+    width: 100%;
     min-height: 88px;
 
     padding: 0 28px;
 
     display: flex;
     align-items: center;
+    justify-content: space-between;
 
     gap: 32px;
 }
 
+.admin-header-label {
+    margin: 0 0 3px;
+
+    color: #777;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.14em;
+}
+
+.admin-header-title {
+    margin: 0;
+
+    color: #333;
+
+    font-size: 19px;
+    font-weight: 600;
+}
+
+.admin-header-link {
+    flex: 0 0 auto;
+
+    color: #333;
+
+    font-size: 13px;
+
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.admin-header-link:hover {
+    opacity: 0.65;
+}
+
+
+/* =========================================
+   Legacy Admin Logo
+========================================= */
 
 .admin-logo {
     display: inline-flex;
+    align-items: center;
 
     flex: 0 0 auto;
-
-    align-items: center;
 }
-
 
 .admin-logo-image {
     display: block;
 
-    width: 210px;
+    width: auto;
     height: auto;
-}
 
+    max-width: 210px;
+    max-height: 58px;
 
-.admin-header-title {
-    padding-left: 28px;
-
-    color: #333;
-
-    border-left: 1px solid #ddd;
-
-    font-size: 17px;
-    font-weight: 600;
+    object-fit: contain;
 }
 
 
@@ -117,20 +170,26 @@ select {
 ========================================= */
 
 .admin-main {
+    width: 100%;
+
     padding: 56px 28px 80px;
 }
 
-
-.admin-container {
+.admin-container,
+.admin-content-inner {
     width: 100%;
     max-width: 1280px;
 
     margin: 0 auto;
 }
 
+.admin-content-inner {
+    max-width: 1000px;
+}
+
 
 /* =========================================
-   Heading
+   Page Heading
 ========================================= */
 
 .admin-page-heading {
@@ -144,37 +203,76 @@ select {
 }
 
 
-.admin-label {
+.admin-page-heading > div {
+    min-width: 0;
+}
+
+
+.admin-page-heading h1,
+.admin-page-heading h2 {
+    margin: 0;
+
+    color: #222;
+
+    font-size: 34px;
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+
+.admin-label,
+.admin-section-label {
     margin: 0 0 8px;
 
     color: #777;
 
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
 
     letter-spacing: 0.14em;
 }
 
 
-.admin-page-heading h1 {
-    margin: 0;
+.admin-description,
+.admin-page-description {
+    max-width: 700px;
 
-    font-size: 36px;
-    font-weight: 600;
-}
-
-
-.admin-description {
     margin: 12px 0 0;
 
     color: #666;
 
     font-size: 14px;
+    line-height: 1.8;
 }
 
 
 /* =========================================
-   Buttons
+   New Material Button
+========================================= */
+
+.admin-page-heading .admin-primary-button {
+    flex: 0 0 auto;
+
+    margin: 0;
+
+    align-self: flex-end;
+}
+
+
+.admin-primary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+
+    text-decoration: none;
+}
+
+
+/* =========================================
+   Common Buttons
 ========================================= */
 
 .admin-primary-button,
@@ -188,10 +286,11 @@ select {
     cursor: pointer;
 
     transition:
-        opacity 0.2s ease,
-        background-color 0.2s ease;
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        opacity 0.2s ease;
 }
-
 
 .admin-primary-button {
     min-width: 210px;
@@ -204,6 +303,11 @@ select {
     font-weight: 600;
 }
 
+.admin-primary-button:hover {
+    background: #454b54;
+
+    border-color: #454b54;
+}
 
 .admin-primary-button:disabled,
 .admin-action-button:disabled {
@@ -211,7 +315,6 @@ select {
 
     opacity: 0.45;
 }
-
 
 .admin-action-button {
     color: #222;
@@ -222,6 +325,9 @@ select {
     font-size: 13px;
 }
 
+.admin-action-button:hover {
+    background: #f1f2f3;
+}
 
 .admin-action-button-dark {
     color: #fff;
@@ -230,9 +336,23 @@ select {
     border-color: #454b54;
 }
 
+.admin-action-button-delete {
+    color: #a40019;
+    background: #fff;
+
+    border-color: #c9a2aa;
+}
+
+.admin-action-button-delete:hover {
+    color: #fff;
+    background: #a40019;
+
+    border-color: #a40019;
+}
+
 
 /* =========================================
-   Filters
+   Admin List Page
 ========================================= */
 
 .admin-filter-area {
@@ -252,7 +372,6 @@ select {
     border: 1px solid #e0e0e0;
 }
 
-
 .admin-search,
 .admin-select {
     width: 100%;
@@ -268,17 +387,17 @@ select {
     outline: none;
 }
 
-
 .admin-search:focus,
 .admin-select:focus {
     border-color: #222;
 
-    box-shadow: 0 0 0 1px #222;
+    box-shadow:
+        0 0 0 1px #222;
 }
 
 
 /* =========================================
-   List
+   Material List
 ========================================= */
 
 .admin-list-header,
@@ -297,7 +416,6 @@ select {
     align-items: center;
 }
 
-
 .admin-list-header {
     padding: 13px 20px;
 
@@ -308,14 +426,12 @@ select {
     font-weight: 600;
 }
 
-
 .admin-material-list {
     background: #fff;
 
     border-right: 1px solid #e0e0e0;
     border-left: 1px solid #e0e0e0;
 }
-
 
 .admin-material-row {
     min-height: 108px;
@@ -325,16 +441,14 @@ select {
     border-bottom: 1px solid #e0e0e0;
 }
 
-
 .admin-material-main {
+    min-width: 0;
+
     display: flex;
     align-items: center;
 
     gap: 18px;
-
-    min-width: 0;
 }
-
 
 .admin-pdf-icon {
     width: 46px;
@@ -353,11 +467,9 @@ select {
     font-weight: 700;
 }
 
-
 .admin-material-text {
     min-width: 0;
 }
-
 
 .admin-material-title {
     margin: 0 0 5px;
@@ -368,29 +480,33 @@ select {
     line-height: 1.5;
 }
 
-
 .admin-material-summary {
     margin: 0;
-
-    color: #666;
-
-    font-size: 12px;
-
-    line-height: 1.6;
 
     overflow: hidden;
 
     display: -webkit-box;
 
+    color: #666;
+
+    font-size: 12px;
+    line-height: 1.6;
+
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
-
 
 .admin-material-category {
     color: #444;
 
     font-size: 13px;
+}
+
+.admin-material-actions {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
 }
 
 
@@ -408,7 +524,6 @@ select {
     font-weight: 600;
 }
 
-
 .admin-status::before {
     content: "";
 
@@ -420,11 +535,9 @@ select {
     border-radius: 50%;
 }
 
-
 .admin-status-published::before {
     background: #169b58;
 }
-
 
 .admin-status-draft::before {
     background: #e3a008;
@@ -432,33 +545,19 @@ select {
 
 
 /* =========================================
-   Actions
-========================================= */
-
-.admin-material-actions {
-    display: flex;
-    flex-wrap: wrap;
-
-    gap: 8px;
-}
-
-
-/* =========================================
-   Message
+   List Message
 ========================================= */
 
 .admin-message {
     padding: 40px 20px;
 
-    background: #fff;
-
     color: #666;
+    background: #fff;
 
     text-align: center;
 
     border: 1px solid #e0e0e0;
 }
-
 
 .admin-message-error {
     color: #a40019;
@@ -466,7 +565,7 @@ select {
 
 
 /* =========================================
-   Development note
+   Legacy Development Note
 ========================================= */
 
 .admin-development-note {
@@ -474,7 +573,6 @@ select {
     padding: 20px 22px;
 
     color: #444;
-
     background: #fff;
 
     border-left: 4px solid #b40020;
@@ -482,163 +580,31 @@ select {
     font-size: 13px;
 }
 
-
 .admin-development-note p {
-    margin:
-        5px 0 0;
+    margin: 5px 0 0;
 }
 
 
 /* =========================================
-   Responsive
+   Edit Form
 ========================================= */
 
-@media (max-width: 900px) {
+.admin-form {
+    width: 100%;
 
-    .admin-list-header {
-        display: none;
-    }
-
-
-    .admin-material-row {
-        display: block;
-    }
-
-
-    .admin-material-main {
-        margin-bottom: 18px;
-    }
-
-
-    .admin-material-category,
-    .admin-status,
-    .admin-material-updated {
-        margin:
-            6px 0;
-    }
-
-
-    .admin-material-actions {
-        margin-top: 16px;
-    }
-
-}
-
-
-@media (max-width: 640px) {
-
-    .admin-header-inner {
-        min-height: 74px;
-
-        padding:
-            12px 16px;
-
-        gap: 16px;
-    }
-
-
-    .admin-logo-image {
-        width: 160px;
-    }
-
-
-    .admin-header-title {
-        padding-left: 16px;
-
-        font-size: 13px;
-    }
-
-
-    .admin-main {
-        padding:
-            40px 16px 60px;
-    }
-
-
-    .admin-page-heading {
-        display: block;
-    }
-
-
-    .admin-primary-button {
-        width: 100%;
-
-        margin-top: 24px;
-    }
-
-
-    .admin-filter-area {
-        grid-template-columns: 1fr;
-    }
-
-}
-
-
-/* =========================================
-   Admin Edit Page
-========================================= */
-
-.admin-primary-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    color: #fff;
-
-    text-decoration: none;
-}
-
-
-.admin-edit-container {
-    max-width: 1000px;
-}
-
-
-.admin-breadcrumb {
-    margin-bottom: 34px;
-
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    color: #666;
-
-    font-size: 13px;
-}
-
-
-.admin-breadcrumb a {
-    color: #333;
-
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
-
-.admin-edit-heading {
-    margin-bottom: 36px;
-}
-
-
-.admin-edit-heading h1 {
-    margin: 0;
-
-    font-size: 34px;
-    font-weight: 600;
-}
-
-
-/* Form */
-
-.admin-edit-form {
     display: grid;
 
     gap: 24px;
 }
 
 
+/* =========================================
+   Form Section
+========================================= */
+
 .admin-form-section {
+    width: 100%;
+
     padding: 30px;
 
     background: #fff;
@@ -646,35 +612,140 @@ select {
     border: 1px solid #dedede;
 }
 
+.admin-form-section > :first-child {
+    margin-top: 0;
+}
 
-.admin-form-section h2 {
-    margin:
-        0 0 20px;
+.admin-section-heading {
+    margin: 0 0 20px;
+}
+
+.admin-section-heading h2 {
+    margin: 0;
+
+    color: #222;
 
     font-size: 20px;
     font-weight: 600;
 }
 
+.admin-section-description {
+    margin: -6px 0 26px;
+
+    color: #666;
+
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+
+/* =========================================
+   Language Sections
+========================================= */
+
+.admin-language-section {
+    display: block;
+}
+
+.admin-language-heading {
+    margin-bottom: 12px;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 24px;
+}
+
+.admin-language-heading h2 {
+    margin: 0;
+
+    color: #222;
+
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.admin-required-label,
+.admin-optional-label {
+    display: inline-block;
+
+    flex: 0 0 auto;
+
+    padding: 3px 9px;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.admin-required-label {
+    color: #a40019;
+    background: #fff1f3;
+}
+
+.admin-optional-label {
+    color: #555;
+    background: #f0f1f2;
+}
+
+
+/* =========================================
+   Form Fields
+========================================= */
 
 .admin-form-field {
+    width: 100%;
+
     margin-top: 24px;
 }
 
+.admin-form-field:first-child {
+    margin-top: 0;
+}
 
 .admin-form-field > label {
     display: block;
 
     margin-bottom: 9px;
 
+    color: #222;
+
     font-size: 14px;
     font-weight: 600;
 }
 
 
+/* =========================================
+   Required / Optional
+========================================= */
+
 .admin-required {
+    margin-left: 3px;
+
     color: #b40020;
 }
 
+.admin-optional {
+    display: inline-block;
+
+    margin-left: 8px;
+    padding: 1px 6px;
+
+    color: #666;
+    background: #f1f1f1;
+
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+
+    vertical-align: middle;
+}
+
+
+/* =========================================
+   Common Form Controls
+========================================= */
 
 .admin-form-field input[type="text"],
 .admin-form-field input[type="file"],
@@ -682,33 +753,89 @@ select {
 .admin-form-field textarea {
     width: 100%;
 
-    box-sizing: border-box;
+    margin: 0;
 
+    display: block;
+
+    color: #222;
+    background-color: #fff;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 400;
+
+    border: 1px solid #aaa;
+    border-radius: 0;
+
+    box-shadow: none;
+}
+
+
+/* =========================================
+   Text Inputs
+========================================= */
+
+.admin-form-field input[type="text"] {
+    height: 52px;
+
+    padding: 0 16px;
+}
+
+
+/* =========================================
+   File Input
+========================================= */
+
+.admin-form-field input[type="file"] {
+    min-height: 52px;
+
+    padding: 12px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================
+   Select
+========================================= */
+
+.admin-form-field select {
+    width: 100%;
+
+    height: 52px;
+    min-height: 52px;
+    max-height: 52px;
+
+    padding: 0 16px;
+
+    color: #222;
+    background-color: #fff;
+
+    line-height: normal;
+
+    cursor: pointer;
+
+    appearance: auto;
+    -webkit-appearance: menulist;
+}
+
+.admin-form-field select option {
     color: #222;
     background: #fff;
 
-    border: 1px solid #aaa;
-
-    border-radius: 0;
-
-    font: inherit;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 400;
 }
 
 
-.admin-form-field input[type="text"],
-.admin-form-field select {
-    min-height: 48px;
-
-    padding: 0 14px;
-}
-
-
-.admin-form-field input[type="file"] {
-    padding: 12px;
-}
-
+/* =========================================
+   Textarea
+========================================= */
 
 .admin-form-field textarea {
+    min-height: 120px;
+
     padding: 12px 14px;
 
     resize: vertical;
@@ -716,6 +843,18 @@ select {
     line-height: 1.7;
 }
 
+.admin-form-field textarea[rows="4"] {
+    min-height: 120px;
+}
+
+.admin-form-field textarea[rows="8"] {
+    min-height: 220px;
+}
+
+
+/* =========================================
+   Focus
+========================================= */
 
 .admin-form-field input:focus,
 .admin-form-field select:focus,
@@ -723,27 +862,30 @@ select {
     border-color: #222;
 
     outline: 2px solid
-        rgba(0, 0, 0, 0.1);
+        rgba(0, 0, 0, 0.12);
 
     outline-offset: 1px;
 }
 
 
-.admin-field-help {
-    margin: 0;
+/* =========================================
+   Field Notes / Metadata
+========================================= */
+
+.admin-field-note {
+    margin: 8px 0 0;
 
     color: #777;
 
     font-size: 12px;
-
     line-height: 1.7;
 }
 
-
-.admin-field-footer {
+.admin-field-meta {
     margin-top: 7px;
 
     display: flex;
+    align-items: flex-start;
     justify-content: space-between;
 
     gap: 20px;
@@ -751,8 +893,19 @@ select {
     color: #777;
 
     font-size: 12px;
+    line-height: 1.7;
 }
 
+.admin-character-counter {
+    flex: 0 0 auto;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   Validation
+========================================= */
 
 .admin-field-error {
     margin: 7px 0 0;
@@ -760,81 +913,81 @@ select {
     color: #b40020;
 
     font-size: 12px;
+    line-height: 1.6;
 }
-
-
-/* Status */
-
-.admin-status-options {
-    margin: 20px 0 0;
-    padding: 0;
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 12px;
-
-    border: 0;
-}
-
-
-.admin-radio-card {
-    padding: 18px;
-
-    display: flex;
-    align-items: flex-start;
-
-    gap: 12px;
-
-    cursor: pointer;
-
-    border: 1px solid #bbb;
-}
-
-
-.admin-radio-card input {
-    width: 18px;
-    height: 18px;
-
-    flex: 0 0 auto;
-
-    margin-top: 3px;
-
-    accent-color: #222;
-}
-
-
-.admin-radio-card span {
-    display: grid;
-
-    gap: 4px;
-}
-
-
-.admin-radio-card small {
-    color: #666;
-
-    font-size: 12px;
-}
-
-
-/* Form error */
 
 .admin-form-error {
+    margin: 0;
     padding: 14px 16px;
 
     color: #940019;
     background: #fff1f3;
 
     border-left: 4px solid #b40020;
+
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.admin-field-error[hidden],
+.admin-form-error[hidden] {
+    display: none !important;
 }
 
 
-/* Actions */
+/* =========================================
+   Publication Status
+========================================= */
 
-.admin-edit-actions {
+.admin-status-fieldset {
+    width: 100%;
+
+    margin: 20px 0 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 28px;
+
+    border: 0;
+}
+
+.admin-radio-label {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color: #222;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.admin-radio-label input[type="radio"] {
+    width: 18px;
+    height: 18px;
+
+    flex: 0 0 18px;
+
+    margin: 0;
+
+    cursor: pointer;
+
+    accent-color: #222;
+}
+
+
+/* =========================================
+   Form Actions
+========================================= */
+
+.admin-form-actions {
+    width: 100%;
+
     padding-top: 12px;
 
     display: flex;
@@ -844,8 +997,7 @@ select {
     gap: 12px;
 }
 
-
-.admin-secondary-link {
+.admin-secondary-button {
     min-width: 130px;
     min-height: 42px;
 
@@ -861,66 +1013,194 @@ select {
     text-decoration: none;
 
     border: 1px solid #aaa;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.admin-secondary-button:hover {
+    background: #f1f2f3;
+
+    border-color: #777;
 }
 
 
-/* Responsive */
+/* =========================================
+   Defensive Fixes
+========================================= */
+
+/*
+ * Firefox / Chromiumでselectを通常の
+ * 1行セレクトとして固定。
+ */
+
+#material-category {
+    display: block !important;
+
+    width: 100% !important;
+
+    height: 52px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+
+    margin: 0 !important;
+
+    overflow: visible;
+
+    color: #222 !important;
+    background: #fff !important;
+}
+
+
+/*
+ * sectionやfieldsetが意図せず
+ * 高さを引き継がないようリセット。
+ */
+
+.admin-form-section,
+.admin-form-field,
+.admin-status-fieldset {
+    min-height: 0;
+}
+
+
+/* =========================================
+   List Responsive
+========================================= */
+
+@media (max-width: 900px) {
+
+    .admin-list-header {
+        display: none;
+    }
+
+    .admin-material-row {
+        display: block;
+    }
+
+    .admin-material-main {
+        margin-bottom: 18px;
+    }
+
+    .admin-material-category,
+    .admin-status,
+    .admin-material-updated {
+        margin: 6px 0;
+    }
+
+    .admin-material-actions {
+        margin-top: 16px;
+    }
+}
+
+
+/* =========================================
+   Mobile
+========================================= */
 
 @media (max-width: 640px) {
 
-    .admin-form-section {
-        padding: 22px 18px;
+    .admin-header-inner {
+        min-height: 74px;
+
+        padding: 12px 16px;
+
+        gap: 16px;
+    }
+
+    .admin-header-title {
+        font-size: 16px;
+    }
+
+    .admin-header-link {
+        font-size: 12px;
+    }
+
+    .admin-logo-image {
+        max-width: 160px;
     }
 
 
-    .admin-status-options {
+    .admin-main {
+        padding:
+            40px 16px
+            60px;
+    }
+
+
+    .admin-page-heading h1,
+    .admin-page-heading h2 {
+        font-size: 28px;
+    }
+
+
+    .admin-filter-area {
         grid-template-columns: 1fr;
     }
 
 
-    .admin-field-footer {
+    .admin-form-section {
+        padding:
+            22px 18px;
+    }
+
+
+    .admin-language-heading {
         display: block;
     }
 
 
-    .admin-edit-actions {
+    .admin-required-label,
+    .admin-optional-label {
+        margin-top: 10px;
+    }
+
+
+    .admin-field-meta {
+        display: block;
+    }
+
+
+    .admin-character-counter {
+        display: block;
+
+        margin-top: 4px;
+    }
+
+
+    .admin-status-fieldset {
+        display: grid;
+
+        gap: 14px;
+    }
+
+
+    .admin-form-actions {
         flex-direction: column-reverse;
     }
 
 
-    .admin-secondary-link,
-    .admin-edit-actions .admin-primary-button {
+    .admin-form-actions .admin-primary-button,
+    .admin-secondary-button {
         width: 100%;
     }
 
-}
+
+    .admin-form-actions .admin-primary-button {
+        margin-top: 0;
+    }
+
+   
+    .admin-page-heading {
+        display: block;
+    }
 
 
-/* =========================================
-   Hidden elements
-========================================= */
+    .admin-page-heading .admin-primary-button {
+        width: 100%;
 
-.admin-field-error[hidden],
-.admin-form-error[hidden] {
-    display: none !important;
-}
+        margin-top: 24px;
+    }
 
-
-/* =========================================
-   Delete Button
-========================================= */
-
-.admin-action-button-delete {
-    color: #a40019;
-    background: #fff;
-
-    border-color: #c9a2aa;
-}
-
-
-.admin-action-button-delete:hover {
-    color: #fff;
-    background: #a40019;
-
-    border-color: #a40019;
 }

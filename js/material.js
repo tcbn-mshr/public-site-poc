@@ -8,6 +8,9 @@
 const MATERIALS_API_URL =
     "/api/materials";
 
+const MATERIAL_THUMBNAIL_API_URL =
+    "/api/material-thumbnail";
+
 
 /* =========================================
    DOM Elements
@@ -18,40 +21,124 @@ const loadingElement =
         "material-loading"
     );
 
+
 const errorElement =
     document.getElementById(
         "material-error"
     );
+
 
 const contentElement =
     document.getElementById(
         "material-content"
     );
 
+
 const categoryTopElement =
     document.getElementById(
         "material-category-top"
     );
 
-const titleTopElement =
-    document.getElementById(
-        "material-title-top"
-    );
 
 const titleElement =
     document.getElementById(
         "material-title"
     );
 
+
 const descriptionElement =
     document.getElementById(
         "material-description"
     );
 
+
 const downloadLinkElement =
     document.getElementById(
         "material-download-link"
     );
+
+
+const thumbnailElement =
+    document.getElementById(
+        "material-detail-thumbnail"
+    );
+
+
+const pdfFallbackElement =
+    document.getElementById(
+        "material-detail-pdf"
+    );
+
+
+/* =========================================
+   State
+========================================= */
+
+let currentMaterial =
+    null;
+
+
+/* =========================================
+   Utility
+========================================= */
+
+function normalizeText(
+    value
+) {
+
+    return String(
+        value ?? ""
+    ).trim();
+}
+
+
+function firstText(
+    ...values
+) {
+
+    for (
+        const value of values
+    ) {
+
+        const text =
+            normalizeText(
+                value
+            );
+
+
+        if (text) {
+
+            return text;
+        }
+    }
+
+
+    return "";
+}
+
+
+function hideElement(
+    element
+) {
+
+    if (element) {
+
+        element.hidden =
+            true;
+    }
+}
+
+
+function showElement(
+    element
+) {
+
+    if (element) {
+
+        element.hidden =
+            false;
+    }
+}
 
 
 /* =========================================
@@ -65,9 +152,10 @@ function getMaterialId() {
             window.location.search
         );
 
-    return String(
-        params.get("id") || ""
-    ).trim();
+
+    return normalizeText(
+        params.get("id")
+    );
 }
 
 
@@ -75,31 +163,17 @@ function getMaterialId() {
    UI State
 ========================================= */
 
-function hideElement(element) {
-
-    if (element) {
-        element.hidden = true;
-    }
-}
-
-
-function showElement(element) {
-
-    if (element) {
-        element.hidden = false;
-    }
-}
-
-
 function showLoading() {
 
     showElement(
         loadingElement
     );
 
+
     hideElement(
         errorElement
     );
+
 
     hideElement(
         contentElement
@@ -113,9 +187,11 @@ function showError() {
         loadingElement
     );
 
+
     hideElement(
         contentElement
     );
+
 
     showElement(
         errorElement
@@ -129,9 +205,11 @@ function showContent() {
         loadingElement
     );
 
+
     hideElement(
         errorElement
     );
+
 
     showElement(
         contentElement
@@ -153,6 +231,7 @@ async function fetchMaterials() {
                     "GET",
 
                 headers: {
+
                     "Accept":
                         "application/json"
                 },
@@ -172,8 +251,21 @@ async function fetchMaterials() {
     }
 
 
-    const result =
-        await response.json();
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+
+    } catch {
+
+        throw new Error(
+            "Invalid materials API response."
+        );
+    }
 
 
     if (
@@ -204,7 +296,7 @@ async function fetchMaterials() {
 
 
 /* =========================================
-   Normalize
+   Normalize Material
 ========================================= */
 
 function normalizeMaterial(
@@ -214,38 +306,381 @@ function normalizeMaterial(
     return {
 
         id:
-            String(
-                material?.id ?? ""
-            ).trim(),
+            normalizeText(
+                material?.id
+            ),
 
-        title:
-            String(
-                material?.title ?? ""
-            ).trim(),
+
+        /* =================================
+           Category
+        ================================= */
 
         category:
-            String(
-                material?.category ??
-                "other"
-            ).trim() || "other",
+            normalizeText(
+                material?.category
+            ) || "other",
 
         categoryName:
-            String(
-                material?.categoryName ??
-                "その他"
-            ).trim() || "その他",
+            normalizeText(
+                material?.categoryName
+            ) || "その他",
+
+
+        /* =================================
+           Legacy
+        ================================= */
+
+        title:
+            normalizeText(
+                material?.title
+            ),
 
         summary:
-            String(
-                material?.summary ?? ""
-            ).trim(),
+            normalizeText(
+                material?.summary
+            ),
 
         description:
-            String(
-                material?.description ??
-                ""
-            ).trim()
+            normalizeText(
+                material?.description
+            ),
+
+
+        /* =================================
+           English
+        ================================= */
+
+        titleEn:
+            normalizeText(
+                material?.titleEn
+            ),
+
+        summaryEn:
+            normalizeText(
+                material?.summaryEn
+            ),
+
+        descriptionEn:
+            normalizeText(
+                material?.descriptionEn
+            ),
+
+
+        /* =================================
+           Japanese
+        ================================= */
+
+        titleJa:
+            normalizeText(
+                material?.titleJa
+            ),
+
+        summaryJa:
+            normalizeText(
+                material?.summaryJa
+            ),
+
+        descriptionJa:
+            normalizeText(
+                material?.descriptionJa
+            )
     };
+}
+
+
+/* =========================================
+   Current Language
+========================================= */
+
+function getLanguage() {
+
+    if (
+        typeof getCurrentLanguage ===
+        "function"
+    ) {
+
+        const language =
+            getCurrentLanguage();
+
+
+        if (
+            language === "ja" ||
+            language === "en"
+        ) {
+
+            return language;
+        }
+    }
+
+
+    return "en";
+}
+
+
+/* =========================================
+   Localized Title
+========================================= */
+
+function getLocalizedTitle(
+    material
+) {
+
+    const language =
+        getLanguage();
+
+
+    /*
+     * English
+     *
+     * 1. titleEn
+     * 2. legacy title
+     */
+
+    if (
+        language === "en"
+    ) {
+
+        return firstText(
+
+            material.titleEn,
+
+            material.title
+        );
+    }
+
+
+    /*
+     * Japanese
+     *
+     * 1. titleJa
+     * 2. titleEn
+     * 3. legacy title
+     */
+
+    return firstText(
+
+        material.titleJa,
+
+        material.titleEn,
+
+        material.title
+    );
+}
+
+
+/* =========================================
+   Localized Summary
+========================================= */
+
+function getLocalizedSummary(
+    material
+) {
+
+    const language =
+        getLanguage();
+
+
+    /*
+     * English
+     *
+     * 1. summaryEn
+     * 2. legacy summary
+     */
+
+    if (
+        language === "en"
+    ) {
+
+        return firstText(
+
+            material.summaryEn,
+
+            material.summary
+        );
+    }
+
+
+    /*
+     * Japanese
+     *
+     * 1. summaryJa
+     * 2. summaryEn
+     * 3. legacy summary
+     */
+
+    return firstText(
+
+        material.summaryJa,
+
+        material.summaryEn,
+
+        material.summary
+    );
+}
+
+
+/* =========================================
+   Localized Description
+========================================= */
+
+function getLocalizedDescription(
+    material
+) {
+
+    const language =
+        getLanguage();
+
+
+    /*
+     * =====================================
+     * English
+     *
+     * 1. English detail description
+     * 2. English list summary
+     * 3. Legacy detail description
+     * 4. Legacy list summary
+     *
+     * 詳細説明（英語）が空欄の場合、
+     * 一覧用説明（英語）を表示します。
+     * =====================================
+     */
+
+    if (
+        language === "en"
+    ) {
+
+        return firstText(
+
+            material.descriptionEn,
+
+            material.summaryEn,
+
+            material.description,
+
+            material.summary
+        );
+    }
+
+
+    /*
+     * =====================================
+     * Japanese
+     *
+     * 1. Japanese detail description
+     * 2. Japanese list summary
+     * 3. English detail description
+     * 4. English list summary
+     * 5. Legacy detail description
+     * 6. Legacy list summary
+     *
+     * 日本語詳細説明が空欄の場合は
+     * 日本語一覧用説明。
+     *
+     * 日本語情報自体が無い場合は
+     * Englishへフォールバックします。
+     * =====================================
+     */
+
+    return firstText(
+
+        material.descriptionJa,
+
+        material.summaryJa,
+
+        material.descriptionEn,
+
+        material.summaryEn,
+
+        material.description,
+
+        material.summary
+    );
+}
+
+
+/* =========================================
+   Localized Category
+========================================= */
+
+function getLocalizedCategoryName(
+    material
+) {
+
+    const language =
+        getLanguage();
+
+
+    const category =
+        normalizeText(
+            material?.category
+        );
+
+
+    const categoryNames = {
+
+        electronics: {
+
+            en:
+                "Information & Electronics",
+
+            ja:
+                "情報電子"
+        },
+
+
+        chemicals: {
+
+            en:
+                "Chemicals",
+
+            ja:
+                "化学品"
+        },
+
+
+        life: {
+
+            en:
+                "Life Industry",
+
+            ja:
+                "生活産業"
+        },
+
+
+        plastics: {
+
+            en:
+                "Plastics",
+
+            ja:
+                "合成樹脂"
+        },
+
+
+        other: {
+
+            en:
+                "Other",
+
+            ja:
+                "その他"
+        }
+    };
+
+
+    return firstText(
+
+        categoryNames?.[
+            category
+        ]?.[
+            language
+        ],
+
+        material.categoryName,
+
+        category
+    );
 }
 
 
@@ -276,6 +711,101 @@ async function getMaterial(
 
 
 /* =========================================
+   Render Thumbnail
+========================================= */
+
+function renderThumbnail(
+    material
+) {
+
+    if (
+        !thumbnailElement ||
+        !pdfFallbackElement
+    ) {
+
+        return;
+    }
+
+
+    /*
+     * 初期状態
+     *
+     * 先にPDFフォールバックを表示。
+     * サムネイル取得成功時のみ画像へ切替。
+     */
+
+    thumbnailElement.hidden =
+        true;
+
+
+    pdfFallbackElement.hidden =
+        false;
+
+
+    /*
+     * 前回のイベント・URLをリセット。
+     */
+
+    thumbnailElement.onload =
+        null;
+
+
+    thumbnailElement.onerror =
+        null;
+
+
+    thumbnailElement.removeAttribute(
+        "src"
+    );
+
+
+    /*
+     * Thumbnail取得成功
+     */
+
+    thumbnailElement.onload =
+        () => {
+
+            thumbnailElement.hidden =
+                false;
+
+
+            pdfFallbackElement.hidden =
+                true;
+        };
+
+
+    /*
+     * Thumbnail未登録
+     * または404 / 読込エラー
+     */
+
+    thumbnailElement.onerror =
+        () => {
+
+            thumbnailElement.hidden =
+                true;
+
+
+            pdfFallbackElement.hidden =
+                false;
+        };
+
+
+    /*
+     * Public Thumbnail API
+     */
+
+    thumbnailElement.src =
+        MATERIAL_THUMBNAIL_API_URL +
+        "?id=" +
+        encodeURIComponent(
+            material.id
+        );
+}
+
+
+/* =========================================
    Render Material
 ========================================= */
 
@@ -283,72 +813,121 @@ function renderMaterial(
     material
 ) {
 
+    if (!material) {
+
+        return;
+    }
+
+
+    /* =====================================
+       Thumbnail
+    ===================================== */
+
+    renderThumbnail(
+        material
+    );
+
+
+    /* =====================================
+       Localized Values
+    ===================================== */
+
+    const localizedTitle =
+        getLocalizedTitle(
+            material
+        );
+
+
     /*
-     * Hero category
+     * Summaryは詳細説明の
+     * フォールバック計算にも使用するため、
+     * 関数自体を保持しています。
      */
+
+    const localizedSummary =
+        getLocalizedSummary(
+            material
+        );
+
+
+    const localizedDescription =
+        getLocalizedDescription(
+            material
+        );
+
+
+    const localizedCategoryName =
+        getLocalizedCategoryName(
+            material
+        );
+
+
+    const language =
+        getLanguage();
+
+
+    /* =====================================
+       Hero Category
+    ===================================== */
 
     if (categoryTopElement) {
 
         categoryTopElement.textContent =
-            material.categoryName;
+            localizedCategoryName;
     }
 
 
-    /*
-     * Hero title
-     */
-
-    if (titleTopElement) {
-
-        titleTopElement.textContent =
-            material.title;
-    }
-
-
-    /*
-     * Document title
-     */
+    /* =====================================
+       Document Title
+    ===================================== */
 
     if (titleElement) {
 
         titleElement.textContent =
-            material.title;
+            localizedTitle;
     }
 
 
-    /*
-     * Description
-     */
+    /* =====================================
+       Description
+    ===================================== */
 
     if (descriptionElement) {
 
-        if (
-            material.description
-        ) {
+        /*
+         * 優先順位：
+         *
+         * 詳細説明
+         * ↓
+         * 一覧用説明
+         * ↓
+         * 最終固定文言
+         */
 
-            descriptionElement.textContent =
-                material.description;
-
-        } else {
-
-            descriptionElement.textContent =
-                "資料の詳細をご確認のうえ、" +
-                "ダウンロードページへお進みください。";
-        }
+        descriptionElement.textContent =
+            localizedDescription ||
+            localizedSummary ||
+            (
+                language === "ja"
+                    ? "資料の詳細をご確認のうえ、ダウンロードページへお進みください。"
+                    : "Please review the material details and proceed to the download page."
+            );
     }
 
 
-    /*
-     * Download page
-     *
-     * 重要：
-     * title / category / file は渡しません。
-     *
-     * 今後はmaterialIdだけを
-     * サーバー側の資料マスターと照合します。
-     */
+    /* =====================================
+       Download Page Link
+    ===================================== */
 
     if (downloadLinkElement) {
+
+        /*
+         * URLにはmaterialIdのみ渡します。
+         *
+         * 資料名・説明等は
+         * download.html側でも
+         * Materials APIから取得します。
+         */
 
         downloadLinkElement.href =
             "./download.html?id=" +
@@ -358,13 +937,27 @@ function renderMaterial(
     }
 
 
-    /*
-     * Browser title
-     */
+    /* =====================================
+       Browser Title
+    ===================================== */
 
-    document.title =
-        material.title +
-        "｜展示会資料｜INABATA";
+    if (localizedTitle) {
+
+        document.title =
+            language === "ja"
+                ? localizedTitle +
+                    "｜展示会資料｜INABATA"
+                : localizedTitle +
+                    " | Exhibition Materials | INABATA";
+
+
+    } else {
+
+        document.title =
+            language === "ja"
+                ? "展示会資料｜INABATA"
+                : "Exhibition Materials | INABATA";
+    }
 }
 
 
@@ -387,7 +980,9 @@ async function initializeMaterialPage() {
             "Material ID was not specified."
         );
 
+
         showError();
+
 
         return;
     }
@@ -408,15 +1003,27 @@ async function initializeMaterialPage() {
                 materialId
             );
 
+
             showError();
+
 
             return;
         }
 
 
+        /*
+         * 言語切替時にAPIを再取得せず
+         * 再描画するため保持。
+         */
+
+        currentMaterial =
+            material;
+
+
         renderMaterial(
-            material
+            currentMaterial
         );
+
 
         showContent();
 
@@ -428,9 +1035,38 @@ async function initializeMaterialPage() {
             error
         );
 
+
         showError();
     }
 }
+
+
+/* =========================================
+   Language Change
+========================================= */
+
+window.addEventListener(
+    "inabata-language-change",
+    () => {
+
+        if (!currentMaterial) {
+
+            return;
+        }
+
+
+        /*
+         * API再取得は不要。
+         *
+         * 取得済みの日英6フィールドを
+         * 新しい表示言語で再評価。
+         */
+
+        renderMaterial(
+            currentMaterial
+        );
+    }
+);
 
 
 /* =========================================
@@ -446,6 +1082,7 @@ if (
         "DOMContentLoaded",
         initializeMaterialPage
     );
+
 
 } else {
 

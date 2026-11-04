@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="ja">
-    
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -9,129 +11,135 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta
-        name="description"
-        content="展示会資料の登録・編集"
-    >
-
-    <title>資料の登録｜展示会資料 管理サイト</title>
+    <title>
+        資料編集 | 展示会資料 管理サイト
+    </title>
 
     <link
         rel="stylesheet"
         href="../css/admin.css"
     >
+
 </head>
 
 
 <body>
 
-    <!-- Header -->
+    <!-- =====================================
+         Header
+    ====================================== -->
 
     <header class="admin-header">
 
         <div class="admin-header-inner">
 
-            <a
-                href="../index.html"
-                class="admin-logo"
-            >
-                <img
-                    src="../assets/images/Iktagline_jp_01_RGB.png"
-                    alt="INABATA"
-                    class="admin-logo-image"
-                >
-            </a>
+            <div>
 
-            <div class="admin-header-title">
-                展示会資料 管理サイト
+                <p class="admin-header-label">
+                    EXHIBITION MATERIALS
+                </p>
+
+                <h1 class="admin-header-title">
+                    資料管理
+                </h1>
+
             </div>
+
+
+            <a
+                href="./index.html"
+                class="admin-header-link"
+            >
+                資料一覧へ戻る
+            </a>
 
         </div>
 
     </header>
 
 
-    <!-- Main -->
+    <!-- =====================================
+         Main
+    ====================================== -->
 
     <main class="admin-main">
 
-        <div class="admin-container admin-edit-container">
+        <div class="admin-content-inner">
 
-            <!-- Breadcrumb -->
+            <!-- =================================
+                 Page Header
+            ================================== -->
 
-            <nav
-                class="admin-breadcrumb"
-                aria-label="パンくずリスト"
-            >
-                <a href="/admin/index.html">
-                    資料管理
-                </a>
+            <div class="admin-page-heading">
 
-                <span aria-hidden="true">
-                    /
-                </span>
-
-                <span>
-                    新しい資料を登録
-                </span>
-            </nav>
-
-
-            <!-- Heading -->
-
-            <div class="admin-edit-heading">
-
-                <p class="admin-label">
-                    MATERIAL REGISTRATION
+                <p class="admin-section-label">
+                    MATERIAL EDIT
                 </p>
 
-                <h1>
-                    新しい資料を登録
-                </h1>
+                <h2>
+                    資料の登録・編集
+                </h2>
 
-                <p class="admin-description">
-                    展示会サイトへ掲載する資料情報を入力してください。
+                <p class="admin-page-description">
+                    公開サイトに掲載する資料情報とPDFファイルを登録します。
                 </p>
 
             </div>
 
 
-            <!-- Form -->
+            <!-- =================================
+                 Form
+            ================================== -->
 
             <form
                 id="material-edit-form"
-                class="admin-edit-form"
+                class="admin-form"
                 novalidate
             >
 
-                <!-- PDF -->
+                <!-- =============================
+                     PDF
+                ============================== -->
 
                 <section class="admin-form-section">
 
-                    <h2>
-                        PDFファイル
-                    </h2>
+                    <div class="admin-section-heading">
 
-                    <p class="admin-field-help">
-                        新規登録時はPDFファイルを選択してください。
-                        編集時は、新しいPDFを選択した場合のみPDFを差し替えます。
-                    </p>
+                        <h2>
+                            PDFファイル
+                        </h2>
+
+                    </div>
+
 
                     <div class="admin-form-field">
 
                         <label for="material-file">
+
                             PDFファイル
-                            <span class="admin-required">
+
+                            <span
+                                id="material-file-required"
+                                class="admin-required"
+                            >
                                 *
                             </span>
+
                         </label>
+
 
                         <input
                             type="file"
                             id="material-file"
                             name="materialFile"
-                            accept=".pdf,application/pdf"
+                            accept="application/pdf,.pdf"
                         >
+
+
+                        <p class="admin-field-note">
+                            新規登録時は必須です。編集時にPDFを選択しなければ、現在登録されているPDFを維持します。
+                        </p>
+
 
                         <p
                             id="material-file-error"
@@ -146,56 +154,348 @@
                 </section>
 
 
-                <!-- Basic information -->
+                <!-- =============================
+                     English
+                ============================== -->
 
-                <section class="admin-form-section">
+                <section class="admin-form-section admin-language-section">
 
-                    <h2>
-                        資料情報
-                    </h2>
+                    <div class="admin-language-heading">
+
+                        <div>
+
+                            <p class="admin-section-label">
+                                ENGLISH
+                            </p>
+
+                            <h2>
+                                英語情報
+                            </h2>
+
+                        </div>
 
 
-                    <!-- Title -->
+                        <span class="admin-required-label">
+                            必須
+                        </span>
+
+                    </div>
+
+
+                    <p class="admin-section-description">
+                        公開サイトの初期表示は英語のため、資料名と一覧用説明は必須です。
+                    </p>
+
+
+                    <!-- English Title -->
 
                     <div class="admin-form-field">
 
-                        <label for="material-title">
-                            資料名
+                        <label for="material-title-en">
+
+                            資料名（英語）
+
                             <span class="admin-required">
                                 *
                             </span>
+
                         </label>
+
 
                         <input
                             type="text"
-                            id="material-title"
-                            name="title"
+                            id="material-title-en"
+                            name="titleEn"
                             maxlength="150"
-                            placeholder="例：半導体関連材料のご紹介"
+                            autocomplete="off"
                             required
                         >
 
+
                         <p
-                            id="material-title-error"
+                            id="material-title-en-error"
                             class="admin-field-error"
                             hidden
                         >
-                            資料名を入力してください。
+                            資料名（英語）を入力してください。
                         </p>
 
                     </div>
 
 
-                    <!-- Category -->
+                    <!-- English Summary -->
+
+                    <div class="admin-form-field">
+
+                        <label for="material-summary-en">
+
+                            一覧用説明（英語）
+
+                            <span class="admin-required">
+                                *
+                            </span>
+
+                        </label>
+
+
+                        <textarea
+                            id="material-summary-en"
+                            name="summaryEn"
+                            rows="4"
+                            maxlength="250"
+                            required
+                        ></textarea>
+
+
+                        <div class="admin-field-meta">
+
+                            <span>
+                                資料一覧のカードに表示されます。
+                            </span>
+
+
+                            <span
+                                id="summary-en-counter"
+                                class="admin-character-counter"
+                            >
+                                0 / 250
+                            </span>
+
+                        </div>
+
+
+                        <p
+                            id="material-summary-en-error"
+                            class="admin-field-error"
+                            hidden
+                        >
+                            一覧用説明（英語）を入力してください。
+                        </p>
+
+                    </div>
+
+
+                    <!-- English Description -->
+
+                    <div class="admin-form-field">
+
+                        <label for="material-description-en">
+
+                            詳細説明（英語）
+
+                            <span class="admin-optional">
+                                任意
+                            </span>
+
+                        </label>
+
+
+                        <textarea
+                            id="material-description-en"
+                            name="descriptionEn"
+                            rows="8"
+                            maxlength="2000"
+                        ></textarea>
+
+
+                        <div class="admin-field-meta">
+
+                            <span>
+                                空欄の場合は「一覧用説明（英語）」を詳細画面に表示します。
+                            </span>
+
+
+                            <span
+                                id="description-en-counter"
+                                class="admin-character-counter"
+                            >
+                                0 / 2000
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================
+                     Japanese
+                ============================== -->
+
+                <section class="admin-form-section admin-language-section">
+
+                    <div class="admin-language-heading">
+
+                        <div>
+
+                            <p class="admin-section-label">
+                                JAPANESE
+                            </p>
+
+                            <h2>
+                                日本語情報
+                            </h2>
+
+                        </div>
+
+
+                        <span class="admin-optional-label">
+                            任意
+                        </span>
+
+                    </div>
+
+
+                    <p class="admin-section-description">
+                        日本語情報は任意です。未入力の場合は、公開サイトで英語情報を表示します。
+                    </p>
+
+
+                    <!-- Japanese Title -->
+
+                    <div class="admin-form-field">
+
+                        <label for="material-title-ja">
+
+                            資料名（日本語）
+
+                            <span class="admin-optional">
+                                任意
+                            </span>
+
+                        </label>
+
+
+                        <input
+                            type="text"
+                            id="material-title-ja"
+                            name="titleJa"
+                            maxlength="150"
+                            autocomplete="off"
+                        >
+
+
+                        <p class="admin-field-note">
+                            空欄の場合、日本語表示時も英語の資料名を表示します。
+                        </p>
+
+                    </div>
+
+
+                    <!-- Japanese Summary -->
+
+                    <div class="admin-form-field">
+
+                        <label for="material-summary-ja">
+
+                            一覧用説明（日本語）
+
+                            <span class="admin-optional">
+                                任意
+                            </span>
+
+                        </label>
+
+
+                        <textarea
+                            id="material-summary-ja"
+                            name="summaryJa"
+                            rows="4"
+                            maxlength="250"
+                        ></textarea>
+
+
+                        <div class="admin-field-meta">
+
+                            <span>
+                                空欄の場合、日本語表示時も英語の一覧用説明を表示します。
+                            </span>
+
+
+                            <span
+                                id="summary-ja-counter"
+                                class="admin-character-counter"
+                            >
+                                0 / 250
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Japanese Description -->
+
+                    <div class="admin-form-field">
+
+                        <label for="material-description-ja">
+
+                            詳細説明（日本語）
+
+                            <span class="admin-optional">
+                                任意
+                            </span>
+
+                        </label>
+
+
+                        <textarea
+                            id="material-description-ja"
+                            name="descriptionJa"
+                            rows="8"
+                            maxlength="2000"
+                        ></textarea>
+
+
+                        <div class="admin-field-meta">
+
+                            <span>
+                                空欄の場合は「一覧用説明（日本語）」を表示します。一覧用説明（日本語）も空欄の場合は英語情報を表示します。
+                            </span>
+
+
+                            <span
+                                id="description-ja-counter"
+                                class="admin-character-counter"
+                            >
+                                0 / 2000
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================
+                     Category
+                ============================== -->
+
+                <section class="admin-form-section">
+
+                    <div class="admin-section-heading">
+
+                        <h2>
+                            カテゴリー
+                        </h2>
+
+                    </div>
+
 
                     <div class="admin-form-field">
 
                         <label for="material-category">
+
                             カテゴリー
+
                             <span class="admin-required">
                                 *
                             </span>
+
                         </label>
+
 
                         <select
                             id="material-category"
@@ -207,27 +507,38 @@
                                 選択してください
                             </option>
 
+
                             <option value="electronics">
                                 情報電子
                             </option>
 
-                            <option value="chemicals">
-                                化学品
-                            </option>
 
-                            <option value="life">
-                                生活産業
-                            </option>
+                            <!--
+                                現在の公開サイトでは
+                                「すべて」「情報電子」のみ表示。
 
-                            <option value="plastics">
-                                合成樹脂
-                            </option>
+                                将来カテゴリーを再度使用する場合は
+                                以下を戻せます。
 
-                            <option value="other">
-                                その他
-                            </option>
+                                <option value="chemicals">
+                                    化学品
+                                </option>
+
+                                <option value="life">
+                                    生活産業
+                                </option>
+
+                                <option value="plastics">
+                                    合成樹脂
+                                </option>
+
+                                <option value="other">
+                                    その他
+                                </option>
+                            -->
 
                         </select>
+
 
                         <p
                             id="material-category-error"
@@ -239,117 +550,32 @@
 
                     </div>
 
-
-                    <!-- Summary -->
-
-                    <div class="admin-form-field">
-
-                        <label for="material-summary">
-                            一覧用説明
-                            <span class="admin-required">
-                                *
-                            </span>
-                        </label>
-
-                        <textarea
-                            id="material-summary"
-                            name="summary"
-                            rows="3"
-                            maxlength="250"
-                            placeholder="資料一覧・ダウンロード画面に表示する短い説明を入力してください。"
-                            required
-                        ></textarea>
-
-                        <div class="admin-field-footer">
-
-                            <p class="admin-field-help">
-                                資料一覧などに表示する短い説明です。
-                            </p>
-
-                            <span id="summary-counter">
-                                0 / 250
-                            </span>
-
-                        </div>
-
-                        <p
-                            id="material-summary-error"
-                            class="admin-field-error"
-                            hidden
-                        >
-                            一覧用説明を入力してください。
-                        </p>
-
-                    </div>
-
-
-                    <!-- Description -->
-
-                    <div class="admin-form-field">
-
-                        <label for="material-description">
-                            詳細説明
-                            <span class="admin-required">
-                                *
-                            </span>
-                        </label>
-
-                        <textarea
-                            id="material-description"
-                            name="description"
-                            rows="8"
-                            maxlength="2000"
-                            placeholder="資料詳細ページに表示する詳しい説明を入力してください。"
-                            required
-                        ></textarea>
-
-                        <div class="admin-field-footer">
-
-                            <p class="admin-field-help">
-                                「詳細を見る」のページに表示します。
-                            </p>
-
-                            <span id="description-counter">
-                                0 / 2000
-                            </span>
-
-                        </div>
-
-                        <p
-                            id="material-description-error"
-                            class="admin-field-error"
-                            hidden
-                        >
-                            詳細説明を入力してください。
-                        </p>
-
-                    </div>
-
                 </section>
 
 
-                <!-- Publication -->
+                <!-- =============================
+                     Publication Status
+                ============================== -->
 
                 <section class="admin-form-section">
 
-                    <h2>
-                        公開状態
-                    </h2>
+                    <div class="admin-section-heading">
 
-                    <p class="admin-field-help">
-                        初期値は「下書き」です。
-                        内容を確認後に公開できます。
-                    </p>
+                        <h2>
+                            公開状態
+                        </h2>
+
+                    </div>
 
 
-                    <fieldset class="admin-status-options">
+                    <fieldset class="admin-status-fieldset">
 
                         <legend class="visually-hidden">
                             公開状態
                         </legend>
 
 
-                        <label class="admin-radio-card">
+                        <label class="admin-radio-label">
 
                             <input
                                 type="radio"
@@ -359,21 +585,13 @@
                             >
 
                             <span>
-
-                                <strong>
-                                    下書き
-                                </strong>
-
-                                <small>
-                                    公開サイトには表示しません。
-                                </small>
-
+                                下書き
                             </span>
 
                         </label>
 
 
-                        <label class="admin-radio-card">
+                        <label class="admin-radio-label">
 
                             <input
                                 type="radio"
@@ -382,46 +600,40 @@
                             >
 
                             <span>
-
-                                <strong>
-                                    公開
-                                </strong>
-
-                                <small>
-                                    公開サイトの資料一覧へ表示します。
-                                </small>
-
+                                公開
                             </span>
 
                         </label>
 
                     </fieldset>
 
+
+                    <p class="admin-field-note">
+                        新規資料はPDFとサムネイルのアップロード完了後に公開してください。
+                    </p>
+
                 </section>
 
 
-                <!-- Error summary -->
+                <!-- =============================
+                     Form Error
+                ============================== -->
 
-                <div
+                <p
                     id="admin-form-error"
                     class="admin-form-error"
                     role="alert"
                     hidden
                 >
                     入力内容を確認してください。
-                </div>
+                </p>
 
 
-                <!-- Actions -->
+                <!-- =============================
+                     Actions
+                ============================== -->
 
-                <div class="admin-edit-actions">
-
-                    <a
-                        href="/admin/index.html"
-                        class="admin-secondary-link"
-                    >
-                        キャンセル
-                    </a>
+                <div class="admin-form-actions">
 
                     <button
                         type="submit"
@@ -431,6 +643,14 @@
                         保存する
                     </button>
 
+
+                    <a
+                        href="./index.html"
+                        class="admin-secondary-button"
+                    >
+                        キャンセル
+                    </a>
+
                 </div>
 
             </form>
@@ -439,6 +659,25 @@
 
     </main>
 
+
+    <!-- =====================================
+         Scripts
+    ====================================== -->
+
+    <!--
+        PDF.jsを使ったサムネイル生成。
+        admin-edit.jsより先に読み込みます。
+    -->
+
+    <script
+        type="module"
+        src="../js/admin-thumbnail.js"
+    ></script>
+
+
+    <!--
+        資料登録・編集
+    -->
 
     <script src="../js/admin-edit.js"></script>
 
