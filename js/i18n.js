@@ -30,7 +30,9 @@ const translations = {
 
     en: {
 
-        /* Common */
+        /* =================================
+           Common
+        ================================= */
 
         "common.japanese":
             "日本語",
@@ -39,7 +41,9 @@ const translations = {
             "English",
 
 
-        /* Home */
+        /* =================================
+           Home
+        ================================= */
 
         "home.title":
             "Exhibition Materials",
@@ -51,7 +55,9 @@ const translations = {
             "View Materials",
 
 
-        /* Materials */
+        /* =================================
+           Materials
+        ================================= */
 
         "materials.title":
             "Materials",
@@ -93,11 +99,13 @@ const translations = {
             "No materials are available in this category.",
 
 
-        /* Material Detail */
+        /* =================================
+           Material Detail
+        ================================= */
 
-       "material.pageTitle":
+        "material.pageTitle":
             "Material Details",
-       
+
         "material.download":
             "Download Material",
 
@@ -114,43 +122,24 @@ const translations = {
             "Please review the material details and proceed to the download page.",
 
 
-        /* Download */
+        /* =================================
+           Download
+        ================================= */
 
         "download.title":
             "Download Material",
 
         "download.description":
-            "Please enter the required information below to download the material.",
+            "Please review the material and download it below.",
 
-        "download.formTitle":
-            "Your Information",
+        "download.actionTitle":
+            "Download Material",
 
-        "download.required":
-            "Required",
-
-        "download.company":
-            "Company",
-
-        "download.department":
-            "Department",
-
-        "download.name":
-            "Name",
-
-        "download.email":
-            "Email Address",
-
-        "download.phone":
-            "Phone Number",
-
-        "download.optional":
-            "Optional",
-
-        "download.consent":
-            "I agree to the handling of my personal information.",
+        "download.actionDescription":
+            "You can download the material using the button below.",
 
         "download.submit":
-            "Agree and Download",
+            "Download Material",
 
         "download.processing":
             "Preparing your download...",
@@ -170,20 +159,10 @@ const translations = {
         "download.pageError":
             "Unable to load the material information.",
 
-        "download.companyError":
-            "Please enter your company name.",
 
-        "download.nameError":
-            "Please enter your name.",
-
-        "download.emailError":
-            "Please enter a valid email address.",
-
-        "download.consentError":
-            "Please agree to the handling of your personal information.",
-
-
-        /* Footer */
+        /* =================================
+           Footer
+        ================================= */
 
         "footer.privacy":
             "Privacy Policy",
@@ -210,7 +189,9 @@ const translations = {
             "https://www.inabata.co.jp/english/sitepolicy/",
 
 
-        /* Cookie */
+        /* =================================
+           Cookie
+        ================================= */
 
         "cookie.title":
             "Cookie Notice",
@@ -235,7 +216,9 @@ const translations = {
 
     ja: {
 
-        /* Common */
+        /* =================================
+           Common
+        ================================= */
 
         "common.japanese":
             "日本語",
@@ -244,7 +227,9 @@ const translations = {
             "English",
 
 
-        /* Home */
+        /* =================================
+           Home
+        ================================= */
 
         "home.title":
             "展示会資料",
@@ -256,7 +241,9 @@ const translations = {
             "資料一覧を見る",
 
 
-        /* Materials */
+        /* =================================
+           Materials
+        ================================= */
 
         "materials.title":
             "資料一覧",
@@ -298,11 +285,13 @@ const translations = {
             "該当する資料はありません。",
 
 
-        /* Material Detail */
+        /* =================================
+           Material Detail
+        ================================= */
 
         "material.pageTitle":
             "資料詳細",
-       
+
         "material.download":
             "資料をダウンロード",
 
@@ -319,43 +308,24 @@ const translations = {
             "資料の詳細をご確認のうえ、ダウンロードページへお進みください。",
 
 
-        /* Download */
+        /* =================================
+           Download
+        ================================= */
 
         "download.title":
             "資料ダウンロード",
 
         "download.description":
-            "必要事項をご入力のうえ、資料をダウンロードしてください。",
+            "資料をご確認のうえ、ダウンロードしてください。",
 
-        "download.formTitle":
-            "お客様情報",
+        "download.actionTitle":
+            "資料のダウンロード",
 
-        "download.required":
-            "必須項目",
-
-        "download.company":
-            "会社名",
-
-        "download.department":
-            "部署名",
-
-        "download.name":
-            "氏名",
-
-        "download.email":
-            "メールアドレス",
-
-        "download.phone":
-            "電話番号",
-
-        "download.optional":
-            "任意",
-
-        "download.consent":
-            "個人情報の取扱いに同意します。",
+        "download.actionDescription":
+            "下のボタンから資料をダウンロードできます。",
 
         "download.submit":
-            "同意してダウンロード",
+            "資料をダウンロード",
 
         "download.processing":
             "ダウンロードを準備しています...",
@@ -375,20 +345,10 @@ const translations = {
         "download.pageError":
             "資料情報を取得できませんでした。",
 
-        "download.companyError":
-            "会社名を入力してください。",
 
-        "download.nameError":
-            "氏名を入力してください。",
-
-        "download.emailError":
-            "有効なメールアドレスを入力してください。",
-
-        "download.consentError":
-            "個人情報の取扱いへの同意が必要です。",
-
-
-        /* Footer */
+        /* =================================
+           Footer
+        ================================= */
 
         "footer.privacy":
             "個人情報保護方針",
@@ -415,7 +375,9 @@ const translations = {
             "https://www.inabata.co.jp/sitepolicy/",
 
 
-        /* Cookie */
+        /* =================================
+           Cookie
+        ================================= */
 
         "cookie.title":
             "Cookieについて",
@@ -563,7 +525,7 @@ function translate(
 
 
     /*
-     * 未定義キー
+     * Undefined key
      */
 
     return key;
@@ -651,33 +613,33 @@ function applyTranslations() {
         language;
 
 
-   /* =====================================
-      Site Logo
-   ===================================== */
-   
-   const logoElement =
-       document.getElementById(
-           "site-logo-image"
-       );
-   
-   
-   if (logoElement) {
-   
-       const logoSource =
-           language === "ja"
-               ? logoElement.dataset.logoJa
-               : logoElement.dataset.logoEn;
-   
-   
-       if (logoSource) {
-   
-           logoElement.setAttribute(
-               "src",
-               logoSource
-           );
-       }
-   }
-   
+    /* =====================================
+       Site Logo
+    ===================================== */
+
+    const logoElement =
+        document.getElementById(
+            "site-logo-image"
+        );
+
+
+    if (logoElement) {
+
+        const logoSource =
+            language === "ja"
+                ? logoElement.dataset.logoJa
+                : logoElement.dataset.logoEn;
+
+
+        if (logoSource) {
+
+            logoElement.setAttribute(
+                "src",
+                logoSource
+            );
+        }
+    }
+
 
     /* =====================================
        Text
@@ -700,6 +662,7 @@ function applyTranslations() {
 
 
             if (!key) {
+
                 return;
             }
 
@@ -734,6 +697,7 @@ function applyTranslations() {
 
 
             if (!key) {
+
                 return;
             }
 
@@ -745,6 +709,7 @@ function applyTranslations() {
 
 
             if (!url) {
+
                 return;
             }
 
@@ -779,6 +744,7 @@ function applyTranslations() {
 
 
             if (!key) {
+
                 return;
             }
 
@@ -815,6 +781,7 @@ function applyTranslations() {
 
 
             if (!key) {
+
                 return;
             }
 
@@ -885,6 +852,9 @@ function updateStaticPageTitle() {
             language === "ja"
                 ? "資料一覧｜INABATA"
                 : "Materials | INABATA";
+
+
+        return;
     }
 
 
@@ -935,7 +905,9 @@ function setLanguage(
 
 
     /*
-     * 静的文言・Footer URLなどを更新。
+     * 静的文言、
+     * Footer URL、
+     * ロゴなどを更新。
      */
 
     applyTranslations();
