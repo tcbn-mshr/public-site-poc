@@ -1,10 +1,6 @@
 "use strict";
 
 
-const crypto =
-    require("node:crypto");
-
-
 const {
     app
 } = require("@azure/functions");
@@ -27,14 +23,14 @@ const {
 const MATERIALS_TABLE_NAME =
     "Materials";
 
-const DEFAULT_LOG_TABLE_NAME =
-    "DownloadLogs";
-
 const DEFAULT_CONTAINER_NAME =
     "files";
 
 const DEFAULT_SAS_MINUTES =
     5;
+
+const MAX_MATERIAL_ID_LENGTH =
+    128;
 
 
 /* =========================================
@@ -69,7 +65,9 @@ function jsonResponse(
    Environment
 ========================================= */
 
-function getRequiredSetting(name) {
+function getRequiredSetting(
+    name
+) {
 
     const value =
         String(
@@ -97,13 +95,6 @@ function getConfiguration() {
         );
 
 
-    const logTableName =
-        String(
-            process.env.DOWNLOAD_LOG_TABLE ||
-            DEFAULT_LOG_TABLE_NAME
-        ).trim();
-
-
     const containerName =
         String(
             process.env.DOWNLOAD_CONTAINER ||
@@ -119,6 +110,13 @@ function getConfiguration() {
         );
 
 
+    /*
+     * SASの有効期間。
+     *
+     * 未設定時は5分。
+     * 設定された場合でも最大60分。
+     */
+
     const sasMinutes =
         Number.isFinite(
             configuredMinutes
@@ -132,16 +130,18 @@ function getConfiguration() {
 
 
     return {
+
         connectionString,
-        logTableName,
+
         containerName,
+
         sasMinutes
     };
 }
 
 
 /* =========================================
-   Request Validation
+   Utility
 ========================================= */
 
 function normalizeText(
@@ -160,120 +160,109 @@ function normalizeText(
 }
 
 
-function isValidEmail(value) {
+/* =========================================
+   Material ID Validation
+========================================= */
 
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(value);
+function isValidMaterialId(
+    materialId
+) {
+
+    if (!materialId) {
+
+        return false;
+    }
+
+
+    if (
+        materialId.length >
+        MAX_MATERIAL_ID_LENGTH
+    ) {
+
+        return false;
+    }
+
+
+    /*
+     * 現在materialIdは
+     * UUID形式で生成しています。
+     *
+     * 英数字とハイフンのみを許可し、
+     * パス文字等を拒否します。
+     */
+
+    return /^[A-Za-z0-9-]+$/
+        .test(
+            materialId
+        );
 }
 
 
-function validatePayload(body) {
+/* =========================================
+   Request Validation
+========================================= */
+
+function validatePayload(
+    body
+) {
 
     const materialId =
         normalizeText(
             body?.materialId,
-            128
+            MAX_MATERIAL_ID_LENGTH
         );
-
-    const company =
-        normalizeText(
-            body?.company,
-            200
-        );
-
-    const department =
-        normalizeText(
-            body?.department,
-            200
-        );
-
-    const customerName =
-        normalizeText(
-            body?.customerName,
-            100
-        );
-
-    const email =
-        normalizeText(
-            body?.email,
-            254
-        );
-
-    const phoneNumber =
-        normalizeText(
-            body?.phoneNumber,
-            50
-        );
-
-    const consent =
-        body?.consent === true;
 
 
     if (!materialId) {
 
         return {
-            valid: false,
+
+            valid:
+                false,
+
             message:
                 "資料IDが指定されていません。"
         };
     }
 
 
-    if (!company) {
-
-        return {
-            valid: false,
-            message:
-                "会社名を入力してください。"
-        };
-    }
-
-
-    if (!customerName) {
-
-        return {
-            valid: false,
-            message:
-                "氏名を入力してください。"
-        };
-    }
-
-
     if (
-        !email ||
-        !isValidEmail(email)
+        !isValidMaterialId(
+            materialId
+        )
     ) {
 
         return {
-            valid: false,
+
+            valid:
+                false,
+
             message:
-                "正しいメールアドレスを入力してください。"
+                "資料IDが正しくありません。"
         };
     }
 
 
-    if (!consent) {
-
-        return {
-            valid: false,
-            message:
-                "個人情報の取り扱いへの同意が必要です。"
-        };
-    }
-
+    /*
+     * materialId以外は使用しません。
+     *
+     * クライアントから
+     *
+     * blobName
+     * path
+     * fileName
+     *
+     * 等が送信されても無視します。
+     */
 
     return {
 
-        valid: true,
+        valid:
+            true,
 
         value: {
-            materialId,
-            company,
-            department,
-            customerName,
-            email,
-            phoneNumber,
-            consent
+
+            materialId
         }
     };
 }
@@ -304,21 +293,40 @@ async function getPublishedMaterial(
             );
 
 
+        /* =================================
+           Published Check
+        ================================= */
+
+        const status =
+            normalizeText(
+                entity.status,
+                20
+            ).toLowerCase();
+
+
         if (
-            String(
-                entity.status || ""
-            ).toLowerCase() !==
+            status !==
             "published"
         ) {
+
+            /*
+             * draft等は公開APIから
+             * 存在しない資料として扱います。
+             */
 
             return null;
         }
 
 
+        /* =================================
+           Blob Name
+        ================================= */
+
         const blobName =
-            String(
-                entity.blobName || ""
-            ).trim();
+            normalizeText(
+                entity.blobName,
+                500
+            );
 
 
         if (!blobName) {
@@ -329,39 +337,87 @@ async function getPublishedMaterial(
         }
 
 
+        /*
+         * Blobパスはクライアント値ではなく、
+         * Materials Tableに保存された値を使用。
+         *
+         * さらに現在の命名規則
+         *
+         * materials/{materialId}/document.pdf
+         *
+         * と一致することを確認します。
+         */
+
+        const expectedBlobName =
+            `materials/${materialId}/document.pdf`;
+
+
+        if (
+            blobName !==
+            expectedBlobName
+        ) {
+
+            const error =
+                new Error(
+                    "Unexpected material blob path."
+                );
+
+
+            error.code =
+                "InvalidBlobPath";
+
+
+            throw error;
+        }
+
+
+        /* =================================
+           Original File Name
+        ================================= */
+
+        let originalFileName =
+            normalizeText(
+                entity.originalFileName,
+                255
+            );
+
+
+        /*
+         * Content-Dispositionで使用するため、
+         * 改行等を取り除きます。
+         */
+
+        originalFileName =
+            originalFileName
+                .replace(
+                    /[\r\n]/g,
+                    ""
+                )
+                .trim();
+
+
+        if (
+            !originalFileName ||
+            !originalFileName
+                .toLowerCase()
+                .endsWith(
+                    ".pdf"
+                )
+        ) {
+
+            originalFileName =
+                "document.pdf";
+        }
+
+
         return {
 
             id:
                 materialId,
 
-            title:
-                String(
-                    entity.title || ""
-                ).trim(),
-
-            category:
-                String(
-                    entity.category || ""
-                ).trim(),
-
-            categoryName:
-                String(
-                    entity.categoryName || ""
-                ).trim(),
-
-            description:
-                String(
-                    entity.description || ""
-                ).trim(),
-
             blobName,
 
-            originalFileName:
-                String(
-                    entity.originalFileName ||
-                    entity.blobName ||
-                    "document.pdf"
-                ).trim()
+            originalFileName
         };
 
 
@@ -377,108 +433,6 @@ async function getPublishedMaterial(
 
         throw error;
     }
-}
-
-
-/* =========================================
-   Download Log
-========================================= */
-
-async function saveDownloadLog(
-    connectionString,
-    logTableName,
-    request,
-    input,
-    material
-) {
-
-    const tableClient =
-        TableClient.fromConnectionString(
-            connectionString,
-            logTableName
-        );
-
-
-    const now =
-        new Date();
-
-
-    const forwardedFor =
-        String(
-            request.headers.get(
-                "x-forwarded-for"
-            ) || ""
-        )
-            .split(",")[0]
-            .trim();
-
-
-    const userAgent =
-        normalizeText(
-            request.headers.get(
-                "user-agent"
-            ) || "",
-            1024
-        );
-
-
-    const entity = {
-
-        partitionKey:
-            material.id,
-
-        rowKey:
-            `${now.getTime()}-${crypto.randomUUID()}`,
-
-        materialId:
-            material.id,
-
-        title:
-            material.title,
-
-        category:
-            material.category,
-
-        categoryName:
-            material.categoryName,
-
-        blobName:
-            material.blobName,
-
-        originalFileName:
-            material.originalFileName,
-
-        company:
-            input.company,
-
-        department:
-            input.department,
-
-        customerName:
-            input.customerName,
-
-        email:
-            input.email,
-
-        phoneNumber:
-            input.phoneNumber,
-
-        consent:
-            input.consent,
-
-        downloadedAtUtc:
-            now.toISOString(),
-
-        sourceIp:
-            forwardedFor,
-
-        userAgent
-    };
-
-
-    await tableClient.createEntity(
-        entity
-    );
 }
 
 
@@ -514,6 +468,10 @@ async function createDownloadUrl(
             );
 
 
+    /* =====================================
+       Blob Existence
+    ===================================== */
+
     const exists =
         await blobClient.exists();
 
@@ -525,12 +483,23 @@ async function createDownloadUrl(
                 "The material blob was not found."
             );
 
+
         error.code =
             "BlobNotFound";
+
 
         throw error;
     }
 
+
+    /* =====================================
+       SAS Validity
+    ===================================== */
+
+    /*
+     * 1分前から有効にすることで
+     * 時計ずれを吸収。
+     */
 
     const startsOn =
         new Date(
@@ -548,16 +517,19 @@ async function createDownloadUrl(
         );
 
 
-    /*
-     * PDFをブラウザー表示ではなく
-     * ダウンロードとして扱わせます。
-     */
+    /* =====================================
+       Download File Name
+    ===================================== */
 
     const encodedFileName =
         encodeURIComponent(
             material.originalFileName
         );
 
+
+    /* =====================================
+       Read-Only SAS
+    ===================================== */
 
     return blobClient.generateSasUrl({
 
@@ -594,6 +566,10 @@ async function downloadHandler(
 
     try {
 
+        /* =================================
+           Request Body
+        ================================= */
+
         let body;
 
 
@@ -602,18 +578,25 @@ async function downloadHandler(
             body =
                 await request.json();
 
+
         } catch {
 
             return jsonResponse(
                 400,
                 {
-                    success: false,
+                    success:
+                        false,
+
                     message:
                         "リクエスト内容を確認できませんでした。"
                 }
             );
         }
 
+
+        /* =================================
+           Validation
+        ================================= */
 
         const validation =
             validatePayload(
@@ -626,7 +609,9 @@ async function downloadHandler(
             return jsonResponse(
                 400,
                 {
-                    success: false,
+                    success:
+                        false,
+
                     message:
                         validation.message
                 }
@@ -634,13 +619,23 @@ async function downloadHandler(
         }
 
 
+        /* =================================
+           Configuration
+        ================================= */
+
         const config =
             getConfiguration();
 
 
+        /* =================================
+           Trusted Material Metadata
+        ================================= */
+
         /*
-         * 信頼できるMaterialsテーブルから
-         * 資料情報とblobNameを取得します。
+         * クライアントからはmaterialIdのみ受信。
+         *
+         * blobName等のファイル情報は
+         * 信頼できるMaterials Tableから取得します。
          */
 
         const material =
@@ -652,22 +647,27 @@ async function downloadHandler(
 
         if (!material) {
 
+            /*
+             * draft資料についても
+             * 存在有無を外部へ区別させません。
+             */
+
             return jsonResponse(
                 404,
                 {
-                    success: false,
+                    success:
+                        false,
+
                     message:
-                        "指定された資料は存在しないか、" +
-                        "現在公開されていません。"
+                        "指定された資料は存在しないか、現在公開されていません。"
                 }
             );
         }
 
 
-        /*
-         * Blobの存在確認と
-         * 読み取り専用SAS URLの生成
-         */
+        /* =================================
+           Create Read SAS
+        ================================= */
 
         const downloadUrl =
             await createDownloadUrl(
@@ -678,19 +678,19 @@ async function downloadHandler(
             );
 
 
+        /* =================================
+           Response
+        ================================= */
+
         /*
-         * SAS発行後、レスポンスを返す前に
-         * DownloadLogsへ記録します。
+         * DownloadLogsへの書き込みは行いません。
+         *
+         * 個人情報、
+         * IPアドレス、
+         * User-Agent等も
+         * アプリケーション独自ログとして
+         * 保存しません。
          */
-
-        await saveDownloadLog(
-            config.connectionString,
-            config.logTableName,
-            request,
-            validation.value,
-            material
-        );
-
 
         return jsonResponse(
             200,
@@ -700,9 +700,6 @@ async function downloadHandler(
 
                 materialId:
                     material.id,
-
-                title:
-                    material.title,
 
                 downloadUrl,
 
@@ -714,11 +711,19 @@ async function downloadHandler(
 
     } catch (error) {
 
+        /*
+         * 詳細な内部情報はサーバーログのみ。
+         */
+
         context.error(
             "Download API failed.",
             error
         );
 
+
+        /* =================================
+           Blob Not Found
+        ================================= */
 
         if (
             error?.code ===
@@ -728,7 +733,9 @@ async function downloadHandler(
             return jsonResponse(
                 404,
                 {
-                    success: false,
+                    success:
+                        false,
+
                     message:
                         "ダウンロード対象のPDFが見つかりませんでした。"
                 }
@@ -736,10 +743,43 @@ async function downloadHandler(
         }
 
 
+        /* =================================
+           Invalid Blob Path
+        ================================= */
+
+        if (
+            error?.code ===
+            "InvalidBlobPath"
+        ) {
+
+            /*
+             * 内部のBlobパス情報は
+             * クライアントへ返しません。
+             */
+
+            return jsonResponse(
+                404,
+                {
+                    success:
+                        false,
+
+                    message:
+                        "ダウンロード対象の資料を確認できませんでした。"
+                }
+            );
+        }
+
+
+        /* =================================
+           Generic Error
+        ================================= */
+
         return jsonResponse(
             500,
             {
-                success: false,
+                success:
+                    false,
+
                 message:
                     "ダウンロード処理中にエラーが発生しました。"
             }
@@ -758,6 +798,11 @@ app.http(
         methods: [
             "POST"
         ],
+
+        /*
+         * 展示会来訪者向け公開APIなので
+         * anonymousを維持します。
+         */
 
         authLevel:
             "anonymous",

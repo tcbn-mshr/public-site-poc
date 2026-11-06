@@ -53,6 +53,7 @@ main {
 
 a {
     color: inherit;
+
     text-decoration: none;
 }
 
@@ -420,7 +421,8 @@ input {
 
     font-size: 12px;
 
-    transition: opacity 0.2s ease;
+    transition:
+        opacity 0.2s ease;
 }
 
 .footer-links a:hover {
@@ -776,7 +778,8 @@ input {
 
     text-decoration: none;
 
-    transition: opacity 0.2s ease;
+    transition:
+        opacity 0.2s ease;
 }
 
 .materials-back a:hover {
@@ -935,39 +938,55 @@ input {
 
 
 /* =========================================
-   Material Download Link
+   Material Download Page Link
 ========================================= */
 
-#material-download-link {
-    min-width: 230px;
-    min-height: 56px;
-
-    padding: 14px 24px;
-
+.material-download-link {
     display: inline-flex;
     align-items: center;
-    justify-content: space-between;
 
-    gap: 32px;
+    gap: 10px;
 
-    color: #fff;
-    background: #222;
+    margin-top: 6px;
+
+    padding: 6px 0;
+
+    color: #222;
+    background: transparent;
 
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
 
-    border: 1px solid #222;
+    line-height: 1.5;
 
     text-decoration: none;
 
+    border: 0;
+
     transition:
-        color 0.2s ease,
-        background-color 0.2s ease;
+        opacity 0.2s ease;
 }
 
-#material-download-link:hover {
-    color: #222;
-    background: #fff;
+.material-download-link:hover {
+    opacity: 0.65;
+}
+
+.material-download-arrow {
+    display: inline-block;
+
+    transition:
+        transform 0.2s ease;
+}
+
+.material-download-link:hover
+.material-download-arrow {
+    transform:
+        translateX(4px);
+}
+
+.material-download-link:focus-visible {
+    outline: 2px solid #222;
+    outline-offset: 4px;
 }
 
 
@@ -1005,7 +1024,8 @@ input {
 
     text-decoration: none;
 
-    transition: opacity 0.2s ease;
+    transition:
+        opacity 0.2s ease;
 }
 
 .material-detail-back a:hover {
@@ -1185,7 +1205,8 @@ input {
     text-decoration: underline;
     text-underline-offset: 3px;
 
-    transition: opacity 0.2s ease;
+    transition:
+        opacity 0.2s ease;
 }
 
 .selected-document-back:hover {
@@ -1194,7 +1215,7 @@ input {
 
 
 /* =========================================
-   Download Form
+   Download Action Area
 ========================================= */
 
 .download-form-area {
@@ -1210,182 +1231,6 @@ input {
     font-weight: 500;
 }
 
-.required-note {
-    margin: 0 0 35px;
-
-    color: #666;
-
-    font-size: 13px;
-}
-
-.form-field {
-    width: 100%;
-
-    margin-bottom: 32px;
-}
-
-.form-field > label:not(.consent-label) {
-    display: block;
-
-    margin-bottom: 10px;
-
-    color: #222;
-
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.form-field input[type="text"],
-.form-field input[type="email"] {
-    width: 100%;
-    height: 52px;
-
-    display: block;
-
-    padding: 0 16px;
-
-    color: #222;
-    background: #fff;
-
-    font-family: inherit;
-    font-size: 15px;
-
-    border: 1px solid #bbb;
-    border-radius: 0;
-
-    outline: none;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.form-field input[type="text"]:focus,
-.form-field input[type="email"]:focus {
-    border-color: #222;
-
-    box-shadow:
-        0 0 0 1px #222;
-}
-
-.form-field input:disabled {
-    color: #777;
-    background: #eee;
-}
-
-
-/* =========================================
-   Required / Optional
-========================================= */
-
-.required-mark {
-    color: #b60018;
-}
-
-.optional-mark {
-    display: inline-block;
-
-    margin-left: 8px;
-    padding: 1px 6px;
-
-    color: #666;
-    background: #f1f1f1;
-
-    font-size: 11px;
-    font-weight: 400;
-    line-height: 1.5;
-
-    vertical-align: middle;
-}
-
-
-/* =========================================
-   Field Errors
-========================================= */
-
-.field-error {
-    min-height: 1.6em;
-
-    margin: 7px 0 0;
-
-    color: #b00020;
-
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-.form-error {
-    margin-top: 8px;
-
-    color: #b60018;
-
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-
-/* =========================================
-   Consent
-========================================= */
-
-.form-field-consent {
-    width: 100%;
-
-    margin: 8px 0 32px;
-}
-
-.consent-label {
-    width: 100%;
-
-    display: flex;
-    align-items: flex-start;
-
-    gap: 12px;
-
-    cursor: pointer;
-
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.7;
-}
-
-.consent-label input[type="checkbox"] {
-    appearance: auto;
-    -webkit-appearance: checkbox;
-
-    width: 18px !important;
-    height: 18px !important;
-
-    min-width: 18px;
-    min-height: 18px;
-
-    flex: 0 0 auto;
-
-    margin: 3px 0 0;
-    padding: 0;
-
-    cursor: pointer;
-
-    box-shadow: none;
-
-    accent-color: #222;
-}
-
-.consent-label span {
-    min-width: 0;
-}
-
-.consent-label a {
-    color: #222;
-
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
-.consent-label a:hover {
-    opacity: 0.65;
-}
-
 
 /* =========================================
    Download Button
@@ -1394,6 +1239,8 @@ input {
 #download-submit {
     min-width: 230px;
     min-height: 56px;
+
+    margin-top: 32px;
 
     padding: 14px 24px;
 
@@ -1420,7 +1267,7 @@ input {
         background-color 0.2s ease;
 }
 
-#download-submit:hover {
+#download-submit:hover:not(:disabled) {
     color: #222;
     background: #fff;
 }
@@ -1429,6 +1276,11 @@ input {
     opacity: 0.55;
 
     cursor: wait;
+}
+
+#download-submit:focus-visible {
+    outline: 2px solid #222;
+    outline-offset: 4px;
 }
 
 
@@ -1460,105 +1312,6 @@ input {
 
     font-size: 13px;
     line-height: 1.6;
-}
-
-
-/* =========================================
-   Cookie Consent
-========================================= */
-
-.cookie-banner {
-    position: fixed;
-
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    z-index: 1000;
-
-    padding: 24px;
-
-    color: #222;
-    background: #fff;
-
-    border-top: 1px solid #ddd;
-
-    box-shadow:
-        0 -6px 24px
-        rgba(0, 0, 0, 0.08);
-}
-
-.cookie-banner[hidden] {
-    display: none;
-}
-
-.cookie-banner-inner {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 48px;
-}
-
-.cookie-message {
-    max-width: 760px;
-}
-
-.cookie-message h2 {
-    margin: 0 0 8px;
-
-    font-size: 17px;
-    font-weight: 500;
-}
-
-.cookie-message p {
-    margin: 0 0 8px;
-
-    color: #555;
-
-    font-size: 13px;
-    line-height: 1.8;
-}
-
-.cookie-policy-link {
-    padding-bottom: 2px;
-
-    border-bottom: 1px solid #222;
-
-    font-size: 12px;
-}
-
-.cookie-actions {
-    display: flex;
-    flex-shrink: 0;
-
-    gap: 10px;
-}
-
-.cookie-button {
-    min-width: 130px;
-    min-height: 44px;
-
-    padding: 10px 18px;
-
-    cursor: pointer;
-
-    font-family: inherit;
-    font-size: 13px;
-
-    border: 1px solid #222;
-}
-
-.cookie-button-primary {
-    color: #fff;
-    background: #222;
-}
-
-.cookie-button-secondary {
-    color: #222;
-    background: #fff;
 }
 
 
@@ -1614,9 +1367,11 @@ input {
         gap: 48px;
     }
 
+
     .material-detail-visual {
         height: 340px;
     }
+
 
     .material-detail-information {
         width: 100%;
@@ -1624,14 +1379,15 @@ input {
 
 
     .download-inner {
-        display: flex;
-        flex-direction: column;
-
         width: 100%;
         max-width: 100%;
 
+        display: flex;
+        flex-direction: column;
+
         gap: 48px;
     }
+
 
     .selected-document {
         order: 1;
@@ -1640,28 +1396,12 @@ input {
         max-width: 100%;
     }
 
+
     .download-form-area {
         order: 2;
 
         width: 100%;
         max-width: none;
-        min-width: 0;
-    }
-
-    .cookie-banner-inner {
-        flex-direction: column;
-        align-items: stretch;
-
-        gap: 20px;
-    }
-
-    .cookie-actions {
-        width: 100%;
-    }
-
-    .cookie-button {
-        flex: 1;
-
         min-width: 0;
     }
 }
@@ -1684,6 +1424,7 @@ input {
         gap: 12px;
     }
 
+
     .site-logo-image {
         width: auto;
 
@@ -1691,9 +1432,11 @@ input {
         max-height: 52px;
     }
 
+
     .language-switcher {
         gap: 6px;
     }
+
 
     .language-button {
         font-size: 12px;
@@ -1706,14 +1449,17 @@ input {
         min-height: auto;
     }
 
+
     .hero-inner {
         padding:
             72px 20px;
     }
 
+
     .hero h1 {
         font-size: 42px;
     }
+
 
     .hero-description {
         font-size: 15px;
@@ -1728,6 +1474,7 @@ input {
         padding:
             48px 20px;
     }
+
 
     .materials-page-title,
     .material-detail-title,
@@ -1755,6 +1502,7 @@ input {
         margin-bottom: 35px;
     }
 
+
     .category-filter-button {
         padding:
             8px 12px;
@@ -1771,9 +1519,11 @@ input {
         gap: 24px;
     }
 
+
     .material-card-visual {
         height: 200px;
     }
+
 
     .materials-back {
         margin-top: 48px;
@@ -1786,18 +1536,24 @@ input {
         height: 280px;
     }
 
+
     .material-detail-pdf {
         width: 110px;
         height: 145px;
     }
 
+
     .material-detail-document-title {
         font-size: 25px;
     }
 
-    #material-download-link {
-        width: 100%;
+
+    .material-download-link {
+        width: auto;
+
+        font-size: 14px;
     }
+
 
     .material-detail-back {
         margin-top: 48px;
@@ -1812,38 +1568,34 @@ input {
         font-size: 14px;
     }
 
+
     .selected-document-visual {
         height: 240px;
     }
+
 
     .selected-document-pdf {
         width: 90px;
         height: 120px;
     }
 
+
     .selected-document-body {
         padding:
             24px 20px;
     }
 
+
     .selected-document-title {
         font-size: 22px;
     }
+
 
     .download-form-title,
     .download-form-area h2 {
         font-size: 27px;
     }
 
-    .form-field {
-        margin-bottom: 26px;
-    }
-
-    .consent-label {
-        gap: 10px;
-
-        font-size: 13px;
-    }
 
     #download-submit {
         width: 100%;
@@ -1861,6 +1613,7 @@ input {
             28px;
     }
 
+
     .footer-inner {
         flex-direction: column;
 
@@ -1868,6 +1621,7 @@ input {
 
         gap: 32px;
     }
+
 
     .footer-links {
         flex-direction: column;
@@ -1887,13 +1641,16 @@ input {
         max-width: 145px;
     }
 
+
     .language-button {
         font-size: 11px;
     }
 
+
     .language-separator {
         font-size: 11px;
     }
+
 
     .download-hero {
         padding:
@@ -1901,9 +1658,11 @@ input {
             48px;
     }
 
+
     .download-page-title {
         font-size: 34px;
     }
+
 
     .selected-document-visual {
         height: 220px;

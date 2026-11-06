@@ -24,6 +24,43 @@ const {
 const MATERIALS_TABLE_NAME =
     "Materials";
 
+const DEFAULT_CONTAINER_NAME =
+    "files";
+
+const DEFAULT_SAS_MINUTES =
+    5;
+
+const MAX_MATERIAL_ID_LENGTH =
+    128;
+
+
+/* =========================================
+   Response
+========================================= */
+
+function jsonResponse(
+    status,
+    body
+) {
+
+    return {
+
+        status,
+
+        headers: {
+
+            "Content-Type":
+                "application/json; charset=utf-8",
+
+            "Cache-Control":
+                "no-store"
+        },
+
+        jsonBody:
+            body
+    };
+}
+
 
 /* =========================================
    Environment
@@ -56,7 +93,7 @@ function getContainerName() {
 
     return String(
         process.env.DOWNLOAD_CONTAINER ||
-        "files"
+        DEFAULT_CONTAINER_NAME
     ).trim();
 }
 
@@ -82,6 +119,245 @@ function normalizeText(
 
 
 /* =========================================
+   Material ID Validation
+========================================= */
+
+function isValidMaterialId(
+    materialId
+) {
+
+    if (!materialId) {
+
+        return false;
+    }
+
+
+    if (
+        materialId.length >
+        MAX_MATERIAL_ID_LENGTH
+    ) {
+
+        return false;
+    }
+
+
+    /*
+     * 現在materialIdはUUID形式。
+     *
+     * 英数字とハイフンのみ許可。
+     *
+     * "/", "\", ".", "?", "#"
+     * 等のパス・URL関連文字を拒否。
+     */
+
+    return /^[A-Za-z0-9-]+$/
+        .test(
+            materialId
+        );
+}
+
+
+/* =========================================
+   Get Published Material
+========================================= */
+
+async function getPublishedMaterial(
+    tableClient,
+    materialId
+) {
+
+    let entity;
+
+
+    try {
+
+        entity =
+            await tableClient.getEntity(
+                "materials",
+                materialId
+            );
+
+
+    } catch (error) {
+
+        if (
+            error?.statusCode ===
+            404
+        ) {
+
+            return null;
+        }
+
+
+        throw error;
+    }
+
+
+    /* =====================================
+       Published Check
+    ===================================== */
+
+    const status =
+        normalizeText(
+            entity.status,
+            20
+        ).toLowerCase();
+
+
+    if (
+        status !==
+        "published"
+    ) {
+
+        /*
+         * draft等は外部から見ると
+         * 「存在しない資料」と同じ扱い。
+         */
+
+        return null;
+    }
+
+
+    /* =====================================
+       Thumbnail Blob Name
+    ===================================== */
+
+    const thumbnailBlobName =
+        normalizeText(
+            entity.thumbnailBlobName,
+            500
+        );
+
+
+    if (!thumbnailBlobName) {
+
+        return null;
+    }
+
+
+    /*
+     * クライアントからBlobパスは受け取らず、
+     * Table Storageに保存された値についても
+     * 現在の固定命名規則と完全一致することを確認。
+     */
+
+    const expectedBlobName =
+        `materials/${materialId}/thumbnail.jpg`;
+
+
+    if (
+        thumbnailBlobName !==
+        expectedBlobName
+    ) {
+
+        /*
+         * ログには詳細を残すが、
+         * API利用者にはBlobパスを公開しない。
+         */
+
+        return {
+
+            invalidBlobPath:
+                true
+        };
+    }
+
+
+    return {
+
+        id:
+            materialId,
+
+        thumbnailBlobName
+    };
+}
+
+
+/* =========================================
+   Create Thumbnail SAS
+========================================= */
+
+async function createThumbnailUrl(
+    connectionString,
+    containerName,
+    thumbnailBlobName
+) {
+
+    const blobServiceClient =
+        BlobServiceClient
+            .fromConnectionString(
+                connectionString
+            );
+
+
+    const containerClient =
+        blobServiceClient
+            .getContainerClient(
+                containerName
+            );
+
+
+    const blobClient =
+        containerClient
+            .getBlobClient(
+                thumbnailBlobName
+            );
+
+
+    /* =====================================
+       Blob Existence
+    ===================================== */
+
+    const exists =
+        await blobClient.exists();
+
+
+    if (!exists) {
+
+        return null;
+    }
+
+
+    /* =====================================
+       Read-Only SAS
+    ===================================== */
+
+    return blobClient.generateSasUrl({
+
+        permissions:
+            BlobSASPermissions
+                .parse(
+                    "r"
+                ),
+
+        /*
+         * Clock skew対策として
+         * 1分前から有効。
+         */
+
+        startsOn:
+            new Date(
+                Date.now() -
+                60 * 1000
+            ),
+
+        /*
+         * Thumbnail用SASは
+         * 5分間のみ有効。
+         */
+
+        expiresOn:
+            new Date(
+                Date.now() +
+                DEFAULT_SAS_MINUTES *
+                60 *
+                1000
+            )
+    });
+}
+
+
+/* =========================================
    Handler
 ========================================= */
 
@@ -97,37 +373,62 @@ async function materialThumbnailHandler(
 
     try {
 
-        /*
-         * materialId
-         */
+        /* =================================
+           Material ID
+        ================================= */
 
         const materialId =
             normalizeText(
-                request.query.get("id"),
-                128
+                request.query.get(
+                    "id"
+                ),
+                MAX_MATERIAL_ID_LENGTH
             );
 
 
         if (!materialId) {
 
-            return {
-                status:
-                    400,
+            return jsonResponse(
+                400,
+                {
 
-                jsonBody: {
                     success:
                         false,
 
                     message:
                         "資料IDが指定されていません。"
                 }
-            };
+            );
         }
 
 
-        /*
-         * Storage
-         */
+        /* =================================
+           Material ID Validation
+        ================================= */
+
+        if (
+            !isValidMaterialId(
+                materialId
+            )
+        ) {
+
+            return jsonResponse(
+                400,
+                {
+
+                    success:
+                        false,
+
+                    message:
+                        "資料IDが正しくありません。"
+                }
+            );
+        }
+
+
+        /* =================================
+           Storage
+        ================================= */
 
         const connectionString =
             getConnectionString();
@@ -141,175 +442,109 @@ async function materialThumbnailHandler(
                 );
 
 
-        /*
-         * Materials取得
-         */
+        /* =================================
+           Trusted Material Metadata
+        ================================= */
 
-        let entity;
-
-
-        try {
-
-            entity =
-                await tableClient.getEntity(
-                    "materials",
-                    materialId
-                );
-
-
-        } catch (error) {
-
-            if (
-                error?.statusCode ===
-                404
-            ) {
-
-                return {
-                    status:
-                        404
-                };
-            }
-
-
-            throw error;
-        }
-
-
-        /*
-         * 公開中の資料だけ
-         */
-
-        if (
-            normalizeText(
-                entity.status,
-                20
-            ) !== "published"
-        ) {
-
-            return {
-                status:
-                    404
-            };
-        }
-
-
-        /*
-         * Thumbnail
-         */
-
-        const thumbnailBlobName =
-            normalizeText(
-                entity.thumbnailBlobName,
-                500
+        const material =
+            await getPublishedMaterial(
+                tableClient,
+                materialId
             );
 
 
-        if (!thumbnailBlobName) {
+        /*
+         * 存在しない資料と
+         * draft資料は同じ404。
+         */
 
-            return {
-                status:
-                    404
-            };
+        if (!material) {
+
+            return jsonResponse(
+                404,
+                {
+
+                    success:
+                        false,
+
+                    message:
+                        "サムネイル画像が見つかりませんでした。"
+                }
+            );
         }
 
 
-        /*
-         * materialIdとBlobパスが
-         * 一致することを確認
-         */
-
-        const expectedBlobName =
-            `materials/${materialId}/thumbnail.jpg`;
-
+        /* =================================
+           Invalid Blob Path
+        ================================= */
 
         if (
-            thumbnailBlobName !==
-            expectedBlobName
+            material.invalidBlobPath
         ) {
+
+            /*
+             * 不正な内部Blob Pathは
+             * ログへIDだけ記録。
+             *
+             * Blob名そのものは
+             * 外部レスポンスへ返さない。
+             */
 
             context.warn(
-                "Unexpected thumbnail blob name:",
-                thumbnailBlobName
+                "Unexpected thumbnail blob path for material:",
+                materialId
             );
 
 
-            return {
-                status:
-                    404
-            };
+            return jsonResponse(
+                404,
+                {
+
+                    success:
+                        false,
+
+                    message:
+                        "サムネイル画像が見つかりませんでした。"
+                }
+            );
         }
 
 
-        /*
-         * Blob Client
-         */
-
-        const blobServiceClient =
-            BlobServiceClient
-                .fromConnectionString(
-                    connectionString
-                );
-
-
-        const containerClient =
-            blobServiceClient
-                .getContainerClient(
-                    getContainerName()
-                );
-
-
-        const blobClient =
-            containerClient
-                .getBlobClient(
-                    thumbnailBlobName
-                );
-
-
-        /*
-         * Blob実在確認
-         */
-
-        const exists =
-            await blobClient.exists();
-
-
-        if (!exists) {
-
-            return {
-                status:
-                    404
-            };
-        }
-
-
-        /*
-         * 5分間のRead SAS
-         */
+        /* =================================
+           SAS URL
+        ================================= */
 
         const thumbnailUrl =
-            await blobClient
-                .generateSasUrl({
+            await createThumbnailUrl(
+                connectionString,
+                getContainerName(),
+                material.thumbnailBlobName
+            );
 
-                    permissions:
-                        BlobSASPermissions
-                            .parse("r"),
 
-                    startsOn:
-                        new Date(
-                            Date.now() -
-                            60 * 1000
-                        ),
+        if (!thumbnailUrl) {
 
-                    expiresOn:
-                        new Date(
-                            Date.now() +
-                            5 * 60 * 1000
-                        )
-                });
+            return jsonResponse(
+                404,
+                {
 
+                    success:
+                        false,
+
+                    message:
+                        "サムネイル画像が見つかりませんでした。"
+                }
+            );
+        }
+
+
+        /* =================================
+           Redirect
+        ================================= */
 
         /*
-         * BlobへRedirect
+         * Private Blobへ直接公開せず、
+         * 5分間だけ有効なRead SASへRedirect。
          */
 
         return {
@@ -322,6 +557,11 @@ async function materialThumbnailHandler(
                 "Location":
                     thumbnailUrl,
 
+                /*
+                 * SAS URL自体を長期間
+                 * キャッシュさせない。
+                 */
+
                 "Cache-Control":
                     "private, max-age=300"
             }
@@ -330,17 +570,20 @@ async function materialThumbnailHandler(
 
     } catch (error) {
 
+        /*
+         * 詳細な内部エラーは
+         * Azure Functionsログのみ。
+         */
+
         context.error(
             "Material thumbnail API failed.",
             error
         );
 
 
-        return {
-            status:
-                500,
-
-            jsonBody: {
+        return jsonResponse(
+            500,
+            {
 
                 success:
                     false,
@@ -348,7 +591,7 @@ async function materialThumbnailHandler(
                 message:
                     "サムネイル画像を取得できませんでした。"
             }
-        };
+        );
     }
 }
 
@@ -360,9 +603,15 @@ async function materialThumbnailHandler(
 app.http(
     "material-thumbnail",
     {
+
         methods: [
             "GET"
         ],
+
+        /*
+         * 展示会来訪者向け公開APIなので
+         * anonymous。
+         */
 
         authLevel:
             "anonymous",

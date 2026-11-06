@@ -95,11 +95,11 @@ const translations = {
 
         /* Material Detail */
 
-       "material.pageTitle":
+        "material.pageTitle":
             "Material Details",
-       
+
         "material.download":
-            "Download Material",
+            "Proceed to Download",
 
         "material.back":
             "Back to Materials",
@@ -120,37 +120,16 @@ const translations = {
             "Download Material",
 
         "download.description":
-            "Please enter the required information below to download the material.",
+            "Please review the material and download it below.",
 
-        "download.formTitle":
-            "Your Information",
+        "download.actionTitle":
+            "Download Material",
 
-        "download.required":
-            "Required",
-
-        "download.company":
-            "Company",
-
-        "download.department":
-            "Department",
-
-        "download.name":
-            "Name",
-
-        "download.email":
-            "Email Address",
-
-        "download.phone":
-            "Phone Number",
-
-        "download.optional":
-            "Optional",
-
-        "download.consent":
-            "I agree to the handling of my personal information.",
+        "download.actionDescription":
+            "You can download the material using the button below.",
 
         "download.submit":
-            "Agree and Download",
+            "Download Material",
 
         "download.processing":
             "Preparing your download...",
@@ -169,18 +148,6 @@ const translations = {
 
         "download.pageError":
             "Unable to load the material information.",
-
-        "download.companyError":
-            "Please enter your company name.",
-
-        "download.nameError":
-            "Please enter your name.",
-
-        "download.emailError":
-            "Please enter a valid email address.",
-
-        "download.consentError":
-            "Please agree to the handling of your personal information.",
 
 
         /* Footer */
@@ -207,25 +174,7 @@ const translations = {
             "Terms of use",
 
         "footer.sitePolicyUrl":
-            "https://www.inabata.co.jp/english/sitepolicy/",
-
-
-        /* Cookie */
-
-        "cookie.title":
-            "Cookie Notice",
-
-        "cookie.message":
-            "This website uses cookies to provide a better browsing experience.",
-
-        "cookie.policy":
-            "Cookie Policy",
-
-        "cookie.accept":
-            "Accept",
-
-        "cookie.decline":
-            "Decline"
+            "https://www.inabata.co.jp/english/sitepolicy/"
     },
 
 
@@ -302,9 +251,9 @@ const translations = {
 
         "material.pageTitle":
             "資料詳細",
-       
+
         "material.download":
-            "資料をダウンロード",
+            "ダウンロードはこちら",
 
         "material.back":
             "資料一覧へ戻る",
@@ -325,37 +274,16 @@ const translations = {
             "資料ダウンロード",
 
         "download.description":
-            "必要事項をご入力のうえ、資料をダウンロードしてください。",
+            "資料をご確認のうえ、ダウンロードしてください。",
 
-        "download.formTitle":
-            "お客様情報",
+        "download.actionTitle":
+            "資料のダウンロード",
 
-        "download.required":
-            "必須項目",
-
-        "download.company":
-            "会社名",
-
-        "download.department":
-            "部署名",
-
-        "download.name":
-            "氏名",
-
-        "download.email":
-            "メールアドレス",
-
-        "download.phone":
-            "電話番号",
-
-        "download.optional":
-            "任意",
-
-        "download.consent":
-            "個人情報の取扱いに同意します。",
+        "download.actionDescription":
+            "下のボタンから資料をダウンロードできます。",
 
         "download.submit":
-            "同意してダウンロード",
+            "資料をダウンロード",
 
         "download.processing":
             "ダウンロードを準備しています...",
@@ -374,18 +302,6 @@ const translations = {
 
         "download.pageError":
             "資料情報を取得できませんでした。",
-
-        "download.companyError":
-            "会社名を入力してください。",
-
-        "download.nameError":
-            "氏名を入力してください。",
-
-        "download.emailError":
-            "有効なメールアドレスを入力してください。",
-
-        "download.consentError":
-            "個人情報の取扱いへの同意が必要です。",
 
 
         /* Footer */
@@ -412,25 +328,7 @@ const translations = {
             "サイトポリシー",
 
         "footer.sitePolicyUrl":
-            "https://www.inabata.co.jp/sitepolicy/",
-
-
-        /* Cookie */
-
-        "cookie.title":
-            "Cookieについて",
-
-        "cookie.message":
-            "本サイトでは、より快適にご利用いただくためCookieを使用しています。",
-
-        "cookie.policy":
-            "Cookieポリシー",
-
-        "cookie.accept":
-            "同意する",
-
-        "cookie.decline":
-            "同意しない"
+            "https://www.inabata.co.jp/sitepolicy/"
     }
 };
 
@@ -562,10 +460,6 @@ function translate(
     }
 
 
-    /*
-     * 未定義キー
-     */
-
     return key;
 }
 
@@ -643,41 +537,39 @@ function applyTranslations() {
         getCurrentLanguage();
 
 
-    /* =====================================
-       HTML Language
-    ===================================== */
+    /* HTML Language */
 
     document.documentElement.lang =
         language;
 
 
-   /* =====================================
-      Site Logo
-   ===================================== */
-   
-   const logoElement =
-       document.getElementById(
-           "site-logo-image"
-       );
-   
-   
-   if (logoElement) {
-   
-       const logoSource =
-           language === "ja"
-               ? logoElement.dataset.logoJa
-               : logoElement.dataset.logoEn;
-   
-   
-       if (logoSource) {
-   
-           logoElement.setAttribute(
-               "src",
-               logoSource
-           );
-       }
-   }
-   
+    /* =====================================
+       Site Logo
+    ===================================== */
+
+    const logoElement =
+        document.getElementById(
+            "site-logo-image"
+        );
+
+
+    if (logoElement) {
+
+        const logoSource =
+            language === "ja"
+                ? logoElement.dataset.logoJa
+                : logoElement.dataset.logoEn;
+
+
+        if (logoSource) {
+
+            logoElement.setAttribute(
+                "src",
+                logoSource
+            );
+        }
+    }
+
 
     /* =====================================
        Text
@@ -700,6 +592,7 @@ function applyTranslations() {
 
 
             if (!key) {
+
                 return;
             }
 
@@ -734,6 +627,7 @@ function applyTranslations() {
 
 
             if (!key) {
+
                 return;
             }
 
@@ -745,6 +639,7 @@ function applyTranslations() {
 
 
             if (!url) {
+
                 return;
             }
 
@@ -779,6 +674,7 @@ function applyTranslations() {
 
 
             if (!key) {
+
                 return;
             }
 
@@ -815,6 +711,7 @@ function applyTranslations() {
 
 
             if (!key) {
+
                 return;
             }
 
@@ -885,12 +782,16 @@ function updateStaticPageTitle() {
             language === "ja"
                 ? "資料一覧｜INABATA"
                 : "Materials | INABATA";
+
+
+        return;
     }
 
 
     /*
-     * material.html / download.html のタイトルは
-     * material.js / download.js が資料名を含めて設定。
+     * material.html / download.html は
+     * material.js / download.js が
+     * 資料名を含めて設定。
      */
 }
 
@@ -935,7 +836,9 @@ function setLanguage(
 
 
     /*
-     * 静的文言・Footer URLなどを更新。
+     * 静的文言、
+     * Footer URL、
+     * ロゴを更新。
      */
 
     applyTranslations();
@@ -945,11 +848,8 @@ function setLanguage(
 
 
     /*
-     * app.js
-     * material.js
-     * download.js
-     *
-     * へ言語変更を通知。
+     * 各ページ固有JSへ
+     * 言語変更を通知。
      */
 
     if (
