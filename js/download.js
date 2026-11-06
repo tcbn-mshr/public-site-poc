@@ -73,48 +73,6 @@ const pdfFallbackElement =
     );
 
 
-const formElement =
-    document.getElementById(
-        "download-form"
-    );
-
-
-const companyElement =
-    document.getElementById(
-        "company"
-    );
-
-
-const departmentElement =
-    document.getElementById(
-        "department"
-    );
-
-
-const customerNameElement =
-    document.getElementById(
-        "customer-name"
-    );
-
-
-const emailElement =
-    document.getElementById(
-        "email"
-    );
-
-
-const phoneNumberElement =
-    document.getElementById(
-        "phone-number"
-    );
-
-
-const consentElement =
-    document.getElementById(
-        "privacy-consent"
-    );
-
-
 const submitButton =
     document.getElementById(
         "download-submit"
@@ -142,30 +100,6 @@ const successElement =
 const apiErrorElement =
     document.getElementById(
         "download-error"
-    );
-
-
-const companyErrorElement =
-    document.getElementById(
-        "company-error"
-    );
-
-
-const customerNameErrorElement =
-    document.getElementById(
-        "customer-name-error"
-    );
-
-
-const emailErrorElement =
-    document.getElementById(
-        "email-error"
-    );
-
-
-const consentErrorElement =
-    document.getElementById(
-        "consent-error"
     );
 
 
@@ -569,21 +503,6 @@ function getLocalizedCategoryName(
 
 
 /* =========================================
-   Email Validation
-========================================= */
-
-function isValidEmail(
-    value
-) {
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(
-            value
-        );
-}
-
-
-/* =========================================
    Page State
 ========================================= */
 
@@ -649,28 +568,11 @@ function setProcessing(
     isProcessing
 ) {
 
-    const formControls = [
+    if (submitButton) {
 
-        companyElement,
-        departmentElement,
-        customerNameElement,
-        emailElement,
-        phoneNumberElement,
-        consentElement,
-        submitButton
-    ];
-
-
-    formControls.forEach(
-        (control) => {
-
-            if (control) {
-
-                control.disabled =
-                    isProcessing;
-            }
-        }
-    );
+        submitButton.disabled =
+            isProcessing;
+    }
 
 
     if (submitLabelElement) {
@@ -695,7 +597,7 @@ function setProcessing(
             submitLabelElement.textContent =
                 isProcessing
                     ? "Preparing..."
-                    : "Agree and Download";
+                    : "Download Material";
         }
     }
 
@@ -721,26 +623,6 @@ function setProcessing(
 ========================================= */
 
 function clearMessages() {
-
-    hideElement(
-        companyErrorElement
-    );
-
-
-    hideElement(
-        customerNameErrorElement
-    );
-
-
-    hideElement(
-        emailErrorElement
-    );
-
-
-    hideElement(
-        consentErrorElement
-    );
-
 
     hideElement(
         apiErrorElement
@@ -778,129 +660,6 @@ function showApiError(
     showElement(
         apiErrorElement
     );
-}
-
-
-/* =========================================
-   Validation
-========================================= */
-
-function validateForm() {
-
-    clearMessages();
-
-
-    const company =
-        normalizeText(
-            companyElement?.value
-        );
-
-
-    const customerName =
-        normalizeText(
-            customerNameElement?.value
-        );
-
-
-    const email =
-        normalizeText(
-            emailElement?.value
-        );
-
-
-    const consent =
-        Boolean(
-            consentElement?.checked
-        );
-
-
-    let firstInvalidElement =
-        null;
-
-
-    /* =====================================
-       Company
-    ===================================== */
-
-    if (!company) {
-
-        showElement(
-            companyErrorElement
-        );
-
-
-        firstInvalidElement =
-            firstInvalidElement ||
-            companyElement;
-    }
-
-
-    /* =====================================
-       Name
-    ===================================== */
-
-    if (!customerName) {
-
-        showElement(
-            customerNameErrorElement
-        );
-
-
-        firstInvalidElement =
-            firstInvalidElement ||
-            customerNameElement;
-    }
-
-
-    /* =====================================
-       Email
-    ===================================== */
-
-    if (
-        !email ||
-        !isValidEmail(
-            email
-        )
-    ) {
-
-        showElement(
-            emailErrorElement
-        );
-
-
-        firstInvalidElement =
-            firstInvalidElement ||
-            emailElement;
-    }
-
-
-    /* =====================================
-       Consent
-    ===================================== */
-
-    if (!consent) {
-
-        showElement(
-            consentErrorElement
-        );
-
-
-        firstInvalidElement =
-            firstInvalidElement ||
-            consentElement;
-    }
-
-
-    if (firstInvalidElement) {
-
-        firstInvalidElement.focus();
-
-
-        return false;
-    }
-
-
-    return true;
 }
 
 
@@ -1017,8 +776,8 @@ function renderThumbnail(
     /*
      * 初期状態
      *
-     * 最初はPDFフォールバックを表示。
-     * Thumbnail成功時のみ画像へ変更。
+     * PDFフォールバックを先に表示。
+     * Thumbnail取得成功時のみ画像へ切替。
      */
 
     thumbnailElement.hidden =
@@ -1238,43 +997,16 @@ async function requestDownload() {
 
 
     /*
-     * Department と Phone Number は任意。
+     * 個人情報は送信しません。
+     *
+     * 公開APIへ送信するのは
+     * materialIdのみ。
      */
 
     const payload = {
 
         materialId:
-            currentMaterial.id,
-
-        company:
-            normalizeText(
-                companyElement?.value
-            ),
-
-        department:
-            normalizeText(
-                departmentElement?.value
-            ),
-
-        customerName:
-            normalizeText(
-                customerNameElement?.value
-            ),
-
-        email:
-            normalizeText(
-                emailElement?.value
-            ),
-
-        phoneNumber:
-            normalizeText(
-                phoneNumberElement?.value
-            ),
-
-        consent:
-            Boolean(
-                consentElement?.checked
-            )
+            currentMaterial.id
     };
 
 
@@ -1361,8 +1093,9 @@ async function requestDownload() {
 
 
     /*
-     * APIから返された短時間有効な
-     * SAS URLを使用してPDFを取得。
+     * APIから返された
+     * 短時間有効なRead SAS URLで
+     * Private BlobのPDFを取得。
      */
 
     const downloadLink =
@@ -1392,20 +1125,25 @@ async function requestDownload() {
 
 
 /* =========================================
-   Submit
+   Download Button
 ========================================= */
 
-async function handleSubmit(
-    event
-) {
+async function handleDownload() {
 
-    event.preventDefault();
+    /*
+     * 二重クリック防止。
+     */
 
-
-    if (!validateForm()) {
+    if (
+        !submitButton ||
+        submitButton.disabled
+    ) {
 
         return;
     }
+
+
+    clearMessages();
 
 
     setProcessing(
@@ -1432,7 +1170,7 @@ async function handleSubmit(
 
 
         showApiError(
-            error.message
+            error?.message
         );
 
 
@@ -1475,6 +1213,19 @@ async function initializeDownloadPage() {
     }
 
 
+    /*
+     * ダウンロードボタンは、
+     * 資料情報を正常に取得するまで
+     * 使用不可にしておきます。
+     */
+
+    if (submitButton) {
+
+        submitButton.disabled =
+            true;
+    }
+
+
     try {
 
         currentMaterial =
@@ -1506,12 +1257,10 @@ async function initializeDownloadPage() {
         showPageContent();
 
 
-        if (formElement) {
+        if (submitButton) {
 
-            formElement.addEventListener(
-                "submit",
-                handleSubmit
-            );
+            submitButton.disabled =
+                false;
         }
 
 
@@ -1525,6 +1274,19 @@ async function initializeDownloadPage() {
 
         showPageError();
     }
+}
+
+
+/* =========================================
+   Download Button Event
+========================================= */
+
+if (submitButton) {
+
+    submitButton.addEventListener(
+        "click",
+        handleDownload
+    );
 }
 
 
@@ -1552,9 +1314,10 @@ window.addEventListener(
 
 
         /*
-         * Submit Button
+         * Download Button
          *
-         * 処理中でなければ現在言語へ更新。
+         * 処理中でなければ
+         * 現在言語へ更新。
          */
 
         if (
