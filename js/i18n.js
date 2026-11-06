@@ -189,27 +189,6 @@ const translations = {
             "https://www.inabata.co.jp/english/sitepolicy/",
 
 
-        /* =================================
-           Cookie
-        ================================= */
-
-        "cookie.title":
-            "Cookie Notice",
-
-        "cookie.message":
-            "This website uses cookies to provide a better browsing experience.",
-
-        "cookie.policy":
-            "Cookie Policy",
-
-        "cookie.accept":
-            "Accept",
-
-        "cookie.decline":
-            "Decline"
-    },
-
-
     /* =====================================
        Japanese
     ===================================== */
@@ -373,28 +352,6 @@ const translations = {
 
         "footer.sitePolicyUrl":
             "https://www.inabata.co.jp/sitepolicy/",
-
-
-        /* =================================
-           Cookie
-        ================================= */
-
-        "cookie.title":
-            "Cookieについて",
-
-        "cookie.message":
-            "本サイトでは、より快適にご利用いただくためCookieを使用しています。",
-
-        "cookie.policy":
-            "Cookieポリシー",
-
-        "cookie.accept":
-            "同意する",
-
-        "cookie.decline":
-            "同意しない"
-    }
-};
 
 
 /* =========================================
