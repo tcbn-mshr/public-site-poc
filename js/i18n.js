@@ -99,7 +99,7 @@ const translations = {
             "Material Details",
 
         "material.download":
-            "Download Material",
+            "Proceed to Download",
 
         "material.back":
             "Back to Materials",
@@ -253,7 +253,7 @@ const translations = {
             "資料詳細",
 
         "material.download":
-            "資料をダウンロード",
+            "ダウンロードはこちら",
 
         "material.back":
             "資料一覧へ戻る",
