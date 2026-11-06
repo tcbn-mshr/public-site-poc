@@ -30,9 +30,7 @@ const translations = {
 
     en: {
 
-        /* =================================
-           Common
-        ================================= */
+        /* Common */
 
         "common.japanese":
             "日本語",
@@ -41,9 +39,7 @@ const translations = {
             "English",
 
 
-        /* =================================
-           Home
-        ================================= */
+        /* Home */
 
         "home.title":
             "Exhibition Materials",
@@ -55,9 +51,7 @@ const translations = {
             "View Materials",
 
 
-        /* =================================
-           Materials
-        ================================= */
+        /* Materials */
 
         "materials.title":
             "Materials",
@@ -99,9 +93,7 @@ const translations = {
             "No materials are available in this category.",
 
 
-        /* =================================
-           Material Detail
-        ================================= */
+        /* Material Detail */
 
         "material.pageTitle":
             "Material Details",
@@ -122,9 +114,7 @@ const translations = {
             "Please review the material details and proceed to the download page.",
 
 
-        /* =================================
-           Download
-        ================================= */
+        /* Download */
 
         "download.title":
             "Download Material",
@@ -160,9 +150,7 @@ const translations = {
             "Unable to load the material information.",
 
 
-        /* =================================
-           Footer
-        ================================= */
+        /* Footer */
 
         "footer.privacy":
             "Privacy Policy",
@@ -186,7 +174,8 @@ const translations = {
             "Terms of use",
 
         "footer.sitePolicyUrl":
-            "https://www.inabata.co.jp/english/sitepolicy/",
+            "https://www.inabata.co.jp/english/sitepolicy/"
+    },
 
 
     /* =====================================
@@ -195,9 +184,7 @@ const translations = {
 
     ja: {
 
-        /* =================================
-           Common
-        ================================= */
+        /* Common */
 
         "common.japanese":
             "日本語",
@@ -206,9 +193,7 @@ const translations = {
             "English",
 
 
-        /* =================================
-           Home
-        ================================= */
+        /* Home */
 
         "home.title":
             "展示会資料",
@@ -220,9 +205,7 @@ const translations = {
             "資料一覧を見る",
 
 
-        /* =================================
-           Materials
-        ================================= */
+        /* Materials */
 
         "materials.title":
             "資料一覧",
@@ -264,9 +247,7 @@ const translations = {
             "該当する資料はありません。",
 
 
-        /* =================================
-           Material Detail
-        ================================= */
+        /* Material Detail */
 
         "material.pageTitle":
             "資料詳細",
@@ -287,9 +268,7 @@ const translations = {
             "資料の詳細をご確認のうえ、ダウンロードページへお進みください。",
 
 
-        /* =================================
-           Download
-        ================================= */
+        /* Download */
 
         "download.title":
             "資料ダウンロード",
@@ -325,9 +304,7 @@ const translations = {
             "資料情報を取得できませんでした。",
 
 
-        /* =================================
-           Footer
-        ================================= */
+        /* Footer */
 
         "footer.privacy":
             "個人情報保護方針",
@@ -351,7 +328,9 @@ const translations = {
             "サイトポリシー",
 
         "footer.sitePolicyUrl":
-            "https://www.inabata.co.jp/sitepolicy/",
+            "https://www.inabata.co.jp/sitepolicy/"
+    }
+};
 
 
 /* =========================================
@@ -481,10 +460,6 @@ function translate(
     }
 
 
-    /*
-     * Undefined key
-     */
-
     return key;
 }
 
@@ -562,9 +537,7 @@ function applyTranslations() {
         getCurrentLanguage();
 
 
-    /* =====================================
-       HTML Language
-    ===================================== */
+    /* HTML Language */
 
     document.documentElement.lang =
         language;
@@ -816,8 +789,9 @@ function updateStaticPageTitle() {
 
 
     /*
-     * material.html / download.html のタイトルは
-     * material.js / download.js が資料名を含めて設定。
+     * material.html / download.html は
+     * material.js / download.js が
+     * 資料名を含めて設定。
      */
 }
 
@@ -864,7 +838,7 @@ function setLanguage(
     /*
      * 静的文言、
      * Footer URL、
-     * ロゴなどを更新。
+     * ロゴを更新。
      */
 
     applyTranslations();
@@ -874,11 +848,8 @@ function setLanguage(
 
 
     /*
-     * app.js
-     * material.js
-     * download.js
-     *
-     * へ言語変更を通知。
+     * 各ページ固有JSへ
+     * 言語変更を通知。
      */
 
     if (
